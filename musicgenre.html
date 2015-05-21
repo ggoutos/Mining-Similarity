@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+		
+		
+		
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/postmusic.js"></script>
+    <script src="js/postlikesmusic.js"></script>
+	<script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        
+                    // Now safe to use device APIs
+		 
+                    //var list = document.getElementById('userLikes')
+             
+                    for (var i=0; i < response.music.data.length; i++) {
+                        
+                        //var li = document.createElement('li');
+                        //li.innerHTML = response.music.data[i].name;
+                        //list.appendChild(li);
+                    
+                        document.getElementById('id').value = response.music.data[i].id;
+                        document.getElementById('name').value = response.music.data[i].name;
+                        
+                        //alert(getElementById('genre').value);
+                        document.getElementById('genre').value = response.music.data[i].genre;
+                        $('#music').submit();  
+                        
+                        
+                        document.getElementById('user_id').value = response.id;
+                        document.getElementById('music_id').value = response.music.data[i].id;
+                        $('#likes_music').submit(); 
+                            
+                    }
+                    
+                    alert(JSON.stringify(response.music.data.length)+" records of music sent successfully.");
+                    window.location = "movies.html"; 
+                           
+                
+                   
+				 
+                
+                    
+				 
+		
+    }
+	
+        
+        
+        function getGenre(artist) {
+                
+                artist='Scorpions';
+                //alert(artist);    
+            
+                var url= 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist='+artist+'&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json';
+                       
+                $.getJSON(url, function(lastfm){
+                    //1st one only
+                    alert(lastfm.toptags.tag[0].name);
+                    document.getElementById('genre').value = lastfm.toptags.tag[0].name;   
+                });
+            
+        }
+        
+        
+        
+    </script>
+  
+
+  <body onload="onLoad()">
+      <div id="fb-root"></div> 
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+            
+            
+            <div class="container">
+	           <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+               </div>
+            </div>
+          
+          <h1><small>loading your music... </small></h1>
+          
+          <!-- <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
+
+          
+          
+          
+		      <ul id="userLikes" style="display:none"></ul>
+            
+            <!--
+style="display:none"
+-->
+      
+          
+            <form name="music" id="music">
+		      <label for="id">
+			     <b>id</b>
+			     <input id="id" name="id">
+		      </label>
+
+		      <label for="name">
+			     <b>name</b>
+			     <input id="name" name="name">
+		      </label>
+		
+              <label for="genre">
+			     <b>genre</b>
+			     <input id="genre" name="genre">
+		      </label>
+                
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+          
+          <form name="likes_music" id="likes_music">
+		      <label for="user_id">
+			     <b>user_id</b>
+			     <input id="user_id" name="user_id">
+		      </label>
+
+		      <label for="music_id">
+			     <b>music_id</b>
+			     <input id="music_id" name="music_id">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+          
+          
+      
+      
+      
+  </body>
+</html>

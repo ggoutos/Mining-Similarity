@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+	<script src="js/jquery-1.7.2.min.js"></script>
+	
+	<script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        // Now safe to use device APIs
+        
+        
+              //////////////////Public Profile///////////////////////////////////
+		      facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email", ["user_birthday"],
+                    function (response) { 
+                    //alert("1");
+             
+                    var list = document.getElementById('user');
+                    
+                    var li = document.createElement('li');
+					li.innerHTML = "id:   " + response.id;
+                    list.appendChild(li);
+                    var li = document.createElement('li');
+                    li.innerHTML = "name:   " + response.name;
+                    list.appendChild(li);
+                    var li = document.createElement('li');
+                    li.innerHTML = "first name:   " + response.first_name;
+                    list.appendChild(li);
+                    var li = document.createElement('li');
+                    li.innerHTML = "last name:   " + response.last_name;
+                    list.appendChild(li);
+                    var li = document.createElement('li');
+                    li.innerHTML = "email:   " + response.email;
+                    list.appendChild(li);
+             
+                    
+                                    
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  ); 
+				 //////////////////////////////////////////////////////
+                    
+				 
+        
+        
+                //////////////////////music/////////////////////////
+                
+                facebookConnectPlugin.api( "me?fields=id,music.limit(300)", ["user_birthday"],
+                    function (response) { 
+             //alert("2");
+                        var listt = document.getElementById('music')
+             
+                        for (var i=0; i < response.music.data.length; i++) {
+                            var lii = document.createElement('li');
+                            lii.innerHTML = response.music.data[i].name;
+                            listt.appendChild(lii); 
+                        }
+                
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  ); 
+        
+                /////////////////////////////////////////////////////
+                    
+                    
+                ///////////////////movies//////////////////////////
+                    
+                facebookConnectPlugin.api( "me?fields=id,movies.limit(300)", ["user_birthday"],
+                    function (response) { 
+             //alert("3");
+                        var listtt = document.getElementById('movies')
+             
+                        for (var i=0; i < response.movies.data.length; i++) {
+                            var liii = document.createElement('li');
+                            liii.innerHTML = response.movies.data[i].name;
+                            listtt.appendChild(liii);
+                        }
+                    
+                  
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  );     
+                    
+                ////////////////////////////////////////////////////
+        
+        
+		
+    }
+	
+        
+        document.addEventListener('backbutton', function(e){
+                      window.location = "menu.html";
+              }, false);
+        
+       
+        
+        
+        var  callAnotherPage = function () {
+                window.location = "menu.html";
+             }
+        
+    </script>
+  
+  <body onload="onLoad()">
+      
+      <div class="app">
+          
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="menu.html">View details</a></small></h1>
+          
+            <div class="event listening button" onclick="callAnotherPage();">Back</div>
+
+          
+            <p>Your public profile</p>
+           
+		    <ul id="user"></ul>
+          
+          <p>Your music list</p>
+            
+          
+            <ul id="music"></ul>
+          
+            
+          
+            <ul id="movies"></ul>
+
+              
+      </div>
+      
+      
+  </body>
+</html>

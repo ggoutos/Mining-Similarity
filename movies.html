@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+		
+		
+		
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>
+		<script src="js/postmovies.js"></script>
+    <script src="js/postlikesmovies.js"></script>
+	<script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        // Now safe to use device APIs
+		 facebookConnectPlugin.api( "me?fields=id,movies.limit(300){id,name}", ["user_birthday"],
+                    function (response) { 
+             
+                    //var list = document.getElementById('userLikes')
+             
+                   
+             
+                    //document.getElementById("demo").innerHTML = moviest;       
+             
+                    var i=0;
+                    var flag=0;
+           
+                    var moviest = [];
+                    //var likest = [];
+             
+                    while (i < response.movies.data.length) {
+                        
+                        //var li = document.createElement('li');
+                        //li.innerHTML = response.movies.data[i].name;
+                        //list.appendChild(li);
+                        
+                        
+                        
+                        moviest[moviest.length]=[response.movies.data[i].id, response.movies.data[i].name, ""]
+                        
+                        //likest[likest.length] = [response.id, response.movies.data[i].id]
+                        
+                        i++;
+                        
+                    }
+                    
+                    
+                    alert(JSON.stringify(response.movies.data.length)+" records of movies sent successfully.");
+                    
+                         
+                    
+          
+                    //document.getElementById("moviesc").innerHTML = moviest;
+                    //document.getElementById("moviescc").innerHTML = table;
+          
+                    genre(moviest, response.id);
+           
+              
+           
+                    //window.location = "movies.html"; 
+             
+             
+             
+             
+                
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  ); 
+				  //window.location = "load-json.html";
+                
+				 
+		
+    }
+        
+        
+        
+        
+        function genre(moviest, id) {
+            
+            alert('genre function called i='+moviest.length);
+        
+            var flag=0;
+            
+            
+            
+            for(i=0; i<moviest.length; i++) {
+                
+                //alert(moviest[flag][1]);
+                
+                $.ajax({
+            //data:		parms,
+			async:   false,
+            //url:		'http://www.myapifilms.com/imdb',
+			url: 'http://www.omdbapi.com/?t=' + moviest[flag][1],
+            //type:		'get',
+            //dataType:	'jsonp',
+			
+            success:  function (response) {
+			
+			
+			if (response['Genre']==null) moviest[flag][2]='undefined'; 
+			else {
+			var j=0;
+			var help="";
+			while (j<response['Genre'].length) {
+			
+			if (response['Genre'][j]!=',') { help+=response['Genre'][j]; j++; }
+			else j=response['Genre'].length;
+			
+			}
+			
+			moviest[flag][2]=help};	
+			flag++;	
+            },
+            error: function(textStatus, errorThrown) {
+            	$("#error").text(textStatus + "; " + errorThrown);
+				alert('error');
+				flag++;
+            }
+    	});  
+        
+                
+                
+        }
+            
+            
+            
+            submitforms(moviest, id);
+            
+            
+        }
+        
+        
+        
+        function submitforms(moviest, id) {
+            
+            
+            for (i=0; i<moviest.length; i++) {
+            
+            
+                        document.getElementById('id').value = moviest[i][0];
+                        document.getElementById('name').value = moviest[i][1];
+                        document.getElementById('genre').value = moviest[i][2];
+                        
+                        $('#movies').submit();  
+                        
+                        
+                        document.getElementById('user_id').value = id;
+                        document.getElementById('movies_id').value = moviest[i][0];
+                        
+                        $('#likes_movies').submit(); 
+                        
+                        
+                        //alert(i);
+            }
+            
+            alert('movies data submitted');
+           window.location = "menu.html";
+            
+        }
+        
+	
+       
+        
+        
+    </script>
+  
+  <body onload="onLoad()">
+      <div id="fb-root"></div> 
+      
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+            
+          <!-- <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
+
+          <div class="container">
+	           <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+               </div>
+            </div>
+          
+          <h1><small>loading your movies... </small></h1>
+          
+          
+          
+          
+           
+            <ul id="userLikes" style="display:none"></ul>
+           
+		      
+            
+          
+            <form name="movies" id="movies" style="display:none">
+		      <label for="id">
+			     <b>id</b>
+			     <input id="id" name="id">
+		      </label>
+
+		      <label for="name">
+			     <b>name</b>
+			     <input id="name" name="name">
+		      </label>
+              <label for="genre">
+			     <b>genre</b>
+			     <input id="genre" name="genre">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+          
+          <form name="likes_movies" id="likes_movies" style="display:none">
+		      <label for="user_id">
+			     <b>user_id</b>
+			     <input id="user_id" name="user_id">
+		      </label>
+
+		      <label for="movie_id">
+			     <b>movie_id</b>
+			     <input id="movie_id" name="movie_id">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+          
+          <p id="demo"></p>
+      
+      
+      
+  </body>
+</html>

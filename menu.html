@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Facebook</title>
+        </head>
+        
+        
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>
+		<script src="js/load-json.js"></script>
+        <script type="text/javascript">
+                
+            
+            var login = function () {
+                if (!window.cordova) {
+                    var appId = prompt("Enter FB Application ID", "");
+                    facebookConnectPlugin.browserInit(appId);
+                }
+                facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
+                    function (response) { 
+                        alert("Status: connected\nNow ready to send data."); 
+                
+                    },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+            
+            var showDialog = function () { 
+                facebookConnectPlugin.showDialog( { method: "feed" }, 
+                    function (response) { alert("Your post sent successfully.") },
+                    function (response) {  });
+            }
+            
+            
+            var  callmusicpage = function () {
+                window.location = "music.html";
+             }
+            var  callmoviespage = function () {
+                window.location = "movies.html";
+             }
+            
+            var  calluserpage = function () {
+                window.location = "user.html";
+             }
+            var  callfriendspage = function () {
+                window.location = "friends.html";
+             }
+            
+            var apiMusic = function () { 
+                facebookConnectPlugin.api( "me/music?limit=300", ["user_birthday"],
+                    function (response) { 
+                
+                    //alert(JSON.stringify(response))
+                    //alert(JSON.stringify(response.data.length));
+                    var list = document.getElementById('userLikes')
+                    for (var i=0; i < response.data.length; i++) {
+                        //alert("mpike for");
+                    var li = document.createElement('li');
+                    li.innerHTML = response.data[i].name;
+                    list.appendChild(li);
+                    //document.write(li);
+                    }
+  
+
+
+                        
+                
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  ); 
+				  //window.location = "load-json.html";
+                
+				  
+            }
+
+            
+            var apiPermissions = function () { 
+                facebookConnectPlugin.api( "me/?fields=permissions", ["user_birthday"],
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) }); 
+            }
+            
+            var getAccessToken = function () { 
+                facebookConnectPlugin.getAccessToken( 
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+            
+            var getStatus = function () { 
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+
+            var logout = function () { 
+                facebookConnectPlugin.logout( 
+                    function (response) { alert("Good bye!") },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+            
+            
+            
+            $(document).on('click', '#logout', function(){
+                facebookConnectPlugin.logout( 
+                    function (response) { alert("Good bye!") },
+                    function (response) { alert(JSON.stringify(response)) });
+                
+                  window.location = "index.html";
+                                
+                            
+            });
+            
+            
+            document.addEventListener('backbutton', function(e){
+                      if (confirm("Do you want to exit?"))
+                      {
+                        navigator.app.exitApp();
+                      }
+                    else
+                      {
+                        
+                      }
+              }, false);
+            
+        </script>
+        
+        
+    
+    <body>
+        
+        
+        <div id="fb-root"></div>        
+        <div class="app">
+            
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="menu.html">View details</a></small></h1>
+                
+            <div class="event listening button" onclick="showDialog();">Post on your wall</div>
+            <div class="event listening button" onclick="calluserpage();">Check yourself</div>
+            <!--
+            <div class="event listening button" onclick="callmusicpage();">Check your music</div>
+            <div class="event listening button" onclick="callmoviespage();">Check your movies</div>
+            -->
+            <div class="event listening button" onclick="callfriendspage();">Check your friends</div>
+            
+            <img id="logout" src="img/logout.png" alt="" />
+            
+            <ul id="userLikes"></ul>
+            
+           
+            
+        </div>
+        
+        
+    </body>
+</html>

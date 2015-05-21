@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+		
+		
+		
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/postmusic.js"></script>
+    <script src="js/postlikesmusic.js"></script>
+	<script type="text/javascript" charset="utf-8">
+
+        
+          
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        
+        // Now safe to use device APIs
+		
+      
+        
+      facebookConnectPlugin.api( "me?fields=id,music.limit(300){id,name}", ["user_birthday"],
+                    function (response) { 
+             
+                    //var list = document.getElementById('userLikes')
+             
+                   document.getElementById("info").innerHTML = 'Getting your music from facebook...';  
+             
+                    //document.getElementById("demo").innerHTML = musict;       
+             
+                    var i=0;
+                    var flag=0;
+           
+                    var musict = [];
+                    //var likest = [];
+             
+                    while (i < response.music.data.length) {
+                        
+                        //var li = document.createElement('li');
+                        //li.innerHTML = response.music.data[i].name;
+                        //list.appendChild(li);
+                        
+                        
+                        
+                        musict[musict.length]=[response.music.data[i].id, response.music.data[i].name, ""]
+                        
+                        //likest[likest.length] = [response.id, response.music.data[i].id]
+                        
+                        i++;
+                        
+                    }
+                    
+                    
+                    alert(JSON.stringify(response.music.data.length)+" records of music sent successfully.");
+                    
+                         
+                    
+          
+                    //document.getElementById("musicc").innerHTML = musict;
+                    //document.getElementById("musiccc").innerHTML = table;
+          
+                    
+          
+          
+          genre(musict, response.id);
+           
+              
+           
+                    //window.location = "movies.html"; 
+                           
+                
+                    },
+                    
+                    function (response) {  alert("Something went wrong.");    }  ); 
+        
+                
+        
+        
+        
+        
+                
+        //document.getElementById("demo").innerHTML = musict;
+                 
+        
+        
+        
+        
+                
+                    
+				 
+		
+    }
+	
+        
+        function genre(musict, id) {
+            
+            alert('genre function called i='+musict.length);
+        
+            var flag=0;
+            document.getElementById("info").innerHTML = 'Updating your music\'s genres...';  
+            document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
+            
+            
+            for(i=0; i<musict.length; i++) {
+                
+                //alert(musict[flag][1]);
+                
+                $.ajax({
+		                  url: 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist='+musict[flag][1]+'&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json',
+		                  async:   false,
+		                  success: function(lastfm){
+			                 
+                        
+                             
+                              if (lastfm.hasOwnProperty('error'))  musict[flag][2]="undefined";
+                              
+                              else {
+                              
+                               if (lastfm.toptags.hasOwnProperty('tag'))  {
+                                 musict[flag][2]=lastfm.toptags.tag[0].name; 
+                            
+                            
+                              
+                                 
+                                 }
+                              else 
+                                  musict[flag][2]="undefined";
+                                  
+                              
+                              }
+                              
+                              
+                              //var out = '<p>'+'          artist: '+musict[flag][1]+'<br>'+'          genre: '+musict[flag][2]+'</p></br>';
+                            //$("body").append(out);
+                              
+                             flag++;
+                              //alert(flag)
+                              //var help=flag/musict.length*100;
+                            document.getElementById("percentage").innerHTML = flag+"/"+musict.length; 
+                              
+                              
+                              
+                              //var out = flag+'/'+musict.length;
+                              //document.getElementById("demo").innerHTML = out;    
+                              //alert(out);
+                              
+                              
+		                  
+		                  }
+	
+                        });
+        
+        }
+            
+			
+            submitforms(musict, id);
+            
+            
+        }
+        
+        
+        
+        function submitforms(musict, id) {
+            
+            alert('Started submiting');
+            
+            document.getElementById("info").innerHTML = 'Sending your music to database...';  
+            document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
+            
+            
+            for (i=0; i<musict.length; i++) {
+            
+            //alert(i);
+                        document.getElementById('id').value = musict[i][0];
+                        document.getElementById('name').value = musict[i][1];
+                        document.getElementById('genre').value = musict[i][2];
+                        
+                        $('#music').submit();  
+                        
+                        
+                        document.getElementById('user_id').value = id;
+                        document.getElementById('music_id').value = musict[i][0];
+                        
+                        $('#likes_music').submit(); 
+                        
+                        //var help=i/musict.length*100;
+                        document.getElementById("percentage").innerHTML = i+"/"+musict.length; 
+                        
+                        //alert(i);
+            }
+            
+            alert('music data submitted');
+            window.location = "movies.html";
+            
+        }
+        
+        
+        
+    </script>
+  <!-- onload="onLoad()"
+        -->
+
+  <body onload="onLoad()">
+      <div id="fb-root"></div> 
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+        
+            
+            <div class="container">
+	           <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+               </div>
+            </div>
+          
+          <h1><small>loading your music... </small></h1>
+            
+			<p id="info"></p>
+            <p id="percentage"></p>
+          
+		  <!-- 
+         <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
+
+          
+          
+          
+		      <ul id="userLikes" style="display:none"></ul>
+            
+            <!--
+style="display:none"
+-->
+      
+          
+            <form name="music" id="music" style="display:none">
+		      <label for="id">
+			     <b>id</b>
+			     <input id="id" name="id">
+		      </label>
+
+		      <label for="name">
+			     <b>name</b>
+			     <input id="name" name="name">
+		      </label>
+		
+               
+              <label for="genre">
+			     <b>genre</b>
+			     <input id="genre" name="genre">
+		      </label>
+              
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+          
+          <form name="likes_music" id="likes_music" style="display:none">
+		      <label for="user_id">
+			     <b>user_id</b>
+			     <input id="user_id" name="user_id">
+		      </label>
+
+		      <label for="music_id">
+			     <b>music_id</b>
+			     <input id="music_id" name="music_id">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+        
+          <p id="musicc"></p>
+        <p id="musiccc"></p>
+      
+      
+  </body>
+</html>

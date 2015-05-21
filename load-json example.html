@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>
+		<script src="js/load-json.js"></script>
+        
+        <title>Mining Social Web</title>
+    </head>
+    <body>
+        <div class="app">
+            <h1>Mining Social Web - music</h1>
+			
+			<script type="text/javascript">
+
+
+	
+
+	var output = $('#output');
+
+	$.ajax({
+		url: 'http://samcroft.co.uk/demos/updated-load-data-into-phonegap/landmarks.php',
+		dataType: 'jsonp',
+		jsonp: 'jsoncallback',
+		timeout: 5000,
+		success: function(data, status){
+			$.each(data, function(i,item){ 
+				var landmark = '<h1>'+item.name+'</h1>'
+				+ '<p>'+item.latitude+'<br>'
+				+ item.longitude+'</p>';
+			
+				output.append(landmark);
+                $(".app").append(landmark);
+                
+				//alert(landmark);
+                //var txt = document.createTextNode(output);
+                //document.getElementById('app').appendChild(output); 
+				//document.write(landmark);
+                //$("body").append(landmark);
+                
+			});
+			
+			
+		},
+		error: function(){
+		   output.text('There was an error loading the data.');
+		}
+	
+});
+
+</script>
+			
+			
+		</div>
+	</body>
+
+
+</html>
