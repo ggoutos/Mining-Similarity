@@ -16,8 +16,9 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
     <script src="js/jquery-1.7.2.min.js"></script>
-    <script src="js/postmusic.js"></script>
-    <script src="js/postlikesmusic.js"></script>
+    <script src="js/dynamicpage.js"></script>
+    <!--<script src="js/postmusic.js"></script>-->
+    <!--<script src="js/postlikesmusic.js"></script>-->
 	<script type="text/javascript" charset="utf-8">
 
         
@@ -34,34 +35,22 @@
         
         // Now safe to use device APIs
 		
-      
         
       facebookConnectPlugin.api( "me?fields=id,music.limit(300){id,name}", ["user_birthday"],
-                    function (response) { 
-             
-                    //var list = document.getElementById('userLikes')
-             
-                   document.getElementById("info").innerHTML = 'Getting your music from facebook...';  
-             
-                    //document.getElementById("demo").innerHTML = musict;       
-             
+            function (response) { 
+          
+                    alert('Getting your music from facebook...');
+                    
                     var i=0;
                     var flag=0;
-           
-                    var musict = [];
-                    //var likest = [];
+                    var mid = [];
+                    var mname = [];
+                    
              
                     while (i < response.music.data.length) {
                         
-                        //var li = document.createElement('li');
-                        //li.innerHTML = response.music.data[i].name;
-                        //list.appendChild(li);
-                        
-                        
-                        
-                        musict[musict.length]=[response.music.data[i].id, response.music.data[i].name, ""]
-                        
-                        //likest[likest.length] = [response.id, response.music.data[i].id]
+                        mid[i]=response.music.data[i].id;           
+                        mname[i]=response.music.data[i].name;
                         
                         i++;
                         
@@ -70,98 +59,121 @@
                     
                     alert(JSON.stringify(response.music.data.length)+" records of music sent successfully.");
                     
-                         
                     
-          
-                    //document.getElementById("musicc").innerHTML = musict;
-                    //document.getElementById("musiccc").innerHTML = table;
-          
-                    
+                    genre(mid, mname, response.id);
           
           
-          genre(musict, response.id);
-           
-              
-           
-                    //window.location = "movies.html"; 
+                    //sendmusic(mid, mname, response.id);
+          
+          
+                    changePage("menu.html");
                            
                 
-                    },
-                    
-                    function (response) {  alert("Something went wrong.");    }  ); 
+            },
+            function (response) {  alert("Something went wrong.");    }  ); 
         
                 
         
-        
-        
-        
-                
-        //document.getElementById("demo").innerHTML = musict;
                  
+        }
         
         
-        
-        
-                
+        function sendmusic(mid, mname, id, tag1, count1, tag2, count2) {
+            
+            
+            alert('Sending your music to database...');
+            
+            
+            var postData = {
+		      "mid[]": mid,
+		      "mname[]": mname,
+		      "id": id,
+              "tag1": tag1,
+              "count1": count1,
+              "tag2": tag2,
+              "count2": count2
+		    };
+            
+            
+            $.ajax({
+                type: 'POST',
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: 'http://ggoutos.ddns.net:5000/music',
+                success: function(data){
+                    console.log(data);
+                    alert('music sent successfully!!');
                     
-				 
-		
-    }
+                },
+                error: function(){
+                    console.log(data);
+                    alert('There was an error updating your profile.');
+                }
+            });
+            
+            
+        }
 	
         
-        function genre(musict, id) {
+        function genre(mid, mname, id) {
             
-            alert('genre function called i='+musict.length);
+            alert('Updating your music\'s genres.');
         
             var flag=0;
-            document.getElementById("info").innerHTML = 'Updating your music\'s genres...';  
-            document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
+            var tag1 = [];
+            var count1 = [];
+            var tag2 = [];
+            var count2 = [];
             
             
-            for(i=0; i<musict.length; i++) {
+            for(i=0; i<mid.length; i++) {
                 
                 //alert(musict[flag][1]);
                 
-                $.ajax({
-		                  url: 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist='+musict[flag][1]+'&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json',
-		                  async:   false,
+            $.ajax({
+		                  url: 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist='+mname[flag]+'&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json',
+		                  async:  false,
 		                  success: function(lastfm){
 			                 
                         
                              
-                              if (lastfm.hasOwnProperty('error'))  musict[flag][2]="undefined";
-                              
+                              if (lastfm.hasOwnProperty('error'))  {
+                                  tag1[flag]="undefined";
+                                  count1[flag] = 0;
+                                  tag2[flag]="undefined";
+                                  count2[flag] = 0;
+                              }
                               else {
                               
-                               if (lastfm.toptags.hasOwnProperty('tag'))  {
-                                 musict[flag][2]=lastfm.toptags.tag[0].name; 
-                            
+                              if (lastfm.toptags.hasOwnProperty('tag'))  {
+                                   
+                                tag1[flag]=lastfm.toptags.tag[0].name; 
+                                count1[flag]=lastfm.toptags.tag[0].count;
+                                 
+                                //if (lastfm.toptags.tag[1].count>50) {
+                                      tag2[flag]=lastfm.toptags.tag[1].name; 
+                                      count2[flag]=lastfm.toptags.tag[1].count; 
+                                //}
                             
                               
                                  
-                                 }
-                              else 
-                                  musict[flag][2]="undefined";
+                               }
+                               else  {
+                                  tag1[flag]="undefined";
+                                  count1[flag] = 0;
+                                  tag2[flag]="undefined";
+                                  count2[flag] = 0;
                                   
-                              
+                                }
                               }
                               
                               
-                              //var out = '<p>'+'          artist: '+musict[flag][1]+'<br>'+'          genre: '+musict[flag][2]+'</p></br>';
-                            //$("body").append(out);
-                              
                              flag++;
-                              //alert(flag)
-                              //var help=flag/musict.length*100;
-                            document.getElementById("percentage").innerHTML = flag+"/"+musict.length; 
                               
-                              
-                              
-                              //var out = flag+'/'+musict.length;
-                              //document.getElementById("demo").innerHTML = out;    
-                              //alert(out);
-                              
-                              
+                            //if(flag==mid.length){
+                                
+                            //}
 		                  
 		                  }
 	
@@ -169,20 +181,21 @@
         
         }
             
-			
-            submitforms(musict, id);
+			alert('Genres downloaded.');
+            sendmusic(mid, mname, id, tag1, count1, tag2, count2);
+            
             
             
         }
         
         
         
-        function submitforms(musict, id) {
+        function submitform(musict, id) {
             
-            alert('Started submiting');
+            alert('Sending your music to database...');
             
-            document.getElementById("info").innerHTML = 'Sending your music to database...';  
-            document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
+            //document.getElementById("info").innerHTML = 'Sending your music to database...';  
+            //document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
             
             
             for (i=0; i<musict.length; i++) {
@@ -190,7 +203,7 @@
             //alert(i);
                         document.getElementById('id').value = musict[i][0];
                         document.getElementById('name').value = musict[i][1];
-                        document.getElementById('genre').value = musict[i][2];
+                        //document.getElementById('genre').value = musict[i][2];
                         
                         $('#music').submit();  
                         
@@ -206,8 +219,9 @@
                         //alert(i);
             }
             
-            alert('music data submitted');
-            window.location = "movies.html";
+            alert('music sent successfully');
+            //window.location = "movies.html";
+            //window.location = "menu.html";
             
         }
         
@@ -217,7 +231,10 @@
   <!-- onload="onLoad()"
         -->
 
-  <body onload="onLoad()">
+  <body>
+      
+      <script type="text/javascript"> onLoad(); </script>
+      
       <div id="fb-root"></div> 
             <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
         
@@ -229,8 +246,10 @@
                </div>
             </div>
           
-          <h1><small>loading your music... </small></h1>
-            
+          <h1><small>loading your music
+              <br>this may take a minute</small></h1>
+               
+      
 			<p id="info"></p>
             <p id="percentage"></p>
           

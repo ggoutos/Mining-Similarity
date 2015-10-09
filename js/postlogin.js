@@ -5,9 +5,9 @@
             $.ajax({
                 type: 'POST',
                 data: postData,
-                async:   false,
+                async:   true,
                 //change the url for your project
-                url: 'http://ggoutos.ddns.net:5000/fbconnect/login.php',
+                url: 'http://ggoutos.ddns.net:5000/login',
                 success: function(data){
                     console.log(data);
                     //alert('Your profile will be updated.');
