@@ -1,0 +1,137 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+    <title>Neo4j Server</title>
+</head>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+<body>
+
+<h1> Index Page </h1>
+
+<form name="user" id="user">
+		      <label for="id">
+			     <b>id</b>
+			     <input id="id" name="id" value="1123123">
+		      </label>
+
+		      <label for="name">
+			     <b>name</b>
+			     <input id="name" name="name" value="George Goutos">
+		      </label>
+              
+              <label for="first">
+			     <b>first</b>
+			     <input id="first" name="first" value="George">
+		      </label>
+              
+              <label for="last">
+			     <b>last</b>
+			     <input id="last" name="last" value="Goutos">
+		      </label>
+              
+              <label for="email">
+			     <b>email</b>
+			     <input id="email" name="email" value="tkd4real@hotmail.com">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+
+
+<script type="text/javascript">
+
+//document.getElementById("user").submit();
+  
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+	
+		$('form').submit(function(){
+		
+		
+		var mid = [];
+		var mname = [];
+		var id = document.getElementById('id').value;
+		var tag1 = [];
+        var count1 = [];
+        var tag2 = [];
+        var count2 = [];
+		
+		
+		//for(i=0; i<50; i++) {
+		mid[0]='4456456456';
+		mname[0]='AC/DC';
+		tag1[0]='hard rock';
+		count1[0]='100';
+		tag2[0]='classic rock';
+		count2[0]='63';
+		//}
+		
+		//var postData = $(musict).serializeArray();
+		
+		var postData = {
+			  "mid[]": mid,
+		      "mname[]": mname,
+		      "id": id,
+              "tag1": tag1,
+              "count1": count1,
+              "tag2": tag2,
+              "count2": count2
+		};
+		
+		//var postData = $(this).serialize();
+		//alert(postData);
+            $.ajax({
+                type: 'POST',
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: 'http://192.168.1.50:5000/music',
+                success: function(data){
+                    console.log(data);
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    alert('There was an error updating your profile.');
+                }
+            });
+		
+		return false;
+		});
+		
+		
+		
+		
+		
+		
+    
+	
+	
+	function changePage(_link) {
+		
+		//alert('change');
+		history.pushState(null, null, _link);
+        $("body").load(_link);
+        return false;
+	
+}
+	
+	
+	
+       
+    
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" href="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/css/main.css"> -->
+    <title>Neo4j Server</title>
+    <script type="text/javascript">
+                if (window.location.protocol == "https:") {
+                    var restOfUrl = window.location.href.substr(6);
+                    window.location.replace("http:" + restOfUrl);
+                }
+            </script>
+</head>
+
+<body>
+<div id="graph">
+</div>
+
+<form name="user" id="user">
+		      <label for="id">
+			     <b>id</b>
+			     <input id="id" name="id" value="1123123">
+		      </label>
+
+		      <label for="name">
+			     <b>name</b>
+			     <input id="name" name="name" value="George Goutos">
+		      </label>
+              
+              <label for="first">
+			     <b>first</b>
+			     <input id="first" name="first" value="George">
+		      </label>
+              
+              <label for="last">
+			     <b>last</b>
+			     <input id="last" name="last" value="Goutos">
+		      </label>
+              
+              <label for="email">
+			     <b>email</b>
+			     <input id="email" name="email" value="tkd4real@hotmail.com">
+		      </label>
+		
+		      <input type="submit" value="Send data">
+              
+	       </form>  
+
+
+
+
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	alert('Next page!');
+
+
+    $(function () {
+		 
+		 $('form').submit(function(){
+            
+            var postData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: 'http://192.168.1.50:5000/login',
+                success: function(data){
+                    console.log(data);
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    alert('There was an error updating your profile.');
+                }
+            });
+            
+			//alert('data update');
+			$.get("/",
+                    function (data) {
+            //alert("Node Created!!");
+                
+            }, "json");
+            
+            return false;
+        });
+		
+    })
+	
+	
+	
+       
+    
+</script>
+
+
+</body>
+</html>
