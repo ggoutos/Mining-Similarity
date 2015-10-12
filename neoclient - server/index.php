@@ -86,10 +86,11 @@ $app->post('/login', function() use ($neo4j) {
     
     $result = $neo4j->sendCypherQuery($q)->getResult();
     
-    $response = new JsonResponse();
+      $response = new JsonResponse();
     $response->setData($result);
 
     return $response;
+	//return $result;
 });
 
 
@@ -101,17 +102,17 @@ $app->post('/music', function() use ($neo4j) {
 	//$c =  count($_POST['mid']);
 	//echo 'asdasd';
 	
-	for ($i=0; $i<count($_POST['mid']); $i++) {
-	
+	for ($i=0; $i<count($_POST['mname']); $i++) {
+	/*
 	$q = 
 	
 	'MATCH (m:Music { id: "'.$_POST["mid"][$i].'"})
 	SET m.name="'.$_POST["mname"][$i].'"';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
-	
+	*/
 	$q = 
-	'MERGE (m:Music{id: "'.$_POST["mid"][$i].'", name: "'.$_POST["mname"][$i].'"})
+	'MERGE (m:Music{name: "'.$_POST["mname"][$i].'"})
 	RETURN m
 	';
     
@@ -119,7 +120,7 @@ $app->post('/music', function() use ($neo4j) {
 	
 	$q = 
 	'
-	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Music {id: "'.$_POST["mid"][$i].'"})
+	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Music {name: "'.$_POST["mname"][$i].'"})
 	CREATE UNIQUE (u)-[r:LIKES_MUSIC]->(m)
 	RETURN u,r,m
 	
@@ -127,6 +128,78 @@ $app->post('/music', function() use ($neo4j) {
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	
+	
+	//tag1
+	$q = 
+	'MERGE (g:Music_Genre{name: "'.$_POST["tag1"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Music_Genre {name: "'.$_POST["tag1"][$i].'"}), (m:Music {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS {count: "'.$_POST["count1"][$i].'"}]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	//tag2
+	$q = 
+	'MERGE (g:Music_Genre{name: "'.$_POST["tag2"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Music_Genre {name: "'.$_POST["tag2"][$i].'"}), (m:Music {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS {count: "'.$_POST["count2"][$i].'"}]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	//tag3
+	$q = 
+	'MERGE (g:Music_Genre{name: "'.$_POST["tag3"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Music_Genre {name: "'.$_POST["tag3"][$i].'"}), (m:Music {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS {count: "'.$_POST["count3"][$i].'"}]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	}
+	
+    
+    $response = new JsonResponse();
+    $response->setData($result);
+
+    return $response;
+	
+});
+
+
+
+
+$app->post('/genremusic', function() use ($neo4j) {
+
+//MATCH (g:Music_Genre {name: "Rock"}), (m:Music {name: "Scorpions"})
+//CREATE UNIQUE (m)-[r:IS]->(g)
+//RETURN g,r,m
+
+	for ($i=0; $i<count($_POST['mname']); $i++) {
+
 	//tag1
 	$q = 
 	'MERGE (g:Music_Genre{name: "'.$_POST["tag1"][$i].'"})
@@ -160,24 +233,14 @@ $app->post('/music', function() use ($neo4j) {
     
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	
-	
 	}
 	
-    
-    $response = new JsonResponse();
+	
+	$response = new JsonResponse();
     $response->setData($result);
 
     return $response;
-});
-
-
-
-
-$app->post('/genremusic', function() use ($neo4j) {
-
-//MATCH (g:Music_Genre {name: "Rock"}), (m:Music {name: "Scorpions"})
-//CREATE UNIQUE (m)-[r:IS]->(g)
-//RETURN g,r,m
+	
 
 });
 
