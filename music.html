@@ -93,17 +93,30 @@
 		                  url: "http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist="+mname[i]+"&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json",
 		                  async:  true,
 		                  success: function(lastfm){
-			                 
+			                 var a = "";
+								var found = false;
+								var index = 66;
+								
+								while (found == false) {
+								if (this.url[index]=='&' && this.url[index+1]=='u' && this.url[index+2]=='s' && this.url[index+3]=='e' && this.url[index+4]=='r') {
+								found = true;
+								//alert(a);
+								}
+								else {
+								if (this.url[index]=='"') {
+								var c = "\\";
+								//alert(c);
+								a += c;   }
+								a += this.url[index];
+								index++; }
+								};
+								
+								//alert(a);
+								artist.push(a);
+						
                         
 						
                              if (lastfm.hasOwnProperty("error"))  {
-                                  var a = "";
-								var index = 66;
-								while (this.url[index]!='&') {
-								a += this.url[index];
-								index++;
-								};
-                                 artist.push(a);
 								tag1.push("undefined");
                                   count1.push("0");
                                   tag2.push("undefined");
@@ -113,7 +126,7 @@
                               }
                               else {
                                   
-                                  artist.push(lastfm.toptags["@attr"].artist);
+                                  //artist.push(lastfm.toptags["@attr"].artist);
                               
                               if (lastfm.toptags.hasOwnProperty("tag"))  {
                                    
