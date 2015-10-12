@@ -36,37 +36,32 @@
         // Now safe to use device APIs
 		
         
-      facebookConnectPlugin.api( "me?fields=id,music.limit(300){id,name}", ["user_birthday"],
+      facebookConnectPlugin.api( "me?fields=id,music.limit(300){name}", ["user_birthday"],
             function (response) { 
           
                     alert('Getting your music from facebook...');
                     
                     var i=0;
                     var flag=0;
-                    var mid = [];
                     var mname = [];
                     
              
                     while (i < response.music.data.length) {
-                        
-                        mid[i]=response.music.data[i].id;           
                         mname[i]=response.music.data[i].name;
-                        
                         i++;
-                        
                     }
                     
                     
                     alert(JSON.stringify(response.music.data.length)+" records of music sent successfully.");
                     
                     
-                    genre(mid, mname, response.id);
+                    genre(mname, response.id);
           
           
                     //sendmusic(mid, mname, response.id);
           
           
-                    changePage("menu.html");
+                    
                            
                 
             },
@@ -78,153 +73,146 @@
         }
         
         
-        function sendmusic(mid, mname, id, tag1, count1, tag2, count2) {
-            
-            
-            alert('Sending your music to database...');
-            
-            
-            var postData = {
-		      "mid[]": mid,
-		      "mname[]": mname,
-		      "id": id,
-              "tag1": tag1,
-              "count1": count1,
-              "tag2": tag2,
-              "count2": count2
-		    };
-            
-            
-            $.ajax({
-                type: 'POST',
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: 'http://ggoutos.ddns.net:5000/music',
-                success: function(data){
-                    console.log(data);
-                    alert('music sent successfully!!');
-                    
-                },
-                error: function(){
-                    console.log(data);
-                    alert('There was an error updating your profile.');
-                }
-            });
-            
-            
-        }
-	
         
-        function genre(mid, mname, id) {
+        function genre(mname, id) {
             
             alert('Updating your music\'s genres.');
         
-            var flag=0;
+            var artist = [];
             var tag1 = [];
             var count1 = [];
             var tag2 = [];
             var count2 = [];
+			var tag3 = [];
+            var count3 = [];
+			
             
-            
-            for(i=0; i<mid.length; i++) {
+            for(i=0; i<mname.length; i++) {
                 
-                //alert(musict[flag][1]);
-                
-            $.ajax({
-		                  url: 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist='+mname[flag]+'&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json',
-		                  async:  false,
+                $.ajax({
+		                  url: "http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist="+mname[i]+"&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json",
+		                  async:  true,
 		                  success: function(lastfm){
 			                 
                         
-                             
-                              if (lastfm.hasOwnProperty('error'))  {
-                                  tag1[flag]="undefined";
-                                  count1[flag] = 0;
-                                  tag2[flag]="undefined";
-                                  count2[flag] = 0;
+						
+                             if (lastfm.hasOwnProperty("error"))  {
+                                  var a = "";
+								var index = 66;
+								while (this.url[index]!='&') {
+								a += this.url[index];
+								index++;
+								};
+                                 artist.push(a);
+								tag1.push("undefined");
+                                  count1.push("0");
+                                  tag2.push("undefined");
+                                  count2.push("0");
+								  tag3.push("undefined");
+                                  count3.push("0");
                               }
                               else {
+                                  
+                                  artist.push(lastfm.toptags["@attr"].artist);
                               
-                              if (lastfm.toptags.hasOwnProperty('tag'))  {
+                              if (lastfm.toptags.hasOwnProperty("tag"))  {
                                    
-                                tag1[flag]=lastfm.toptags.tag[0].name; 
-                                count1[flag]=lastfm.toptags.tag[0].count;
+                                tag1.push(lastfm.toptags.tag[0].name); 
+                                count1.push(lastfm.toptags.tag[0].count);
                                  
-                                //if (lastfm.toptags.tag[1].count>50) {
-                                      tag2[flag]=lastfm.toptags.tag[1].name; 
-                                      count2[flag]=lastfm.toptags.tag[1].count; 
-                                //}
+                                if (lastfm.toptags.tag.length>=2 && lastfm.toptags.tag[1].count>=50) {
+                                      tag2.push(lastfm.toptags.tag[1].name); 
+                                      count2.push(lastfm.toptags.tag[1].count); 
+                                }
+								else {
+								tag2.push(lastfm.toptags.tag[0].name); 
+                                count2.push(lastfm.toptags.tag[0].count);
+								
+								}
+								
+								if (lastfm.toptags.tag.length>=3 && lastfm.toptags.tag[2].count>=50) {
+                                      tag3.push(lastfm.toptags.tag[2].name); 
+                                      count3.push(lastfm.toptags.tag[2].count); 
+                                }
+								else {
+								tag3.push(lastfm.toptags.tag[0].name); 
+                                count3.push(lastfm.toptags.tag[0].count);
+								
+								}
                             
                               
                                  
                                }
                                else  {
-                                  tag1[flag]="undefined";
-                                  count1[flag] = 0;
-                                  tag2[flag]="undefined";
-                                  count2[flag] = 0;
-                                  
+                                  tag1.push("undefined");
+                                  count1.push("0");
+                                  tag2.push("undefined");
+                                  count2.push("0");
+                                  tag3.push("undefined");
+                                  count3.push("0");
                                 }
                               }
                               
                               
-                             flag++;
-                              
-                            //if(flag==mid.length){
-                                
-                            //}
+                           var postData = {
+		      "id": id,
+		      "mname": artist,
+              "tag1": tag1,
+              "count1": count1,
+              "tag2": tag2,
+              "count2": count2,
+			  "tag3": tag3,
+              "count3": count3
+			  
+		    };
+			
+            //alert(mname.length+" "+postData["mname"].length);
+			
+			if (postData["mname"].length==mname.length)  {
+			
+			
+			alert("Music genres downloaded.");
+			alert("Music sending to database...");					
+								
+								
+			//alert(postDataa["mname"].length+" "+postDataa["tag1"].length+" "+postDataa["mname"]);
+            
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/music",
+                success: function(data){
+                    console.log(data);
+                    alert("Music sent successfully!!");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    //alert("There was an error updating your profile.");
+                }
+            });
+								
+								
+							 
+			
+			
+			
+			}
 		                  
 		                  }
 	
                         });
+						
+						
         
-        }
+        } //for
             
-			alert('Genres downloaded.');
-            sendmusic(mid, mname, id, tag1, count1, tag2, count2);
+            changePage("menu.html");
             
-            
-            
-        }
-        
-        
-        
-        function submitform(musict, id) {
-            
-            alert('Sending your music to database...');
-            
-            //document.getElementById("info").innerHTML = 'Sending your music to database...';  
-            //document.getElementById("percentage").innerHTML = '           ' + 0 +'%';  
-            
-            
-            for (i=0; i<musict.length; i++) {
-            
-            //alert(i);
-                        document.getElementById('id').value = musict[i][0];
-                        document.getElementById('name').value = musict[i][1];
-                        //document.getElementById('genre').value = musict[i][2];
-                        
-                        $('#music').submit();  
-                        
-                        
-                        document.getElementById('user_id').value = id;
-                        document.getElementById('music_id').value = musict[i][0];
-                        
-                        $('#likes_music').submit(); 
-                        
-                        //var help=i/musict.length*100;
-                        document.getElementById("percentage").innerHTML = i+"/"+musict.length; 
-                        
-                        //alert(i);
-            }
-            
-            alert('music sent successfully');
-            //window.location = "movies.html";
-            //window.location = "menu.html";
             
         }
-        
         
         
     </script>
@@ -248,63 +236,6 @@
           
           <h1><small>loading your music
               <br>this may take a minute</small></h1>
-               
-      
-			<p id="info"></p>
-            <p id="percentage"></p>
-          
-		  <!-- 
-         <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
-
-          
-          
-          
-		      <ul id="userLikes" style="display:none"></ul>
             
-            <!--
-style="display:none"
--->
-      
-          
-            <form name="music" id="music" style="display:none">
-		      <label for="id">
-			     <b>id</b>
-			     <input id="id" name="id">
-		      </label>
-
-		      <label for="name">
-			     <b>name</b>
-			     <input id="name" name="name">
-		      </label>
-		
-               
-              <label for="genre">
-			     <b>genre</b>
-			     <input id="genre" name="genre">
-		      </label>
-              
-		      <input type="submit" value="Send data">
-              
-	       </form>  
-          
-          <form name="likes_music" id="likes_music" style="display:none">
-		      <label for="user_id">
-			     <b>user_id</b>
-			     <input id="user_id" name="user_id">
-		      </label>
-
-		      <label for="music_id">
-			     <b>music_id</b>
-			     <input id="music_id" name="music_id">
-		      </label>
-		
-		      <input type="submit" value="Send data">
-              
-	       </form>  
-        
-          <p id="musicc"></p>
-        <p id="musiccc"></p>
-      
-      
   </body>
 </html>
