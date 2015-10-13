@@ -15,8 +15,9 @@
     <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script src="js/jquery-1.7.2.min.js"></script>
-    <script src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
     <!--<script src="js/postmusic.js"></script>-->
     <!--<script src="js/postlikesmusic.js"></script>-->
 	<script type="text/javascript" charset="utf-8">
@@ -39,7 +40,7 @@
       facebookConnectPlugin.api( "me?fields=id,music.limit(300){name}", ["user_birthday"],
             function (response) { 
           
-                    alert('Getting your music from facebook...');
+                    $.notify("Getting your music from facebook...", "info");
                     
                     var i=0;
                     var flag=0;
@@ -51,8 +52,7 @@
                         i++;
                     }
                     
-                    
-                    alert(JSON.stringify(response.music.data.length)+" records of music sent successfully.");
+                    $.notify(JSON.stringify(response.music.data.length)+" records of music sent successfully.", "success");
                     
                     
                     genre(mname, response.id);
@@ -76,7 +76,8 @@
         
         function genre(mname, id) {
             
-            alert('Updating your music\'s genres.');
+            $.notify('Updating your music\'s genres.', 'info');
+            
         
             var artist = [];
             var tag1 = [];
@@ -184,9 +185,10 @@
 			if (postData["mname"].length==mname.length)  {
 			
 			
-			alert("Music genres downloaded.");
-			alert("Music sending to database...");					
-								
+			//alert("Music genres downloaded.");
+                $.notify("Music genres downloaded.", 'success');
+			//alert("Music sending to database...");					
+				$.notify("Music sending to database...", "info");				
 								
 			//alert(postDataa["mname"].length+" "+postDataa["tag1"].length+" "+postDataa["mname"]);
             
@@ -198,7 +200,7 @@
                 url: "http://ggoutos.ddns.net:5000/music",
                 success: function(data){
                     console.log(data);
-                    alert("Music sent successfully!!");
+                    $.notify("Music sent successfully!!", "success");
                     
                 },
                 error: function(){
@@ -235,6 +237,7 @@
   <body>
       
       <script type="text/javascript"> onLoad(); </script>
+      <div id="page">
       
       <div id="fb-root"></div> 
             <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
@@ -249,6 +252,8 @@
           
           <h1><small>loading your music
               <br>this may take a minute</small></h1>
+          
+      </div>
             
   </body>
 </html>

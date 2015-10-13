@@ -16,6 +16,7 @@
 		<script src="js/jquery-1.7.2.min.js"></script>
 		<script src="js/postlogin.js"></script>
         <script src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
         <script type="text/javascript"  charset="utf-8">
             
             
@@ -48,6 +49,8 @@
             
             function login() {
                 
+               // $.notify("Login: successful", "success");
+                
                 if (!window.cordova) {
                     var appId = prompt("Enter FB Application ID", "");
                     facebookConnectPlugin.browserInit(appId);
@@ -56,12 +59,13 @@
                 facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
                     function (response) { 
                         //status=true;
-                        alert('Login: successful');
+                        //alert('Login: successful');
+                        $.notify("Login: successful", "success");
                         loggedin();
                     },
                     function (response) { 
                         //alert(JSON.stringify(response)) 
-                        alert("Something went wrong.\nPlease try again.");  
+                        $.notify("Something went wrong.\nPlease try again.", "warn");  
                     }
                 );
               
@@ -106,7 +110,7 @@
                         /////////////////////////////////////////////////
                     
                     }
-                    else {  window.location = "menu.html"; }
+                    else {  changePage("menu.html"); }
                 
                     
                     
@@ -141,10 +145,16 @@
    
     <body onload="onLoad()">
       
+        <div id="page">
+        
         <div id="fb-root"></div>        
         
+        
+        
+        
+        
             
-            <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
+             <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
             
             
             <input type="checkbox" name="update" id="update" class="css-checkbox" /><label for="update" class="css-label">Update profile</label>
@@ -188,6 +198,10 @@
 	       </form>  
              
             
+            
+        
+      </div>      
+           
         
         
         
