@@ -18,8 +18,6 @@
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/dynamicpage.js"></script>
     <script type="text/javascript" src="js/notify.js.sdx"></script>
-    <!--<script src="js/postmusic.js"></script>-->
-    <!--<script src="js/postlikesmusic.js"></script>-->
 	<script type="text/javascript" charset="utf-8">
 
         
@@ -40,10 +38,9 @@
       facebookConnectPlugin.api( "me?fields=id,music.limit(300){name}", ["user_birthday"],
             function (response) { 
           
-                    $.notify("Getting your music from facebook...", "info");
+                    //$.notify("Getting your music from facebook...", "info");
                     
                     var i=0;
-                    var flag=0;
                     var mname = [];
                     
              
@@ -52,24 +49,14 @@
                         i++;
                     }
                     
-                    $.notify(JSON.stringify(response.music.data.length)+" records of music sent successfully.", "success");
-                    
+                    $.notify(JSON.stringify(response.music.data.length)+" artists sent successfully.", "success");
                     
                     genre(mname, response.id);
-          
-          
-                    //sendmusic(mid, mname, response.id);
-          
-          
-                    
-                           
-                
+            
             },
             function (response) {  alert("Something went wrong.");    }  ); 
         
-                
-        
-                 
+                  
         }
         
         
@@ -236,10 +223,10 @@
 
   <body>
       
-      <script type="text/javascript"> onLoad(); </script>
-      <div id="page">
       
+      <div id="page">
       <div id="fb-root"></div> 
+          <script type="text/javascript"> onLoad(); </script>
             <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
         
             

@@ -16,9 +16,22 @@
         <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
 		<script src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/notify.js.sdx"></script>
-		<script src="js/load-json.js"></script>
+		<script src="js/dynamicpage.js"></script>
         <script type="text/javascript">
                 
+            
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+                
+            }
+            
+            
+            
+            
+            function onDeviceReady() {
+            
+            }
+            
             
             var login = function () {
                 if (!window.cordova) {
@@ -40,18 +53,18 @@
             }
             
             
-            var  callmusicpage = function () {
-                window.location = "music.html";
-             }
-            var  callmoviespage = function () {
-                window.location = "movies.html";
+            var  callupdatepage = function () {
+                if (confirm("Do you want to update your data?"))
+                      {
+                        changePage("music.html");
+                      }
              }
             
             var  calluserpage = function () {
-                window.location = "user.html";
+                changePage("user.html");
              }
             var  callfriendspage = function () {
-                window.location = "friends.html";
+                changePage("friends.html");
              }
             
             var apiMusic = function () { 
@@ -100,35 +113,23 @@
                     function (response) { alert(JSON.stringify(response)) });
             }
 
-            var logout = function () { 
-                facebookConnectPlugin.logout( 
-                    function (response) { alert("Good bye!") },
-                    function (response) { alert(JSON.stringify(response)) });
-            }
-            
-            
+           
             
             $(document).on('click', '#logout', function(){
                 facebookConnectPlugin.logout( 
-                    function (response) { alert("Good bye!") },
-                    function (response) { alert(JSON.stringify(response)) });
+                    function (response) { alert("Good bye!");
+                                            window.location = "index.html";
+                                        },
+                    function (response) {  });
                 
-                  window.location = "index.html";
+                  
                                 
                             
             });
             
             
-            document.addEventListener('backbutton', function(e){
-                      if (confirm("Do you want to exit?"))
-                      {
-                        navigator.app.exitApp();
-                      }
-                    else
-                      {
-                        
-                      }
-              }, false);
+            
+            
             
         </script>
         
@@ -137,30 +138,24 @@
     <body>
         
         
-        <div id="fb-root"></div> 
-        
-        
         <div id="page">
-            
-            <div class="app">
+            <div id="fb-root"></div> 
+            <script type="text/javascript"> onLoad(); </script>
+        
+         <div class="app">
             
             <h1>Mining Facebook<small>Graduate Thesis | <a href="menu.html">View details</a></small></h1>
                 
-            <div class="event listening button" onclick="showDialog();">Post on your wall</div>
-            <div class="event listening button" onclick="calluserpage();">Check yourself</div>
             <!--
-            <div class="event listening button" onclick="callmusicpage();">Check your music</div>
-            <div class="event listening button" onclick="callmoviespage();">Check your movies</div>
-            -->
+            <div class="event listening button" onclick="showDialog();">Post on your wall</div>-->
+            <div class="event listening button" onclick="calluserpage();">Check yourself</div>
+            <div class="event listening button" onclick="getStatus();">Check login status</div>
+            <div class="event listening button" onclick="callupdatepage();">Update your data</div>
             <div class="event listening button" onclick="callfriendspage();">Check your friends</div>
             
             <img id="logout" src="img/logout.png" alt="" />
+            </div>
             
-            <ul id="userLikes"></ul>
-            
-           
-            
-        </div>
             
         </div>
         

@@ -20,21 +20,9 @@
         <script type="text/javascript"  charset="utf-8">
             
             
-            function onDeviceReady() {
-            //alert("Device ready");
-            }
-            
-            
-            
-           
             function onLoad() {
                 document.addEventListener("deviceready", onDeviceReady, false);
-            }
-            
-            
-            
-            
-            document.addEventListener('backbutton', function(e){
+                document.addEventListener('backbutton', function(e){
                       if (confirm("Do you want to exit?"))  
                       {
                         navigator.app.exitApp();
@@ -44,17 +32,40 @@
                         
                       }
             }, false);
+            }
             
             
             
-            function login() {
+            function onDeviceReady() {
+             
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+                        if (response.status == 'connected') {
+                            $.notify(response.status, "success");
+                            changePage("menu.html");
+                        }
+                        else 
+                            $.notify("disconnected", "info");
+                    },
+                    function (response) { alert(JSON.stringify(response)) });
                 
-               // $.notify("Login: successful", "success");
+            }
+            
+            
+            
+            
+            
+            
+            $(document).on('click', '#login', function(){
+                
+                // $.notify("Login: successful", "success");
                 
                 if (!window.cordova) {
                     var appId = prompt("Enter FB Application ID", "");
                     facebookConnectPlugin.browserInit(appId);
                 }
+                
+                
                 
                 facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
                     function (response) { 
@@ -68,8 +79,10 @@
                         $.notify("Something went wrong.\nPlease try again.", "warn");  
                     }
                 );
-              
-            }
+                
+                    
+             });
+            
             
             
             function loggedin() {
@@ -117,27 +130,6 @@
             }
             
             
-            
-            
-            $(document).on('click', '#login', function(){
-                
-                //var status=false;
-                
-                login();
-                
-                    //alert("login done");
-                    
-                    //if(status === true) {
-                        
-                        
-                        
-                    //} 
-                
-                    
-             });
-            
-            
-            
           
         </script>
         
@@ -145,15 +137,10 @@
    
     <body onload="onLoad()">
       
-        <div id="page">
+        <div id="page">            
+            <div id="fb-root"></div> 
+               <div class="app"> 
         
-        <div id="fb-root"></div>        
-        
-        
-        
-        
-        
-            
              <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
             
             
@@ -198,7 +185,7 @@
 	       </form>  
              
             
-            
+            </div>
         
       </div>      
            
