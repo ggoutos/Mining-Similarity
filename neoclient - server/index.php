@@ -30,29 +30,7 @@ $app->get('/next', function () {
     return file_get_contents(__DIR__.'/static/next.html');
 });
 
-$app->get('/search', function (Request $request) use ($neo4j) {
-    $searchTerm = $request->get('q');
-    $term = '(?i).*'.$searchTerm.'.*';
-    $query = 'MATCH (m:Movie) WHERE m.title =~ {term} RETURN m';
-    $params = ['term' => $term];
-
-    $result = $neo4j->sendCypherQuery($query, $params)->getResult();
-    $movies = [];
-    foreach ($result->getNodes() as $movie){
-        $movies[] = ['movie' => $movie->getProperties()];
-    }
-
-    $response = new JsonResponse();
-    $response->setData($movies);
-
-    return $response;
-});
-
-
 $app->post('/create', function() use ($neo4j) {
-
-	
-	//echo "<script type='text/javascript'>alert('skata');</script>";
 	
 	
     $q = 'MERGE (ee:Person{name: "'.$_POST['name'].'", from: "Greece"})
@@ -86,11 +64,11 @@ $app->post('/login', function() use ($neo4j) {
     
     $result = $neo4j->sendCypherQuery($q)->getResult();
     
-      $response = new JsonResponse();
+    $response = new JsonResponse();
     $response->setData($result);
 
     return $response;
-	//return $result;
+	
 });
 
 
@@ -98,19 +76,10 @@ $app->post('/login', function() use ($neo4j) {
 
 $app->post('/music', function() use ($neo4j) {
 
-	//echo "<script type='text/javascript'>alert(".$_POST['mid'].");</script>";
-	//$c =  count($_POST['mid']);
-	//echo 'asdasd';
+
 	
 	for ($i=0; $i<count($_POST['mname']); $i++) {
-	/*
-	$q = 
 	
-	'MATCH (m:Music { id: "'.$_POST["mid"][$i].'"})
-	SET m.name="'.$_POST["mname"][$i].'"';
-	
-	$result = $neo4j->sendCypherQuery($q)->getResult();
-	*/
 	$q = 
 	'MERGE (m:Music{name: "'.$_POST["mname"][$i].'"})
 	RETURN m
@@ -191,39 +160,90 @@ $app->post('/music', function() use ($neo4j) {
 
 
 
-$app->get('/movie/{title}', function ($title) use ($neo4j) {
-    $q = 'MATCH (m:Movie) WHERE m.title = {title} OPTIONAL MATCH p=(m)<-[r]-(a:Person) RETURN m,p';
-    $params = ['title' => $title];
+$app->post('/movies', function() use ($neo4j) {
 
-    $result = $neo4j->sendCypherQuery($q, $params)->getResult();
 
-    $movie = $result->getSingleNodeByLabel('Movie');
-    $mov = [
-        'title' => $movie->getProperty('title'),
-        'cast' => []
-        ];
-
-    foreach ($movie->getInboundRelationships() as $rel){
-        $actor = $rel->getStartNode()->getProperty('name');
-        $relType = explode('_', strtolower($rel->getType()));
-        $job = $relType[0];
-        $cast = [
-            'job' => $job,
-            'name' => $actor
-        ];
-        if (array_key_exists('roles', $rel->getProperties())){
-            $cast['role'] = implode(',', $rel->getProperties()['roles']);
-        } else {
-            $cast['role'] = null;
-        }
-        $mov['cast'][] = $cast;
-    }
-
+	
+	for ($i=0; $i<count($_POST['mname']); $i++) {
+	
+	$q = 
+	'MERGE (m:Movie{name: "'.$_POST["mname"][$i].'"})
+	RETURN m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'
+	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Movie {name: "'.$_POST["mname"][$i].'"})
+	CREATE UNIQUE (u)-[r:LIKES_MOVIE]->(m)
+	RETURN u,r,m
+	
+	';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	//tag1
+	$q = 
+	'MERGE (g:Movie_Genre{name: "'.$_POST["tag1"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Movie_Genre {name: "'.$_POST["tag1"][$i].'"}), (m:Movie {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	//tag2
+	$q = 
+	'MERGE (g:Movie_Genre{name: "'.$_POST["tag2"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Movie_Genre {name: "'.$_POST["tag2"][$i].'"}), (m:Movie {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	//tag3
+	$q = 
+	'MERGE (g:Movie_Genre{name: "'.$_POST["tag3"][$i].'"})
+	RETURN g
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'MATCH (g:Movie_Genre {name: "'.$_POST["tag3"][$i].'"}), (m:Movie {name: "'.$_POST["mname"][$i].'"})
+	 CREATE UNIQUE (m)-[r:IS]->(g)
+	 RETURN g,r,m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	}
+	
+    
     $response = new JsonResponse();
-    $response->setData($mov);
+    $response->setData($result);
 
     return $response;
+	
 });
+
+
+
 
 $app->get('/import', function () use ($app, $neo4j) {
     $q = trim(file_get_contents(__DIR__.'/static/movies.cypher'));

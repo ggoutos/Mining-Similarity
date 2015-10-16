@@ -11,13 +11,12 @@
     
 		
 		
-		
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+      <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-		<script src="js/jquery-1.7.2.min.js"></script>
-		<script src="js/postmovies.js"></script>
-    <script src="js/postlikesmovies.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
 	<script type="text/javascript" charset="utf-8">
 
     // Wait for device API libraries to load
@@ -28,162 +27,235 @@
 
     // device APIs are available
     //
-    function onDeviceReady() {
+   function onDeviceReady() {
         // Now safe to use device APIs
-		 facebookConnectPlugin.api( "me?fields=id,movies.limit(300){id,name}", ["user_birthday"],
-                    function (response) { 
+		 facebookConnectPlugin.api( "me?fields=id,movies.limit(300){name}", ["user_birthday"],
+                function (response) { 
              
-                    //var list = document.getElementById('userLikes')
-             
-                   
-             
-                    //document.getElementById("demo").innerHTML = moviest;       
-             
-                    var i=0;
-                    var flag=0;
-           
-                    var moviest = [];
-                    //var likest = [];
-             
-                    while (i < response.movies.data.length) {
-                        
-                        //var li = document.createElement('li');
-                        //li.innerHTML = response.movies.data[i].name;
-                        //list.appendChild(li);
-                        
-                        
-                        
-                        moviest[moviest.length]=[response.movies.data[i].id, response.movies.data[i].name, ""]
-                        
-                        //likest[likest.length] = [response.id, response.movies.data[i].id]
-                        
-                        i++;
-                        
+                    //$.notify("Getting your movies from facebook...", "info");
+                    
+					var i=0;
+                    var movies = [];
+                    
+					while (i < response.movies.data.length) {
+                       movies[i]=response.movies.data[i].name;
+					   i++;
                     }
                     
+                    $.notify(JSON.stringify(response.movies.data.length)+" movies found.\nYou will be informed when update is done.", "info");
                     
-                    alert(JSON.stringify(response.movies.data.length)+" records of movies sent successfully.");
-                    
-                         
-                    
-          
-                    //document.getElementById("moviesc").innerHTML = moviest;
-                    //document.getElementById("moviescc").innerHTML = table;
-          
-                    genre(moviest, response.id);
-           
-              
-           
-                    //window.location = "movies.html"; 
-             
-             
-             
-             
-                
-                    },
-                    
-                    function (response) {  alert("Something went wrong.");    }  ); 
-				  //window.location = "load-json.html";
-                
-				 
-		
+                    genre(movies, response.id);
+				},
+				
+                function (response) {  alert("Something went wrong.");    }  ); 
+				
     }
         
         
         
+        function genre(mname, id) {
+            
+         //  $.notify('Updating your movies\' genres.', 'info');
         
-        function genre(moviest, id) {
             
-            alert('genre function called i='+moviest.length);
-        
-            var flag=0;
+            var title = [];
+            var tag1 = [];
+            var tag2 = [];
+			var tag3 = [];
+			
+			
+			
             
-            
-            
-            for(i=0; i<moviest.length; i++) {
-                
-                //alert(moviest[flag][1]);
+            for(i=0; i<mname.length; i++) {
+			
+			
                 
                 $.ajax({
-            //data:		parms,
-			async:   false,
-            //url:		'http://www.myapifilms.com/imdb',
-			url: 'http://www.omdbapi.com/?t=' + moviest[flag][1],
-            //type:		'get',
-            //dataType:	'jsonp',
+		                  url: 'http://www.omdbapi.com/?t='+mname[i],
+		                  
+						  async:  true,
+					      success: function(response){
+						  
+						  var a = "";
+						  
+						  var index = 26;
+								
+						  while (index<this.url.length) {
+						  a+= this.url[index];
+						  index++;
+						  }
+						  //alert(a);
+			              title.push(a);
+							
+			if (response.Genre==null) { 
 			
-            success:  function (response) {
-			
-			
-			if (response['Genre']==null) moviest[flag][2]='undefined'; 
+			tag1.push("undefined");
+			tag2.push("undefined");
+			tag3.push("undefined");
+			}
 			else {
-			var j=0;
-			var help="";
-			while (j<response['Genre'].length) {
 			
-			if (response['Genre'][j]!=',') { help+=response['Genre'][j]; j++; }
-			else j=response['Genre'].length;
+				var t=0;
+				var j=0;
+				var help="";
+				var g;
+				
+				while (j<=response['Genre'].length) {
+			
+				if (response['Genre'][j]!=','&&j<response['Genre'].length) {help+=response['Genre'][j]; }
+				else {
+				//alert(help)
+				if (t===0) { tag1.push(help); g=help; help = ""; t=1; }
+				else {if (t===1) { tag2.push(help); help = ""; t=2; }
+				else { tag3.push(help); help = ""; t=3; } }
+				
+				}
+			
+				j++;
+				}
+				
+				if (t==0) {
+				tag1.push("undefined");
+				tag2.push("undefined");
+				tag3.push("undefined");
+				}
+				if (t==1) {
+				
+				tag2.push(g);
+				tag3.push(g);
+				}
+				if (t==2) {
+				tag3.push(g);
+				}
+                
+			
+            for(k=0; k<mname.length; k++) {
+				if (tag1[k][0]==' ') tag1[k]=tag1[k].slice(1); 
+				if (tag2[k][0]==' ') tag2[k]=tag2[k].slice(1); 
+				if (tag3[k][0]==' ') tag3[k]=tag3[k].slice(1); 
+            }
+			
+			
+			var postData = {
+		      "id": id,
+		      "mname": title,
+              "tag1": tag1,
+              "tag2": tag2,
+			  "tag3": tag3
+		    };
+			
+			
+			if (postData["mname"].length==mname.length)  {
+			
+					
+			//alert("Music genres downloaded.");
+            //    $.notify("Movies genres downloaded.", 'success');
+			//alert("Music sending to database...");					
+				//$.notify("Movies sending to database...", "info");	
+            
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/movies",
+                success: function(data){
+                    console.log(data);
+                    $.notify("Movies sent successfully!", "success");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    $.notify("There was an error updating your profile.","warn");
+                }
+            });
+								
+								
+							 
+			
+			
 			
 			}
 			
-			moviest[flag][2]=help};	
-			flag++;	
-            },
-            error: function(textStatus, errorThrown) {
-            	$("#error").text(textStatus + "; " + errorThrown);
-				alert('error');
-				flag++;
-            }
-    	});  
-        
+			
+			
+			
+			}
+						 
+		                  }, 
+				error: function(response) {
                 
-                
-        }
+				title.push("undefined");
+			tag1.push("undefined");
+			tag2.push("undefined");
+			tag3.push("undefined");
+			
+			
+			var postData = {
+		      "id": id,
+		      "mname": title,
+              "tag1": tag1,
+              "tag2": tag2,
+              "tag3": tag3
+		    };
+			
+			if (postData["mname"].length==mname.length)  {
+			
+            //λαθος δημιουργια ειδους λογω "<space>" πριν το ονομα ως απαντηση του omdb  
+			//var str = "";
+			//for(k=0; k<mname.length;k++) str+=title[k]+" "+tag1[k]+" "+tag2[k]+" "+tag3[k]+"\n";
+			
+			//alert(str);
             
-            
-            
-            submitforms(moviest, id);
-            
-            
-        }
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/movies",
+                success: function(data){
+                    console.log(data);
+                    alert("music sent successfully!!");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    //alert("There was an error updating your profile.");
+                }
+            });
+								
+								
+							 
+			
+			
+			
+			}    
+                    
+                }
+                });
+						
+						
         
-        
-        
-        function submitforms(moviest, id) {
+			} //for
             
-            
-            for (i=0; i<moviest.length; i++) {
-            
-            
-                        document.getElementById('id').value = moviest[i][0];
-                        document.getElementById('name').value = moviest[i][1];
-                        document.getElementById('genre').value = moviest[i][2];
-                        
-                        $('#movies').submit();  
-                        
-                        
-                        document.getElementById('user_id').value = id;
-                        document.getElementById('movies_id').value = moviest[i][0];
-                        
-                        $('#likes_movies').submit(); 
-                        
-                        
-                        //alert(i);
-            }
-            
-            alert('movies data submitted');
-           window.location = "menu.html";
-            
-        }
-        
+            changePage("menu.html");
 	
-       
+        
+            
+        }
+        
+        
         
         
     </script>
+		
+    
   
-  <body onload="onLoad()">
+  <body>
+      
+      <div id="page">
       <div id="fb-root"></div> 
+          <script type="text/javascript"> onLoad(); </script>
       
             <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
             
@@ -200,50 +272,8 @@
           
           
           
-          
-           
-            <ul id="userLikes" style="display:none"></ul>
-           
-		      
-            
-          
-            <form name="movies" id="movies" style="display:none">
-		      <label for="id">
-			     <b>id</b>
-			     <input id="id" name="id">
-		      </label>
-
-		      <label for="name">
-			     <b>name</b>
-			     <input id="name" name="name">
-		      </label>
-              <label for="genre">
-			     <b>genre</b>
-			     <input id="genre" name="genre">
-		      </label>
-		
-		      <input type="submit" value="Send data">
-              
-	       </form>  
-          
-          <form name="likes_movies" id="likes_movies" style="display:none">
-		      <label for="user_id">
-			     <b>user_id</b>
-			     <input id="user_id" name="user_id">
-		      </label>
-
-		      <label for="movie_id">
-			     <b>movie_id</b>
-			     <input id="movie_id" name="movie_id">
-		      </label>
-		
-		      <input type="submit" value="Send data">
-              
-	       </form>  
-          
-          <p id="demo"></p>
+      </div>
       
-      
-      
+	  
   </body>
 </html>

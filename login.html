@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Facebook</title>
+        
+     </head>
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>
+		<script src="js/postlogin.js"></script>
+        <script src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
+        <script type="text/javascript"  charset="utf-8">
+            
+            
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+                
+            }
+            
+            
+            
+            function onDeviceReady() {
+             
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+                        if (response.status == 'connected') {
+                            $.notify(response.status, "success");
+                            changePage("menu.html");
+                        }
+                        else 
+                            $.notify("disconnected", "info");
+                    },
+                    function (response) { alert(JSON.stringify(response)) });
+                
+            }
+            
+            
+            
+            
+            
+            
+            $(document).on('click', '#login', function(){
+                
+                // $.notify("Login: successful", "success");
+                
+                if (!window.cordova) {
+                    var appId = prompt("Enter FB Application ID", "");
+                    facebookConnectPlugin.browserInit(appId);
+                }
+                
+                
+                
+                facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
+                    function (response) { 
+                        //status=true;
+                        //alert('Login: successful');
+                        $.notify("Login: successful", "success");
+                        loggedin();
+                    },
+                    function (response) { 
+                        //alert(JSON.stringify(response)) 
+                        $.notify("Something went wrong.\nPlease try again.", "warn");  
+                    }
+                );
+                
+                    
+             });
+            
+            
+            
+            function loggedin() {
+                    
+                //alert('loggedin');
+                
+                if (document.getElementById("update").checked === true) {
+                    
+                
+                    ///////////////////////update personal data/////////////////////////
+                        facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email", ["user_birthday"],
+                            function (response) { 
+                
+                            var postData = {
+                                "id": response.id,
+                                "name": response.name,
+                                "first": response.first_name,
+                                "last": response.last_name,
+                                "email": response.email
+                            };
+                            
+                            
+                            $.ajax({
+                                type: "POST",
+                                data: postData,
+                                async:   false,
+                                url: "http://ggoutos.ddns.net:5000/login",
+                                success: function(data){
+                                    console.log(data);
+                                    //$.notify("Music sent successfully!!", "success");
+                                    changePage("music.html");
+                                },
+                                error: function(){
+                                    console.log(data);
+                                    //alert("There was an error updating your profile.");
+                                }
+                            });
+                            
+                            //setTimeout(function() { 
+                            //changePage("music.html");
+                              //  window.location = "music.html";
+                            //}, 1000);
+                            
+                            },
+                    
+                            function (response) {  
+                            alert("Something went wrong.\nPlease try again.");    
+                            }  ); 
+                        /////////////////////////////////////////////////
+                    
+                    }
+                    else {  
+                        setTimeout(function() { 
+                            changePage("menu.html"); 
+                        }, 1000);
+                    }
+                    
+            }
+            
+            
+          
+        </script>
+        
+        
+   
+    <body>
+      
+        <div id="page">            
+            <div id="fb-root"></div> 
+                <script type="text/javascript"> onLoad(); </script>
+        
+             <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
+            
+            
+            <input type="checkbox" name="update" id="update" class="css-checkbox" /><label for="update" class="css-label">Update profile</label>
+            
+            
+            <img id="login" src="img/login.png"/>
+            
+            
+        </div>      
+           
+    </body>
+</html>

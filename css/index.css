@@ -53,8 +53,17 @@ h1 small{
 	display: block;
 }
 
-.container {width: 100px; margin: 0 auto; overflow: hidden;}
-.content {width:100px; 100margin:0 auto; padding-top:50px;}
+.container {
+    width: 100px; 
+    overflow: hidden; 
+    position: relative;
+    margin-top: 100px;
+    margin-left: -50px;
+    left: 50%;
+    
+}
+
+.content {width:100px; 100margin:0 auto; padding-top: 50px;  }
 .contentBar {width:200px; margin:0 auto;100dding-top:50px; padding-bottom:50px;}
 
 /* STOP ANIMATION */
@@ -204,11 +213,11 @@ p{
 img { 
     width: 250px; 
     display: block;
-    position: absolute;
-    bottom: 20%;
     left: 50%;
+    border-radius: 5px;
     margin-left: -125px;
-    
+    position: relative;
+    margin-top: 100px;
 }
 
 
@@ -228,11 +237,9 @@ input[type=checkbox].css-checkbox {
 							font-size:20px;
 							//vertical-align:middle;
 							//cursor:pointer;
-                            position: absolute;
-                            bottom: 45%;
-                            left: 50%;
-                            margin-left: -85px;
-
+                            position: relative;
+                            margin-top: 120px;
+                            margin-bottom: 20px;
 						}
 
 						input[type=checkbox].css-checkbox:checked + label.css-label {

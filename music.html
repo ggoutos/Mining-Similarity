@@ -49,7 +49,7 @@
                         i++;
                     }
                     
-                    $.notify(JSON.stringify(response.music.data.length)+" artists sent successfully.", "success");
+                    $.notify(JSON.stringify(response.music.data.length)+" artists found.\nYou will be informed when update is done.", "info");
                     
                     genre(mname, response.id);
             
@@ -63,7 +63,7 @@
         
         function genre(mname, id) {
             
-            $.notify('Updating your music\'s genres.', 'info');
+            //$.notify('Updating your music\'s genres.', 'info');
             
         
             var artist = [];
@@ -173,9 +173,9 @@
 			
 			
 			//alert("Music genres downloaded.");
-                $.notify("Music genres downloaded.", 'success');
+             //   $.notify("Music genres downloaded.", 'success');
 			//alert("Music sending to database...");					
-				$.notify("Music sending to database...", "info");				
+				//$.notify("Music sending to database...", "info");				
 								
 			//alert(postDataa["mname"].length+" "+postDataa["tag1"].length+" "+postDataa["mname"]);
             
@@ -203,7 +203,59 @@
 			
 			}
 		                  
-		                  }
+		                  },
+						  error: function(lastfm) {
+						  
+						  	
+					artist.push("undefined");
+			 tag1.push("undefined");
+              count1.push("0");
+               tag2.push("undefined");
+               count2.push("0");
+               tag3.push("undefined");
+             count3.push("0");
+			
+			
+			var postData = {
+		      "id": id,
+		      "mname": artist,
+              "tag1": tag1,
+              "count1": count1,
+              "tag2": tag2,
+              "count2": count2,
+			  "tag3": tag3,
+              "count3": count3
+			  
+		    };
+			
+			if (postData["mname"].length==mname.length)  {
+			
+			//kati leipei
+			
+            
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/music",
+                success: function(data){
+                    console.log(data);
+                    $.notify("Music sent successfully!","success");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    $.notify("There was an error updating your music.","warn");
+                }
+            });
+								
+					
+						  
+						  
+						  }
+	
+                        }
 	
                         });
 						
@@ -211,7 +263,7 @@
         
         } //for
             
-            changePage("menu.html");
+            changePage("movies.html");
             
             
         }

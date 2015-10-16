@@ -21,7 +21,6 @@
             
             
             function onLoad() {
-                document.addEventListener("deviceready", onDeviceReady, false);
                 document.addEventListener('backbutton', function(e){
                       if (confirm("Do you want to exit?"))  
                       {
@@ -31,7 +30,8 @@
                       {
                         
                       }
-            }, false);
+                }, false);
+                document.addEventListener("deviceready", onDeviceReady, false);
             }
             
             
@@ -42,10 +42,12 @@
                     function (response) { 
                         if (response.status == 'connected') {
                             $.notify(response.status, "success");
-                            changePage("menu.html");
+                             setTimeout(function() { 
+                                changePage("menu.html"); 
+                             }, 1000);
                         }
                         else 
-                            $.notify("disconnected", "info");
+                            changePage("login.html");
                     },
                     function (response) { alert(JSON.stringify(response)) });
                 
@@ -53,84 +55,6 @@
             
             
             
-            
-            
-            
-            $(document).on('click', '#login', function(){
-                
-                // $.notify("Login: successful", "success");
-                
-                if (!window.cordova) {
-                    var appId = prompt("Enter FB Application ID", "");
-                    facebookConnectPlugin.browserInit(appId);
-                }
-                
-                
-                
-                facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
-                    function (response) { 
-                        //status=true;
-                        //alert('Login: successful');
-                        $.notify("Login: successful", "success");
-                        loggedin();
-                    },
-                    function (response) { 
-                        //alert(JSON.stringify(response)) 
-                        $.notify("Something went wrong.\nPlease try again.", "warn");  
-                    }
-                );
-                
-                    
-             });
-            
-            
-            
-            function loggedin() {
-                    
-                //alert('loggedin');
-                
-                if (document.getElementById("update").checked === true) {
-                    
-                
-                    ///////////////////////update personal data/////////////////////////
-                        facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email", ["user_birthday"],
-                            function (response) { 
-                
-                            document.getElementById('id').value = response.id;
-                            document.getElementById('name').value = response.name;
-                            document.getElementById('first').value = response.first_name;
-                            document.getElementById('last').value = response.last_name;
-                            document.getElementById('email').value = response.email;
-                            
-                            //alert("Your profile has been registered.");
-                            $('#user').submit(); 
-                            
-                            
-                            
-                            //setTimeout(function() { 
-                            changePage("music.html");
-                              //  window.location = "music.html";
-                            //}, 1000);
-                            
-                              
-                                 
-                            
-                            },
-                    
-                            function (response) {  
-                            alert("Something went wrong.\nPlease try again.");    
-                            }  ); 
-                        /////////////////////////////////////////////////
-                    
-                    }
-                    else {  changePage("menu.html"); }
-                
-                    
-                    
-            }
-            
-            
-          
         </script>
         
         
@@ -139,52 +63,14 @@
       
         <div id="page">            
             <div id="fb-root"></div> 
-               <div class="app"> 
+                
         
              <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
             
             
-            <input type="checkbox" name="update" id="update" class="css-checkbox" /><label for="update" class="css-label">Update profile</label>
-            
-            
-            <img id="login" src="img/login.png"/>
-            
-            
-            <!--
-               style="display:none"
-            -->
-            
-            <form name="user" id="user" style="display:none">
-		      <label for="id">
-			     <b>id</b>
-			     <input id="id" name="id">
-		      </label>
-
-		      <label for="name">
-			     <b>name</b>
-			     <input id="name" name="name">
-		      </label>
-              
-              <label for="first">
-			     <b>name</b>
-			     <input id="first" name="first">
-		      </label>
-              
-              <label for="last">
-			     <b>name</b>
-			     <input id="last" name="last">
-		      </label>
-              
-              <label for="email">
-			     <b>name</b>
-			     <input id="email" name="email">
-		      </label>
-		
-		      <input type="submit" value="Send data">
-              
-	       </form>  
-             
-            
+            <div class="container">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
             </div>
         
       </div>      
