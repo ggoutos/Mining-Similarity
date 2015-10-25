@@ -11,10 +11,10 @@
     
 		
 		
-      <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/dynamicpage.js"></script>
     <script type="text/javascript" src="js/notify.js.sdx"></script>
 	<script type="text/javascript" charset="utf-8">
@@ -45,17 +45,17 @@
                     $.notify(JSON.stringify(response.movies.data.length)+" movies found.\nYou will be informed when update is done.", "info");
                     
                     genre(movies, response.id);
+                    
 				},
 				
                 function (response) {  alert("Something went wrong.");    }  ); 
 				
     }
         
-        
-        
         function genre(mname, id) {
             
-         //  $.notify('Updating your movies\' genres.', 'info');
+            
+         //$.notify('Updating your movies\' genres.', 'info');
         
             
             var title = [];
@@ -136,6 +136,11 @@
             }
 			
 			
+			
+			}
+                
+                
+			
 			var postData = {
 		      "id": id,
 		      "mname": title,
@@ -144,14 +149,15 @@
 			  "tag3": tag3
 		    };
 			
+                
 			
 			if (postData["mname"].length==mname.length)  {
-			
+			//alert("success "+postData["mname"].length+"/"+mname.length);
 					
 			//alert("Music genres downloaded.");
             //    $.notify("Movies genres downloaded.", 'success');
 			//alert("Music sending to database...");					
-				//$.notify("Movies sending to database...", "info");	
+			//	$.notify("Movies sending to database...", "info");	
             
             $.ajax({
                 type: "POST",
@@ -178,13 +184,11 @@
 			}
 			
 			
-			
-			
-			}
 						 
 		                  }, 
 				error: function(response) {
                 
+                alert("undefined");    
 				title.push("undefined");
 			tag1.push("undefined");
 			tag2.push("undefined");
@@ -199,7 +203,11 @@
               "tag3": tag3
 		    };
 			
+                    //alert("error "+postData["mname"].length+"/"+mname.length);
+                    
 			if (postData["mname"].length==mname.length)  {
+                
+               // alert("error "+postData["mname"].length+"/"+mname.length);
 			
             //λαθος δημιουργια ειδους λογω "<space>" πριν το ονομα ως απαντηση του omdb  
 			//var str = "";
@@ -215,7 +223,7 @@
                 url: "http://ggoutos.ddns.net:5000/movies",
                 success: function(data){
                     console.log(data);
-                    alert("music sent successfully!!");
+                    alert("Movies sent successfully!!");
                     
                 },
                 error: function(){
@@ -238,13 +246,10 @@
         
 			} //for
             
-            changePage("menu.html");
-	
-        
+            
+	       changePage("menu.html"); 
             
         }
-        
-        
         
         
     </script>
@@ -262,10 +267,8 @@
           <!-- <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
 
           <div class="container">
-	           <div class="content">
                     <div class="circle"></div>
                     <div class="circle1"></div>
-               </div>
             </div>
           
           <h1><small>loading your movies... </small></h1>

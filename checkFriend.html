@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
+	<script src="js/dynamicpage.js"></script>
+	<script type="text/javascript" charset="utf-8">
+
+        
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+        
+    }
+        
+    
+    
+    function onDeviceReady() {
+        
+		 facebookConnectPlugin.api( "me?fields=name,friends.limit(1000)", ["user_birthday"], 
+            function (response) {
+             
+            similarity(response.name);  
+             
+            alert(JSON.stringify(response.friends.data.length)+"/"+ JSON.stringify(response.friends.summary.total_count) + " friends use the app.");
+            },
+             function (response) {  alert("Something went wrong.");    }  ); 
+        
+    }
+        
+          
+        
+    function similarity(name) {
+        
+        
+		var postData = {
+		      "name": name
+		    };
+			
+			
+			
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/similarity",
+                success: function(response){
+                    console.log(response);
+                    
+					
+					var friends = [];
+					var music = [];
+					var movies = [];
+					var mo = [];
+					
+					
+				for (f=0; f<response.length; f++) {   
+				
+				friends.push(response[f][response[f].length-1].name);
+				
+				
+				for (k=0; k<2; k++) {
+				
+					var enosh = 0;
+					var tomh = 0;
+					var koina = [];
+					
+					for (i=0; i<response[0][k].length; i++) {
+						var found = false;
+						for (j=0; j<response[f][k].length; j++) {
+						
+							if (response[0][k][i].genre==response[f][k][j].genre && response[0][k][i].genre!="undefined") {
+								//alert("tomh "+i);
+								enosh=enosh+Math.max(response[0][k][i].likes,response[f][k][j].likes);
+								tomh=tomh+Math.min(response[0][k][i].likes,response[f][k][j].likes);
+								found=true;
+								koina.push(j);
+							}
+							
+						}
+						if (found==false && response[0][k][i].genre!="undefined") {
+								//alert("enosh: "+i);
+								enosh=enosh+response[0][k][i].likes;
+							}
+					}
+					
+					
+					for (j=0; j<response[f][k].length; j++) {
+						var found = false;
+						for (i=0; i<koina.length; i++) {
+							if (j==koina[i]) {
+							 found=true;
+							}
+						}
+						if (found==false && response[f][k][j].genre!="undefined") {
+							enosh=enosh+response[f][k][j].likes;
+						}
+
+					}		
+					
+					var similarity = tomh/enosh*100;
+					if (k==0) music.push(similarity.toPrecision(4));
+					if (k==1) movies.push(similarity.toPrecision(4));
+					
+					
+					
+					}
+					
+					
+					
+					mo.push(((parseFloat(music[f])+parseFloat(movies[f]))/2).toPrecision(4));
+					
+					/*
+					alert("Με τον/την "+friends[f]+" ταιριάζετε κατά: \n"+
+						"\t"+movies[f]+"% (ταινίες).\n"+
+						"\t"+music[f]+"% (μουσική).\n"+
+						"\t"+mo[f]+"% (MO).\n");
+					*/
+					
+					
+					}
+					
+					
+					///////sort///////
+					var i = 0;
+					var max = 0;
+					var help = 0;
+					
+					while (i!=mo.length) {
+						max = i;
+						for (k=i+1; k<mo.length; k++) {
+							if (parseFloat(mo[k])>parseFloat(mo[i])) {
+								max=k;
+							}
+						}
+						if (max!=i) {
+						help = mo[i];
+						mo[i] = mo[max];
+						mo[max] = help;
+						
+						help = friends[i];
+						friends[i] = friends[max];
+						friends[max] = help;
+						
+						help = music[i];
+						music[i] = music[max];
+						music[max] = help;
+						
+						help = movies[i];
+						movies[i] = movies[max];
+						movies[max] = help;
+						}			
+						i++;
+					}
+					//////////////////
+					
+					
+					var buttons = document.getElementById('btns');
+					
+					for (var i=0; i < friends.length; i++) {
+                    
+                    var btn = document.createElement('div');
+                    btn.className="event listening button";
+                    btn.name=friends[i];
+                    //btn.setAttribute("onclick","selectFriend(this.id , this.name)");
+                    btn.innerHTML = friends[i] + " - " + mo[i] + " %";
+                    buttons.appendChild(btn);   
+					}
+					
+					//changePage("user.html");
+					
+                },
+                error: function(){
+                    console.log(data);
+                    alert("There was an error updating your profile.");
+                }
+            });
+							
+        
+		
+        
+        
+    }
+    
+        
+        
+        
+        
+    var  callAnotherPage = function () {
+        changePage("friends.html");
+    }
+    
+    
+    
+    </script>
+    
+      
+  <body>
+      <div id="page">
+          <div id="fb-root"></div> 
+           <script type="text/javascript"> onLoad(); </script>
+          
+          <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+          
+            <div class="event listening button" onclick="callAnotherPage();">Back</div>
+          
+          <div id=pictures style="margin-left: 20%"></div>
+          <div id="btns" style=""></div>
+          
+          
+          
+      </div>
+      
+      
+  </body>
+</html>

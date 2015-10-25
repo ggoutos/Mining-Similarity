@@ -15,7 +15,7 @@
     <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/dynamicpage.js"></script>
     <script type="text/javascript" src="js/notify.js.sdx"></script>
 	<script type="text/javascript" charset="utf-8">
@@ -60,8 +60,8 @@
         }
         
         
-        
         function genre(mname, id) {
+            
             
             //$.notify('Updating your music\'s genres.', 'info');
             
@@ -97,7 +97,7 @@
 								a += c;   }
 								a += this.url[index];
 								index++; }
-								};
+								}
 								
 								//alert(a);
 								artist.push(a);
@@ -263,10 +263,15 @@
         
         } //for
             
-            changePage("movies.html");
+            
+            
+                       changePage("movies.html"); 
+                  
+            
             
             
         }
+        
         
         
     </script>
@@ -281,12 +286,9 @@
           <script type="text/javascript"> onLoad(); </script>
             <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
         
-            
             <div class="container">
-	           <div class="content">
                     <div class="circle"></div>
                     <div class="circle1"></div>
-               </div>
             </div>
           
           <h1><small>loading your music
