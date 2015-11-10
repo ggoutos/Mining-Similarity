@@ -156,7 +156,7 @@ if (!window.cordova) {
         // Browser wrapper API ONLY
         browserInit: function (appId, version) {
             if (!version) {
-                version = "v2.2";
+                version = "v2.5";
             }
             FB.init({
                 appId      : appId,

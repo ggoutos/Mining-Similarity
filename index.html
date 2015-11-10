@@ -48,7 +48,10 @@
                         else 
                             changePage("login.html");
                     },
-                    function (response) { alert(JSON.stringify(response)) });
+                    function (response) { 
+                        //alert(JSON.stringify(response)) 
+                        changePage("login.html");
+                    });
                 
             }
             
@@ -73,13 +76,17 @@
             
             
             <div class="container">
+                <div class="content">
                     <div class="circle"></div>
                     <div class="circle1"></div>
+                </div>
             </div>
         
       </div>      
            
-        
+        <script src="js/modernizr.custom.js"></script>
+      <script src="js/classie.js"></script>
+		<script src="js/notificationFx.js"></script>
         
         
     </body>

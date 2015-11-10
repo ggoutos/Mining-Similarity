@@ -168,6 +168,10 @@
 					}
 					//////////////////
 					
+                    var loading = document.getElementById('loading');
+		              loading.style.display = "none";
+        
+        
 					var me = response[0][response[0].length-1].id;
 					var buttons = document.getElementById('btns');
 					
@@ -582,6 +586,20 @@
           <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
           
             <div id="menu" class="event listening button" style= "margin-bottom: 20px" onclick="callAnotherPage();">Back</div>
+          
+          <div id="loading">
+            <div class="container">
+                <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+                </div>
+            </div>
+          
+            <h1><small>Checking similarity
+            <br>this may take a while</small></h1>
+          </div>
+          
+          
           
           <!--
           <div id=pictures style="margin-left: 20%"></div> -->

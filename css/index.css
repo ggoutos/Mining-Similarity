@@ -78,7 +78,8 @@ h1 small{
     
 }
 
-.content {width:100px; 100margin:0 auto; padding-top: 50px;  }
+//.content {width:100px; 100margin:0 auto; padding-top: 50px;  }
+.content {margin-top: 10px; }
 .contentBar {width:200px; margin:0 auto;100dding-top:50px; padding-bottom:50px;}
 
 /* STOP ANIMATION */

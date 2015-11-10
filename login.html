@@ -32,7 +32,8 @@
                     function (response) { 
                         if (response.status == 'connected') {
                             $.notify(response.status, "success");
-                            changePage("menu.html");
+                            //changePage("menu.html");
+                            loggedin();
                         }
                         else 
                             $.notify("disconnected", "info");
@@ -57,7 +58,7 @@
                 
                 
                 
-                facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
+                facebookConnectPlugin.login( ["email,user_friends,user_likes,user_tagged_places,user_posts,user_photos,user_videos,user_birthday"], 
                     function (response) { 
                         //status=true;
                         //alert('Login: successful');
@@ -79,8 +80,7 @@
                     
                 //alert('loggedin');
                 
-                if (document.getElementById("update").checked === true) {
-                    
+                
                 
                     ///////////////////////update personal data/////////////////////////
                         facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
@@ -101,11 +101,36 @@
                                 type: "POST",
                                 data: postData,
                                 async:   false,
+                                url: "http://ggoutos.ddns.net:5000/update",
+                                success: function(data){
+                                    console.log(data);
+                                    $.notify("Profile update begins.", "success");
+                                },
+                                error: function(){
+                                    console.log(data);
+                                    alert("There was an error updating your profile.");
+                                }
+                            });
+                            
+                            
+                            $.ajax({
+                                type: "POST",
+                                data: postData,
+                                async:   false,
                                 url: "http://ggoutos.ddns.net:5000/login",
                                 success: function(data){
                                     console.log(data);
                                     //$.notify("Music sent successfully!!", "success");
-                                    changePage("music.html");
+                                    
+                                    if (document.getElementById("update").checked === true) {
+                                        
+                                        changePage("pages.html");
+                                    }
+                                    else {  
+                                        setTimeout(function() { 
+                                            changePage("menu.html"); 
+                                        }, 1000);
+                                    }
                                 },
                                 error: function(){
                                     console.log(data);
@@ -113,24 +138,14 @@
                                 }
                             });
                             
-                            //setTimeout(function() { 
-                            //changePage("music.html");
-                              //  window.location = "music.html";
-                            //}, 1000);
-                            
                             },
                     
                             function (response) {  
                             alert("Something went wrong.\nPlease try again.");    
                             }  ); 
                         /////////////////////////////////////////////////
-                    
-                    }
-                    else {  
-                        setTimeout(function() { 
-                            changePage("menu.html"); 
-                        }, 1000);
-                    }
+                
+                
                     
             }
             

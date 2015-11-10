@@ -6,6 +6,9 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
         <title>Mining Facebook</title>
         </head>
         
@@ -57,9 +60,74 @@
             var  callupdatepage = function () {
                 if (confirm("Do you want to update your data?"))
                       {
-                        changePage("music.html");
+                        //changePage("pages.html");
+                          
+                          
+                
+                    ///////////////////////update personal data/////////////////////////
+                        facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
+                            function (response) { 
+                            
+                            
+                            var postData = {
+                                "id": response.id,
+                                "name": response.name,
+                                "first": response.first_name,
+                                "last": response.last_name,
+                                "email": response.email,
+                                "friends": response.friends.data
+                            };
+                            
+                            
+                             $.ajax({
+                                type: "POST",
+                                data: postData,
+                                async:   false,
+                                url: "http://ggoutos.ddns.net:5000/update",
+                                success: function(data){
+                                    console.log(data);
+                                    $.notify("Profile update begins.", "success");
+                                },
+                                error: function(){
+                                    console.log(data);
+                                    alert("There was an error updating your profile.");
+                                }
+                            });
+                            
+                            
+                            
+                            
+                            $.ajax({
+                                type: "POST",
+                                data: postData,
+                                async:   false,
+                                url: "http://ggoutos.ddns.net:5000/login",
+                                success: function(data){
+                                    console.log(data);
+                                    changePage("pages.html");
+                                },
+                                error: function(){
+                                    console.log(data);
+                                    alert("There was an error updating your profile.");
+                                }
+                            });
+                            
+                            },
+                    
+                            function (response) {  
+                            alert("Something went wrong.\nPlease try again.");    
+                            }  ); 
+                        /////////////////////////////////////////////////
+                
+                
+                          
+                          
+                          
+                          
                       }
              }
+             
+             
             
             var  calluserpage = function () {
                 changePage("user.html");
@@ -67,34 +135,6 @@
             var  callfriendspage = function () {
                 changePage("friends.html");
              }
-            
-            var apiMusic = function () { 
-                facebookConnectPlugin.api( "me/music?limit=300", ["user_birthday"],
-                    function (response) { 
-                
-                    //alert(JSON.stringify(response))
-                    //alert(JSON.stringify(response.data.length));
-                    var list = document.getElementById('userLikes')
-                    for (var i=0; i < response.data.length; i++) {
-                        //alert("mpike for");
-                    var li = document.createElement('li');
-                    li.innerHTML = response.data[i].name;
-                    list.appendChild(li);
-                    //document.write(li);
-                    }
-  
-
-
-                        
-                
-                    },
-                    
-                    function (response) {  alert("Something went wrong.");    }  ); 
-				  //window.location = "load-json.html";
-                
-				  
-            }
-
             
             var apiPermissions = function () { 
                 facebookConnectPlugin.api( "me/?fields=permissions", ["user_birthday"],
@@ -139,7 +179,7 @@
     <body>
         
         
-        <div id="page">
+        <div id="page"  style="position: fixed; top: 0; left: 0; width: 100%;">
             <div id="fb-root"></div> 
             <script type="text/javascript"> onLoad(); </script>
         
@@ -159,9 +199,6 @@
             
             
         </div>
-        
-        
-        
-        
+      
     </body>
 </html>

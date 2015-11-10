@@ -36,6 +36,22 @@ $app->get('/next', function () {
 
 
 
+$app->post('/update', function() use ($neo4j) {
+	
+	
+    $q = 'MATCH (u:User { id: "'.$_POST["id"].'"})
+		  DETACH DELETE u';
+    
+    
+    $result = $neo4j->sendCypherQuery($q)->getResult();
+    
+    $response = new JsonResponse();
+    $response->setData($result);
+
+    return $response;
+});
+
+
 $app->post('/create', function() use ($neo4j) {
 	
 	
@@ -89,11 +105,151 @@ $app->post('/login', function() use ($neo4j) {
 
 
 
+$app->post('/pages', function() use ($neo4j) {
+
+	
+ for ($i=0; $i<count($_POST['pages']); $i++) {
+	
+	$q = 
+	'MATCH (n {name: "'.$_POST["pages"][$i]["name"].'"})
+	SET n:Page
+	RETURN n
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	$q = 
+	'MERGE (m:Page{name: "'.$_POST["pages"][$i]["name"].'"})
+	RETURN m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'
+	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Page {name: "'.$_POST["pages"][$i]["name"].'"})
+	CREATE UNIQUE (u)-[r:LIKES]->(m)
+	RETURN u,r,m
+	
+	';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	//category
+	if (isset($_POST["pages"][$i]["category"])) {
+	$q = 
+	'MERGE (m:Category{name: "'.$_POST["pages"][$i]["category"].'"})
+	RETURN m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'
+	MATCH (u:Category { name: "'.$_POST["pages"][$i]["category"].'" }), (m:Page {name: "'.$_POST["pages"][$i]["name"].'"})
+	CREATE UNIQUE (m)-[r:IS]->(u)
+	RETURN u,r,m
+	
+	';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	}
+	
+ }
+	
+    $response = new JsonResponse();
+    $response->setData($result);
+
+    return $response;
+	
+});
+
+
+
+
+$app->post('/places', function() use ($neo4j) {
+
+	
+ for ($i=0; $i<count($_POST['places']); $i++) {
+	
+	$q = 
+	'MATCH (n {name: "'.$_POST["places"][$i]["place"]["name"].'"})
+	SET n:Place
+	RETURN n
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	
+	$q = 
+	'MERGE (m:Place{name: "'.$_POST["places"][$i]["place"]["name"].'"})
+	RETURN m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'
+	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Place {name: "'.$_POST["places"][$i]["place"]["name"].'"})
+	CREATE UNIQUE (u)-[r:CHECKED_IN]->(m)
+	RETURN u,r,m
+	
+	';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	if (isset($_POST['places'][$i]["place"]["category_list"])) {
+	
+	//category
+	for ($j=0; $j<count($_POST['places'][$i]["place"]["category_list"]); $j++) {
+	
+	$q = 
+	'MERGE (m:Place_Genre{name: "'.$_POST["places"][$i]["place"]["category_list"][$j]["name"].'"})
+	RETURN m
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	$q = 
+	'
+	MATCH (u:Place_Genre { name: "'.$_POST["places"][$i]["place"]["category_list"][$j]["name"].'" }), (m:Place {name: "'.$_POST["places"][$i]["place"]["name"].'"})
+	CREATE UNIQUE (m)-[r:IS]->(u)
+	RETURN u,r,m
+	
+	';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	
+	}
+	}
+ }
+	
+    $response = new JsonResponse();
+    $response->setData($result);
+
+    return $response;
+	
+});
+
+
+
+
+
 $app->post('/music', function() use ($neo4j) {
 
 
 	
 	for ($i=0; $i<count($_POST['mname']); $i++) {
+	
+	$q = 
+	'MATCH (n {name: "'.$_POST["mname"][$i].'"})
+	SET n:Music
+	RETURN n
+	';
+    
+	$result = $neo4j->sendCypherQuery($q)->getResult();		
 	
 	$q = 
 	'MERGE (m:Music{name: "'.$_POST["mname"][$i].'"})
@@ -105,7 +261,7 @@ $app->post('/music', function() use ($neo4j) {
 	$q = 
 	'
 	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Music {name: "'.$_POST["mname"][$i].'"})
-	CREATE UNIQUE (u)-[r:LIKES_MUSIC]->(m)
+	CREATE UNIQUE (u)-[r:LIKES]->(m)
 	RETURN u,r,m
 	
 	';
@@ -182,6 +338,13 @@ $app->post('/movies', function() use ($neo4j) {
 	for ($i=0; $i<count($_POST['mname']); $i++) {
 	
 	$q = 
+	'MATCH (n {name: "'.$_POST["mname"][$i].'"})
+	SET n:Movie
+	RETURN n
+	';
+	
+	
+	$q = 
 	'MERGE (m:Movie{name: "'.$_POST["mname"][$i].'"})
 	RETURN m
 	';
@@ -191,7 +354,7 @@ $app->post('/movies', function() use ($neo4j) {
 	$q = 
 	'
 	MATCH (u:User { id: "'.$_POST["id"].'" }), (m:Movie {name: "'.$_POST["mname"][$i].'"})
-	CREATE UNIQUE (u)-[r:LIKES_MOVIE]->(m)
+	CREATE UNIQUE (u)-[r:LIKES]->(m)
 	RETURN u,r,m
 	
 	';
