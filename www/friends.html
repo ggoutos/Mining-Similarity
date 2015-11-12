@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+		<link rel="stylesheet" type="text/css" href="css/tabs.css" />
+		<link rel="stylesheet" type="text/css" href="css/tabstyles.css" />
+      <link rel="stylesheet" type="text/css" href="DataTables/datatables.css"/>
+        <title>Mining Social Web</title>
+		</head>
+    
+    
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
+	<script src="js/dynamicpage.js"></script>
+    <!--<script type="text/javascript" src="DataTables/datatables.js"></script>-->
+    
+		
+    
+	<script type="text/javascript" charset="utf-8">
+
+        /*
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+        
+    }
+        */
+    
+    
+    function onDeviceReady() {
+        
+		 facebookConnectPlugin.api( "me?fields=name,friends.limit(1000)", ["user_birthday"], 
+            function (response) {
+             
+            similarity(response.name);  
+             
+            //alert(JSON.stringify(response.friends.data.length)+"/"+ JSON.stringify(response.friends.summary.total_count) + " friends use the app.");
+            },
+             function (response) {  alert("Something went wrong.");    }  ); 
+        
+    }
+        
+          
+        
+    function similarity(name) {
+        
+        
+		var postData = {
+		      "name": name
+		    };
+			
+			
+			
+			
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/similarity",
+                success: function(response){
+                    console.log(response);
+					
+					var friends = [];
+					var id = [];
+					var checkins = [];
+					var music = [];
+					var movies = [];
+					var mo = [];
+					
+					
+				for (f=0; f<response.length; f++) {   
+				
+				friends.push(response[f][response[f].length-1].name);
+				id.push(response[f][response[f].length-1].id);
+				
+				for (k=1; k<4; k++) {
+				
+					var enosh = 0;
+					var tomh = 0;
+					var koina = [];
+					
+					for (i=0; i<response[0][k].length; i++) {
+						var found = false;
+						for (j=0; j<response[f][k].length; j++) {
+						
+							if (response[0][k][i].genre==response[f][k][j].genre && response[0][k][i].genre!="undefined") {
+								//alert("tomh "+i);
+								enosh=enosh+Math.max(response[0][k][i].likes,response[f][k][j].likes);
+								tomh=tomh+Math.min(response[0][k][i].likes,response[f][k][j].likes);
+								found=true;
+								koina.push(j);
+							}
+							
+						}
+						if (found==false && response[0][k][i].genre!="undefined") {
+								//alert("enosh: "+i);
+								enosh=enosh+response[0][k][i].likes;
+							}
+					}
+					
+					
+					for (j=0; j<response[f][k].length; j++) {
+						var found = false;
+						for (i=0; i<koina.length; i++) {
+							if (j==koina[i]) {
+							 found=true;
+							}
+						}
+						if (found==false && response[f][k][j].genre!="undefined") {
+							enosh=enosh+response[f][k][j].likes;
+						}
+
+					}		
+					
+					var similarity = tomh/enosh*100;
+					
+					if (k==1) checkins.push(similarity.toPrecision(4));
+					if (k==2) music.push(similarity.toPrecision(4));
+					if (k==3) movies.push(similarity.toPrecision(4));
+					
+					
+					
+					}
+					
+					
+					
+					mo.push(((parseFloat(checkins[f])+parseFloat(music[f])+parseFloat(movies[f]))/3).toPrecision(4));
+					
+					
+					
+					}
+					
+					
+					///////sort///////
+					var i = 0;
+					var max = 0;
+					var help = 0;
+					
+					while (i!=mo.length) {
+						max = i;
+						for (k=i+1; k<mo.length; k++) {
+							if (parseFloat(mo[k])>parseFloat(mo[i])) {
+								max=k;
+							}
+						}
+						if (max!=i) {
+						help = mo[i];
+						mo[i] = mo[max];
+						mo[max] = help;
+						
+						help = friends[i];
+						friends[i] = friends[max];
+						friends[max] = help;
+						
+						help = checkins[i];
+						checkins[i] = checkins[max];
+						checkins[max] = help;
+						
+						help = music[i];
+						music[i] = music[max];
+						music[max] = help;
+						
+						help = movies[i];
+						movies[i] = movies[max];
+						movies[max] = help;
+						
+						help = id[i];
+						id[i] = id[max];
+						id[max] = help;						
+						}			
+						i++;
+					}
+					//////////////////
+					
+					 var loading = document.getElementById('loading');
+		              loading.style.display = "none";
+        
+					
+					
+					var me = response[0][response[0].length-1].id;
+					var buttons = document.getElementById('btns');
+					
+					
+					for (var i=1; i < friends.length; i++) {
+					
+                    var btn = document.createElement('div');
+                    btn.className="event listening button";
+                    btn.name=friends[i];
+					btn.id=i;
+					btn.onclick = function() {
+						check(response, this.name, checkins[this.id], music[this.id], movies[this.id], mo[this.id]);
+					};
+					//btn.id=id[i];
+                    //btn.setAttribute("onclick","checkFriend(this.id)");
+                    btn.innerHTML = friends[i] + " - " + mo[i] + " %";
+					
+                    buttons.appendChild(btn);
+					}
+					
+					//changePage("user.html");
+					
+                },
+                error: function(){
+                    console.log(data);
+                    alert("There was an error updating your profile.");
+                }
+            });
+							
+        
+		//changePage("checkFriend.html?a=234234234234");
+        
+    }
+		
+    
+    
+    
+		
+	function check(response, name, c, m, n, mo) {
+        
+        
+	
+	var menu = document.getElementById('menu');
+		menu.style.display = "none";
+
+
+	var buttons = document.getElementById('btns');
+		buttons.style.display = "none";
+	var back = document.getElementById('back');
+		back.style.display = "block";
+	var section = document.getElementById('section');
+		section.style.display = "block";	
+		
+	var main_page=document.getElementById('page');
+	
+	var page2=document.getElementById('section-linemove-2');
+	var page3=document.getElementById('section-linemove-3');
+	var page4=document.getElementById('section-linemove-4');
+	
+	var t2 = document.createElement('div');
+		t2.id="table2"; 
+		t2.class="table"; 
+	
+	var t3 = document.createElement('div');
+		t3.id="table3"; 
+		t3.class="table"; 
+		
+	var t4 = document.createElement('div');
+		t4.id="table4"; 
+		t4.class="table"; 
+	
+	
+	var p = document.getElementById('par');
+	p.innerHTML = "You are similar to "+name+" by: ";
+	
+	var ul = document.getElementById('list');
+	
+	var li = document.createElement('li');
+	li.innerHTML = c+"% (checkins)";
+    ul.appendChild(li);
+	
+	var li = document.createElement('li');
+	li.innerHTML = m+"% (music)";
+    ul.appendChild(li);
+	
+	var li = document.createElement('li');
+	li.innerHTML = n+"% (movies)";
+    ul.appendChild(li);
+	
+	var li = document.createElement('li');
+	li.innerHTML = mo+"% (MO)";
+    ul.appendChild(li);
+	
+	
+//////////////////////////find friend//////////////////////////////////
+		var f = 0;
+					
+		for (j=1; j<response.length; j++) {
+			if (response[j][response[j].length-1].name==name) {
+			f = j;
+			}
+		}
+		
+		//alert(response[0][0][0].genre);	
+		var me = response[0];
+		var friend = response[f];
+		
+		var checkins = [];
+		var music = [];
+		var movies = [];
+		
+		for (i=0; i<me[1].length; i++) {
+			if (me[1][i].genre!="" && me[1][i].genre!="undefined") {checkins.push(me[1][i].genre);}
+		}
+		for (i=0; i<me[2].length; i++) {
+			if (me[2][i].genre!="" && me[2][i].genre!="undefined") {music.push(me[2][i].genre.toLowerCase());}
+		}
+		for (i=0; i<me[3].length; i++) {
+			if (me[3][i].genre!="" && me[3][i].genre!="undefined") {movies.push(me[3][i].genre);}
+		}
+		
+		for (i=0; i<friend[1].length; i++) {
+			if (friend[1][i].genre!="" && friend[1][i].genre!="undefined") {checkins.push(friend[1][i].genre);}
+		}
+		for (i=0; i<friend[2].length; i++) {
+			if (friend[2][i].genre!="" && friend[2][i].genre!="undefined") {music.push(friend[2][i].genre.toLowerCase());}
+		}
+		for (i=0; i<friend[3].length; i++) {
+			if (friend[3][i].genre!="" && friend[3][i].genre!="undefined") {movies.push(friend[3][i].genre);}
+		}
+		
+		checkins.sort();
+		music.sort();
+		movies.sort();
+		
+
+/////////////////////////CHECKINS//////////////////////////////
+
+		
+		var genres2 = document.createElement('table');
+		genres2.id="genres2";
+					
+					
+					
+		var head = document.createElement('thead');
+		
+        var row = document.createElement('tr');
+                    
+			var cell = document.createElement('th');
+			cell.className="alt";
+			cell.innerHTML = "Checkins";
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = me[me.length-1].name;
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = friend[friend.length-1].name;
+			row.appendChild(cell);
+			head.appendChild(row);
+			
+        genres2.appendChild(head);
+		
+		var body = document.createElement('tbody');
+/////////////////////////////////////////////////////////
+		var last = checkins[0];
+		var m1 = "";
+		var m2 = "";
+		
+		for (i=0; i<me[1].length; i++) {
+			if (me[1][i].genre==last) {
+				m1=me[1][i].likes;
+			}
+		}	
+		for (i=0; i<friend[1].length; i++) {
+			if (friend[1][i].genre==last) {
+				m2=friend[1][i].likes;
+			}
+		}
+		
+		
+		var row = document.createElement('tr');
+		if (m1=="" || m2=="") {row.className="alt"; }
+		
+		var cell = document.createElement('td');
+		cell.className="g";
+		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m1;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m2;
+		row.appendChild(cell);
+			
+		body.appendChild(row);	
+			
+		genres2.appendChild(body);
+		
+
+
+		for (i=1; i<checkins.length; i++) {
+		
+		if (checkins[i]!=last) {
+			m1 = "";
+			m2 = "";
+			
+			for (j=0; j<me[1].length; j++) {
+				if (me[1][j].genre==checkins[i]) {
+				m1=me[1][j].likes;
+				}
+			}	
+			for (j=0; j<friend[1].length; j++) {
+				if (friend[1][j].genre==checkins[i]) {
+				m2=friend[1][j].likes;
+				}
+			}
+		
+		
+			var row = document.createElement('tr');
+			if (m1=="" || m2=="") {row.className="alt"; }
+		
+			var cell = document.createElement('td');
+			cell.className="g";
+			cell.innerHTML = checkins[i];
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m1;
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m2;
+			row.appendChild(cell);
+			
+			body.appendChild(row);	
+			
+		genres2.appendChild(body);
+			
+			
+			
+			last = checkins[i];
+		}
+		}
+
+/////////////////////////////////////////////////////////////		
+		
+		
+		
+/////////////////////////MUSIC//////////////////////////////
+
+		
+		var genres3 = document.createElement('table');
+		genres3.id="genres3";
+					
+					
+					
+		var head = document.createElement('thead');
+		
+        var row = document.createElement('tr');
+                    
+			var cell = document.createElement('th');
+			cell.className="alt";
+			cell.innerHTML = "Music";
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = me[me.length-1].name;
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = friend[friend.length-1].name;
+			row.appendChild(cell);
+			head.appendChild(row);
+			
+        genres3.appendChild(head);
+		
+		var body = document.createElement('tbody');
+/////////////////////////////////////////////////////////
+		var last = music[0];
+		var m1 = "";
+		var m2 = "";
+		
+		for (i=0; i<me[2].length; i++) {
+			if (me[2][i].genre.toLowerCase()==last) {
+				m1=me[2][i].likes;
+			}
+		}	
+		for (i=0; i<friend[2].length; i++) {
+			if (friend[2][i].genre.toLowerCase()==last) {
+				m2=friend[2][i].likes;
+			}
+		}
+		
+		
+		var row = document.createElement('tr');
+		if (m1=="" || m2=="") {row.className="alt"; }
+		
+		var cell = document.createElement('td');
+		cell.className="g";
+		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m1;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m2;
+		row.appendChild(cell);
+			
+		body.appendChild(row);	
+			
+		genres3.appendChild(body);
+		
+
+
+		for (i=1; i<music.length; i++) {
+		
+		if (music[i]!=last) {
+			m1 = "";
+			m2 = "";
+			
+			for (j=0; j<me[2].length; j++) {
+				if (me[2][j].genre.toLowerCase()==music[i]) {
+				m1=me[2][j].likes;
+				}
+			}	
+			for (j=0; j<friend[2].length; j++) {
+				if (friend[2][j].genre.toLowerCase()==music[i]) {
+				m2=friend[2][j].likes;
+				}
+			}
+		
+		
+			var row = document.createElement('tr');
+			if (m1=="" || m2=="") {row.className="alt"; }
+		
+			var cell = document.createElement('td');
+			cell.className="g";
+			cell.innerHTML = music[i];
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m1;
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m2;
+			row.appendChild(cell);
+			
+			body.appendChild(row);	
+			
+		genres3.appendChild(body);
+			
+			
+			
+			last = music[i];
+		}
+		}
+
+		
+/////////////////////////////////////////////////////////////	
+
+//////////////////////MOVIES////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+
+		
+		var genres4 = document.createElement('table');
+		genres4.id="genres4";
+					
+					
+					
+		var head = document.createElement('thead');
+		
+        var row = document.createElement('tr');
+                    
+			var cell = document.createElement('th');
+			cell.className="alt";
+			cell.innerHTML = "Movies";
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = me[me.length-1].name;
+			row.appendChild(cell);
+					
+			var cell = document.createElement('th');
+			cell.innerHTML = friend[friend.length-1].name;
+			row.appendChild(cell);
+			head.appendChild(row);
+			
+        genres4.appendChild(head);
+		
+		var body = document.createElement('tbody');
+/////////////////////////////////////////////////////////
+
+		var last = movies[0];
+		var m1 = "";
+		var m2 = "";
+		
+		for (i=0; i<me[3].length; i++) {
+			if (me[3][i].genre==last) {
+				m1=me[3][i].likes;
+			}
+		}	
+		for (i=0; i<friend[3].length; i++) {
+			if (friend[3][i].genre==last) {
+				m2=friend[3][i].likes;
+			}
+		}
+		
+		
+		var row = document.createElement('tr');
+		if (m1=="" || m2=="") {row.className="alt"; }
+		
+		var cell = document.createElement('td');
+		cell.className="g";
+		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m1;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = m2;
+		row.appendChild(cell);
+			
+		body.appendChild(row);	
+			
+		genres4.appendChild(body);
+		
+		
+		
+
+		for (i=1; i<movies.length; i++) {
+		
+		if (movies[i]!=last) {
+			m1 = "";
+			m2 = "";
+			
+			for (j=0; j<me[3].length; j++) {
+				if (me[3][j].genre==movies[i]) {
+				m1=me[3][j].likes;
+				}
+			}	
+			for (j=0; j<friend[3].length; j++) {
+				if (friend[3][j].genre==movies[i]) {
+				m2=friend[3][j].likes;
+				}
+			}
+		
+		
+			var row = document.createElement('tr');
+			if (m1=="" || m2=="") {row.className="alt"; }
+		
+			var cell = document.createElement('td');
+			cell.className="g";
+			cell.innerHTML = movies[i];
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m1;
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = m2;
+			row.appendChild(cell);
+			
+			body.appendChild(row);	
+			
+		genres4.appendChild(body);
+			
+			
+			
+			last = movies[i];
+		}
+		}
+
+		//////////////////////////////////////////////////
+
+		
+		
+		
+
+
+		t2.appendChild(genres2);
+		t3.appendChild(genres3);
+		t4.appendChild(genres4);
+		
+		page2.appendChild(t2);
+		page3.appendChild(t3);
+		page4.appendChild(t4);
+		$('#genres2').DataTable();
+		$('#genres3').DataTable();
+		$('#genres4').DataTable();
+		t2.style="display: block";
+		t3.style="display: block";
+		t4.style="display: block";
+		
+			
+					
+	
+	
+		
+	}
+    
+    
+    
+        
+        
+        
+        
+    var  callAnotherPage = function () {
+        //changePage("menu.html");
+        window.location = "menu.html";
+    }
+    
+    
+    
+	function back() {
+		var back = document.getElementById('back');
+		back.style.display = "none";
+		var section = document.getElementById('section');
+		section.style.display = "none";
+		var tbl = document.getElementById("table2");
+        tbl.parentNode.removeChild(tbl);
+		tbl = document.getElementById("table3");
+        tbl.parentNode.removeChild(tbl);
+		tbl = document.getElementById("table4");
+        tbl.parentNode.removeChild(tbl);
+		
+		var ul = document.getElementById('list');
+		ul.innerHTML = "";
+		
+		var menu = document.getElementById('menu');
+		menu.style.display = "block";
+		var buttons = document.getElementById('btns');
+		buttons.style.display = "block";
+	}	
+    
+    
+    </script>
+    
+      
+  <body>
+       <script type="text/javascript" src="DataTables/datatables.js"></script>
+      <div id="page">
+          <div id="fb-root"></div> 
+            
+            <script type="text/javascript"> 
+                onDeviceReady(); 
+          </script>
+          
+          
+          <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+          
+            <div id="menu" class="event listening button" style= "margin-bottom: 20px" onclick="callAnotherPage();">Menu</div>
+          
+          <div id="loading">
+            <div class="container">
+                <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+                </div>
+            </div>
+          
+            <h1><small>Checking similarity
+            <br>this may take a while</small></h1>
+          </div>
+          
+          
+           <!--
+          <div id=pictures style="margin-left: 20%"></div> -->
+          <div id="btns" style="display: block"></div>
+          
+          <div id="back" class="event listening button" onclick="back();" style="display: none">Back</div>
+          
+          
+	  <section id="section" style="display: none">	  
+				<p id="par"></p>
+				<ul id="list"></ul>
+				<div class="tabs tabs-style-linemove">
+					<nav>
+						<ul>
+							<li><a href="#section-linemove-1" ><span>Pages</span></a></li>
+							<li><a href="#section-linemove-2" ><span>Checkins</span></a></li>
+							<li><a href="#section-linemove-3" ><span>Music</span></a></li>
+							<li><a href="#section-linemove-4" ><span>Movies</span></a></li>
+						</ul>
+					</nav>
+					<div class="content-wrap">
+						<section id="section-linemove-1"></section>
+						<section id="section-linemove-2"></section>
+						<section id="section-linemove-3"></section>
+						<section id="section-linemove-4"></section>
+					</div>
+				</div>
+			</section>
+	  
+	  
+          
+          
+          
+         
+          
+      </div>
+      
+      
+      <script src="js/cbpFWTabs.js"></script>
+		<script>
+			(function() {
+
+				[].slice.call( document.querySelectorAll( '.tabs' ) ).forEach( function( el ) {
+					new CBPFWTabs( el );
+				});
+
+			})();
+		</script>   
+      
+      
+  </body>
+</html>

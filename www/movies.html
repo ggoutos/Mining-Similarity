@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+        <title>Mining Social Web</title>
+		</head>
+    
+		
+		
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/dynamicpage.js"></script>
+    <script type="text/javascript" src="js/notify.js.sdx"></script>
+	<script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+   function onDeviceReady() {
+        // Now safe to use device APIs
+        facebookConnectPlugin.getAccessToken( 
+            function (response) { 
+                var after = "";
+                var sum = 0;
+                var token = response;
+                
+                 $.ajax({
+                type: "GET",
+                async:   true,
+                //change the url for your project
+                url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
+                success: function(data){
+                     var id = data.id;
+                     movies(after, token, sum, id);
+                 },
+                error: function() {
+                     console.log(data);
+                    alert("There was an error getting the pages.");
+                 }});
+                
+                
+        
+            },
+            function (response) { alert(JSON.stringify(response)) });
+        
+        
+				
+    }
+        
+    
+    function movies(after, token, sum, id) {
+         
+            
+      $.ajax({
+                type: "GET",
+                async:   true,
+                //change the url for your project
+                url: "https://graph.facebook.com/v2.5/me/movies?access_token=" + token + "&fields=name&limit=100&after=" + after,
+                success: function(data){
+                    
+                     var i=0;
+                    var mname = [];
+                    
+             
+                    while (i < data.data.length) {
+                        mname[i]=data.data[i].name;
+                        i++;
+                    }
+                    
+                    
+                //genre(music, id);
+                  
+             
+             var s = sum + data.data.length;
+          
+                
+             
+             
+         //$.notify('Updating your movies\' genres.', 'info');
+        
+            
+            var title = [];
+            var tag1 = [];
+            var tag2 = [];
+			var tag3 = [];
+			
+			
+			
+            
+            for(i=0; i<mname.length; i++) {
+			
+			
+                
+                $.ajax({
+		                  url: 'http://www.omdbapi.com/?t='+mname[i],
+		                  
+						  async:  true,
+					      success: function(response){
+						  
+						  var a = "";
+						  
+						  var index = 26;
+								
+						  while (index<this.url.length) {
+						  a+= this.url[index];
+						  index++;
+						  }
+						  //alert(a);
+			              title.push(a);
+							
+			if (response.Genre==null) { 
+			
+			tag1.push("undefined");
+			tag2.push("undefined");
+			tag3.push("undefined");
+			}
+			else {
+			
+				var t=0;
+				var j=0;
+				var help="";
+				var g;
+				
+				while (j<=response['Genre'].length) {
+			
+				if (response['Genre'][j]!=','&&j<response['Genre'].length) {help+=response['Genre'][j]; }
+				else {
+				//alert(help)
+				if (t===0) { tag1.push(help); g=help; help = ""; t=1; }
+				else {if (t===1) { tag2.push(help); help = ""; t=2; }
+				else { tag3.push(help); help = ""; t=3; } }
+				
+				}
+			
+				j++;
+				}
+				
+				if (t==0) {
+				tag1.push("undefined");
+				tag2.push("undefined");
+				tag3.push("undefined");
+				}
+				if (t==1) {
+				
+				tag2.push(g);
+				tag3.push(g);
+				}
+				if (t==2) {
+				tag3.push(g);
+				}
+                
+			
+            for(k=0; k<mname.length; k++) {
+				if (tag1[k][0]==' ') tag1[k]=tag1[k].slice(1); 
+				if (tag2[k][0]==' ') tag2[k]=tag2[k].slice(1); 
+				if (tag3[k][0]==' ') tag3[k]=tag3[k].slice(1); 
+            }
+			
+			
+			
+			}
+                
+                
+			
+			var postData = {
+		      "id": id,
+		      "mname": title,
+              "tag1": tag1,
+              "tag2": tag2,
+			  "tag3": tag3
+		    };
+			
+                
+			
+			if (postData["mname"].length==mname.length)  {
+			//alert("success "+postData["mname"].length+"/"+mname.length);
+					
+			//alert("Music genres downloaded.");
+            //    $.notify("Movies genres downloaded.", 'success');
+			//alert("Music sending to database...");					
+			//	$.notify("Movies sending to database...", "info");	
+            
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/movies",
+                success: function(data){
+                    console.log(data);
+                    $.notify("Movies sent successfully!", "success");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    $.notify("There was an error updating your profile.","warn");
+                }
+            });
+								
+								
+							 
+			
+			
+			
+			}
+			
+			
+						 
+		                  }, 
+				error: function(response) {
+                
+                alert("undefined");    
+				title.push("undefined");
+			tag1.push("undefined");
+			tag2.push("undefined");
+			tag3.push("undefined");
+			
+			
+			var postData = {
+		      "id": id,
+		      "mname": title,
+              "tag1": tag1,
+              "tag2": tag2,
+              "tag3": tag3
+		    };
+			
+                    //alert("error "+postData["mname"].length+"/"+mname.length);
+                    
+			if (postData["mname"].length==mname.length)  {
+                
+               // alert("error "+postData["mname"].length+"/"+mname.length);
+			
+            //λαθος δημιουργια ειδους λογω "<space>" πριν το ονομα ως απαντηση του omdb  
+			//var str = "";
+			//for(k=0; k<mname.length;k++) str+=title[k]+" "+tag1[k]+" "+tag2[k]+" "+tag3[k]+"\n";
+			
+			//alert(str);
+            
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/movies",
+                success: function(data){
+                    console.log(data);
+                    alert("Movies sent successfully!!");
+                    
+                },
+                error: function(){
+                    console.log(data);
+                    //alert("There was an error updating your profile.");
+                }
+            });
+								
+								
+							 
+			
+			
+			
+			}    
+                    
+                }
+                });
+						
+						
+        
+			} //for
+            
+            
+                
+             
+               if (data.hasOwnProperty('paging') && data.paging.hasOwnProperty('next'))  {
+                        var a = data.paging.cursors.after;
+                        movies(a, token, s, id);
+                    }
+                    else {
+                        // create the notification
+                        var notification = new NotificationFx({
+			             message : '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>'+s+' movies found.</p>',
+			             layout : 'bar',
+			             effect : 'slidetop',
+			             type : 'notice', // notice, warning or error
+			             onClose : function() {
+				            bttn.disabled = false;
+			             }
+                        });
+                    
+                        // show the notification
+                        notification.show();
+                         changePage("menu.html"); 
+                    }
+             
+             
+             
+             
+             
+          
+             
+             
+          
+          
+          
+          
+                 },
+            error: function(){
+                    console.log(data);
+                     $.notify("There was some error!!", "error");
+                }  
+        }); 
+            
+        
+        
+    }
+    
+    
+    
+    
+        
+        
+    </script>
+		
+    
+  
+  <body>
+      
+      <div id="page"  style="position: fixed; top: 0; left: 0; width: 100%;">
+      <div id="fb-root"></div> 
+          <script type="text/javascript"> onLoad(); </script>
+      
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
+            
+          <!-- <div class="event listening button" onclick="callAnotherPage();">Back</div> -->
+
+          <div class="container">
+                <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+                </div>
+            </div>
+          
+          <h1><small>loading your movies... 
+          <br>this may take a minute</small></h1>
+          
+          
+      </div>
+      
+  </body>
+</html>
