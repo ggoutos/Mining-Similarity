@@ -109,6 +109,8 @@ $app->post('/pages', function() use ($neo4j) {
 
 	
  for ($i=0; $i<count($_POST['pages']); $i++) {
+ 
+ if (isset($_POST["pages"][$i]["category"]) && $_POST["pages"][$i]["category"]!="Musician/Band" && $_POST["pages"][$i]["category"]!="Movie") {
 	
 	$q = 
 	'MATCH (n {name: "'.$_POST["pages"][$i]["name"].'"})
@@ -155,6 +157,8 @@ $app->post('/pages', function() use ($neo4j) {
 	';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
+	}
+	
 	}
 	
  }
@@ -424,10 +428,24 @@ $app->post('/movies', function() use ($neo4j) {
 
 $app->post('/similarity', function(Request $request) use ($neo4j) {
 
-/////MATCH (u:User {name: "Giwrgos Goutos"})--(m:Movie)--(g:Movie_Genre)--(l:Movie)--(User {name: "Myrto Goutou"})
-/////RETURN g.name AS genre, count(DISTINCT m) AS me, count(DISTINCT l) AS friend ORDER BY genre ASC
 	
 /////me	
+	$q = 
+	'MATCH (n:User {name: "'.$_POST["name"].'"})--(u:Page)
+	RETURN DISTINCT u.name AS name ORDER BY name ASC';
+	
+	$genre = $neo4j->sendCypherQuery($q)->getResult();
+	$me[] = $genre->getTableFormat();
+	
+
+	$q = 
+	'MATCH (u:User {name: "'.$_POST["name"].'"})-[CHECKED_IN]-(m)--(g:Place_Genre)
+	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	
+	$genre = $neo4j->sendCypherQuery($q)->getResult();
+	$me[] = $genre->getTableFormat();
+	
+	
 	$q = 
 	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m)--(g:Music_Genre)
 	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
@@ -467,6 +485,22 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	for ($i=0; $i<count($friends); $i++) {
 	
 	$q = 
+	'MATCH (n:User {name: "'.$friends[$i]["friend"]["name"].'"})--(u:Page)
+	RETURN DISTINCT u.name AS name ORDER BY name ASC';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	$genres[$i+1][] = $result->getTableFormat();
+	
+	
+	$q = 
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})-[CHECKED_IN]-(m)--(g:Place_Genre)
+	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	
+	$result = $neo4j->sendCypherQuery($q)->getResult();
+	$genres[$i+1][] = $result->getTableFormat();
+	
+	
+	$q = 
 	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Music_Genre)
 	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
 	
@@ -494,67 +528,11 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 
 $app->post('/checkFriend', function(Request $request) use ($neo4j) {
 
-/////me	
-	$q = 
-	'MATCH (u:User {id: "'.$_POST["me"].'"})--(m)--(g:Music_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
-	
-	$genre = $neo4j->sendCypherQuery($q)->getResult();
-	$me[] = $genre->getTableFormat();
-	
-	
-	$q = 
-	'MATCH (u:User {id: "'.$_POST["me"].'"})--(m)--(g:Movie_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
-	
-	$genre = $neo4j->sendCypherQuery($q)->getResult();
-	$me[] = $genre->getTableFormat();
-	
-	
-	$q = 'MATCH (u:User {id: "'.$_POST["me"].'"})
-	RETURN u AS me';
-	
-	$result = $neo4j->sendCypherQuery($q)->getResult();	
-	$help = $result->getTableFormat();
-	$me[] = $help[0]["me"];
-	
-	$genres[] = $me;
 
-//////friend
-   $q =
-   'MATCH (u:User {id: "'.$_POST["friend"].'"})
-	RETURN  u AS friend';
+///MATCH (l:User {name: "Eva Zografaki"}),(p:User {name: "Giwrgos Goutos"}), (l)--(u:Movie)--(p)
+///return DISTINCT u.name
 
-	$result = $neo4j->sendCypherQuery($q)->getResult();	
-	
-	$friends = $result->getTableFormat();
-	
-	
-	
-	
-	
-	$q = 
-	'MATCH (u:User {name: "'.$friends[0]["friend"]["name"].'"})--(m)--(g:Music_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
-	
-	$result = $neo4j->sendCypherQuery($q)->getResult();
-	$genres[1][] = $result->getTableFormat();
-	
-	
-    $q = 
-	'MATCH (u:User {name: "'.$friends[0]["friend"]["name"].'"})--(m)--(g:Movie_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
-	
-	$result = $neo4j->sendCypherQuery($q)->getResult();
-	$genres[1][] = $result->getTableFormat();
-	$genres[1][] = $friends[0]["friend"];
-	
-	
-	
-	
-    $response = new JsonResponse();
-    $response->setData($genres);
-    return $response;
+
 	
 });
 
