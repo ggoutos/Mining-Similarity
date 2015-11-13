@@ -14,7 +14,7 @@
  * Table styles
  */
 table.dataTable { 	
-  width: auto;
+  width: 95%;
   
   clear: both;
   border-collapse: collapse;
@@ -47,13 +47,17 @@ table.dataTable tfoot th {
     background-color: rgb(93, 104, 108);
 }
 table.dataTable thead th.alt {
+	width: 0px;
     font-size: 20px;    
     padding-right: 50px;
     padding-left: 50px;
 }
+table.dataTable thead th.name {
+    width: 0px;
+}
 table.dataTable thead th,
 table.dataTable thead td {
-  
+  width: auto;
   
 }
 table.dataTable thead th:active,
@@ -98,6 +102,9 @@ table.dataTable thead .sorting_desc_disabled {
 table.dataTable tbody tr {
   background-color: rgba(33, 135, 231, 0.27);
 }
+table.dataTable tr {
+  background-color: rgba(33, 135, 231, 0.27);
+}
 table.dataTable tbody tr.selected {
   background-color: #B0BED9;
 }
@@ -105,14 +112,14 @@ table.dataTable tbody th,
 table.dataTable tbody td {
   font-size: 20px;
     border-bottom: 1px solid #2187e7;
-    padding: 5px 5px 5px 5px;
+    padding: 15px 0px 15px 0px;
     background-color: rgba(13, 59, 103, 0.68);
 }
 table.dataTable tbody td.n {
     text-align: center; 
 }
 table.dataTable tbody td.g {
-    //text-align: center; 
+    padding: 0px 0px 0px 15px;
 }
 table.dataTable tbody tr.alt td {
     background-color: rgba(178, 33, 231, 0.74); 
@@ -320,6 +327,7 @@ table.dataTable td {
  */
 .dataTables_wrapper {
   position: relative;
+  width: auto;
   clear: both;
   margin-top: 50px;
   *zoom: 1;

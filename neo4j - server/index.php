@@ -1,4 +1,8 @@
 <?php
+$app->get('/', function () {
+    return file_get_contents(__DIR__.'/static/index.html');
+});
+
 
 
 
@@ -397,8 +401,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	
 /////me	
 	$q = 
-	'MATCH (n:User {name: "'.$_POST["name"].'"})--(u:Page)
-	RETURN DISTINCT u.name AS name ORDER BY name ASC';
+	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m)--(g:Category)
+	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
 	
 	$genre = $neo4j->sendCypherQuery($q)->getResult();
 	$me[] = $genre->getTableFormat();
@@ -451,8 +455,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	for ($i=0; $i<count($friends); $i++) {
 	
 	$q = 
-	'MATCH (n:User {name: "'.$friends[$i]["friend"]["name"].'"})--(u:Page)
-	RETURN DISTINCT u.name AS name ORDER BY name ASC';
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Category)
+	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	$genres[$i+1][] = $result->getTableFormat();
@@ -501,88 +505,6 @@ $app->post('/checkFriend', function(Request $request) use ($neo4j) {
 
 	
 });
-
-
-
-$app->get('/search', function (Request $request) use ($neo4j) {
-    $a = $request->get('a');
-	$b = $request->get('b');
-    
-    $query = 'MATCH (u:User {name: "'.$a.'"})--(m)--(g:Movie_Genre)
-	RETURN g.name AS EIDOS , count(*) AS AKMES ORDER BY EIDOS ASC';
-    
-	$result = $neo4j->sendCypherQuery($query)->getResult();
-   
-	$genres = $result->getTableFormat();
-	
-    $response = new JsonResponse();
-    $response->setData($genres);
-    return $response;
-});
-
-
-$app->get('/searchhhhhhhhh', function (Request $request) use ($neo4j) {
-    $searchTerm = $request->get('q');
-    $term = '(?i).*'.$searchTerm.'.*';
-    $query = 'MATCH (m:Movie) WHERE m.title =~ {term} RETURN m';
-    $params = ['term' => $term];
-    $result = $neo4j->sendCypherQuery($query, $params)->getResult();
-    $movies = [];
-    foreach ($result->getNodes() as $movie){
-        $movies[] = ['movie' => $movie->getProperties()];
-    }
-    $response = new JsonResponse();
-    $response->setData($movies);
-    return $response;
-});
-
-
-$app->get('/movie/{title}', function ($title) use ($neo4j) {
-    $q = 'MATCH (m:Movie) WHERE m.title = {title} OPTIONAL MATCH p=(m)<-[r]-(a:Person) RETURN m,p';
-    $params = ['title' => $title];
-    $result = $neo4j->sendCypherQuery($q, $params)->getResult();
-    $movie = $result->getSingleNodeByLabel('Movie');
-    $mov = [
-        'title' => $movie->getProperty('title'),
-        'cast' => []
-        ];
-    foreach ($movie->getInboundRelationships() as $rel){
-        $actor = $rel->getStartNode()->getProperty('name');
-        $relType = explode('_', strtolower($rel->getType()));
-        $job = $relType[0];
-        $cast = [
-            'job' => $job,
-            'name' => $actor
-        ];
-        if (array_key_exists('roles', $rel->getProperties())){
-            $cast['role'] = implode(',', $rel->getProperties()['roles']);
-        } else {
-            $cast['role'] = null;
-        }
-        $mov['cast'][] = $cast;
-    }
-    $response = new JsonResponse();
-    $response->setData($mov);
-    return $response;
-});
-
-
-
-$app->get('/import', function () use ($app, $neo4j) {
-    $q = trim(file_get_contents(__DIR__.'/static/movies.cypher'));
-    $neo4j->sendCypherQuery($q);
-
-    return $app->redirect('/');
-});
-
-$app->get('/reset', function() use ($app, $neo4j) {
-    $q = 'MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE r,n';
-    $neo4j->sendCypherQuery($q);
-
-    return $app->redirect('/import');
-
-});
-
 
 
 $app->run();
