@@ -86,11 +86,17 @@
              
             for (i=0; i<p.length; i++) {
 			  var a = "";
+              var b = "";
 			  for (j=0; j<p[i].name.length; j++) {
 					if (p[i].name[j]=='"') a+="\\";
 					a+=p[i].name[j];
 			  }
               p[i].name=a;
+              for (j=0; j<p[i].category.length; j++) {
+					if (p[i].category[j]=='/') b+=", ";
+					else b+=p[i].category[j];
+			  }
+              p[i].category=b;
             }
              
              

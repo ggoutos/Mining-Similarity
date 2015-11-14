@@ -142,12 +142,13 @@
 /* Content */
 .content-wrap {
 	position: relative;
+	width: 100%;
 }
 
 .content-wrap section {
 	display: none;
 	margin: 0 auto;
-	padding: 1em;
+	//padding: 1em;
 	max-width: 1200px;
 	text-align: center;
 }
