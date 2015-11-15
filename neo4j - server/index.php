@@ -80,7 +80,7 @@ $app->post('/pages', function() use ($neo4j) {
 	
  for ($i=0; $i<count($_POST['pages']); $i++) {
  
- if (isset($_POST["pages"][$i]["category"]) && $_POST["pages"][$i]["category"]!="Musician/Band" && $_POST["pages"][$i]["category"]!="Movie") {
+ if (isset($_POST["pages"][$i]["category"]) && $_POST["pages"][$i]["category"]!="Musician, Band" && $_POST["pages"][$i]["category"]!="Movie") {
 	
 	$q = 
 	'MATCH (n {name: "'.$_POST["pages"][$i]["name"].'"})
