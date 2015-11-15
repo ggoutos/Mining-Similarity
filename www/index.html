@@ -21,6 +21,7 @@
             
             
             function onLoad() {
+                
                 document.addEventListener('backbutton', function(e){
                       if (confirm("Do you want to exit?"))  
                       {
@@ -32,16 +33,20 @@
                       }
                 }, false);
                 document.addEventListener("deviceready", onDeviceReady, false);
+                
             }
             
             
             
             function onDeviceReady() {
+                
+                
              
                 facebookConnectPlugin.getLoginStatus( 
                     function (response) { 
                         if (response.status == 'connected') {
-                            $.notify(response.status, "success");
+                            //$.notify(response.status, "success");
+                            //progress();
                              setTimeout(function() { 
                                 changePage("menu.html"); 
                              }, 1000);
@@ -53,6 +58,7 @@
                         //alert(JSON.stringify(response)) 
                         changePage("login.html");
                     });
+                    
                 
             }
             
@@ -60,17 +66,15 @@
             
         </script>
         
-        
+        <!-- onload="onLoad()" -->
    
     <body onload="onLoad()">
       
-        <!--style="display:none"-->
-		<input id="user" name="user" value="" style="display:none">
-		      
+        
         
         
         <div id="page">            
-            <div id="fb-root"></div> 
+        <div id="fb-root"></div>
                 
         
              <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
@@ -84,10 +88,20 @@
             </div>
         
       </div>      
-           
+        <div style="">
+	 <div id = "bar" class="la-anim-1">
+	 <input type="number" id="progress1" value=100 style="display:none">
+	 <input type="number" id="progress2" value=100 style="display:none">
+	 <input type="number" id="progress3" value=100 style="display:none">
+	 <input type="number" id="progress4" value=100 style="display:none">
+	 </div>
+	    </div>
+
         <script src="js/modernizr.custom.js"></script>
       <script src="js/classie.js"></script>
 		<script src="js/notificationFx.js"></script>
+        <!--<script>
+             setTimeout(function() { progress();}, 3000);</script> --<
         
         
     </body>
