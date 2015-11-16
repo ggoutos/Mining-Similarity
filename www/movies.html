@@ -45,6 +45,8 @@
                 url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
                 success: function(data){
                      var id = data.id;
+                     document.getElementById('progress4').setAttribute("data-sent", 0);
+                     document.getElementById('progress4').setAttribute("data-all", 1);
                      movies(after, token, sum, id);
                  },
                 error: function() {
@@ -203,7 +205,10 @@
                 success: function(data){
                     console.log(data);
                     $.notify("Movies sent successfully!", "success");
-                    
+                    var sent = parseInt(document.getElementById('progress4').getAttribute("data-sent"));
+                    sent = parseInt(sent) + parseInt(postData["mname"].length);
+                    document.getElementById('progress4').setAttribute("data-sent", sent);
+                    progress();
                 },
                 error: function(){
                     console.log(data);
@@ -259,7 +264,10 @@
                 success: function(data){
                     console.log(data);
                     alert("Movies sent successfully!!");
-                    
+                     var sent = parseInt(document.getElementById('progress4').getAttribute("data-sent"));
+                    sent = parseInt(sent) + parseInt(postData["mname"].length);
+                    document.getElementById('progress4').setAttribute("data-sent", sent);
+                    progress();
                 },
                 error: function(){
                     console.log(data);
@@ -292,6 +300,7 @@
                         // create the notification
                         var notification = new NotificationFx({
 			             message : '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>'+s+' movies found.</p>',
+                        wrapper : document.getElementById('notifications'),
 			             layout : 'bar',
 			             effect : 'slidetop',
 			             type : 'notice', // notice, warning or error
@@ -302,6 +311,7 @@
                     
                         // show the notification
                         notification.show();
+                         document.getElementById('progress4').setAttribute("data-all", s);
                          changePage("menu.html"); 
                     }
              
@@ -338,7 +348,7 @@
   
   <body>
       
-      <div id="page"  style="top: 0; left: 0; width: 100%;">
+     <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
       <div id="fb-root"></div> 
           <script type="text/javascript"> onLoad(); </script>
       

@@ -32,23 +32,20 @@ return(file);
 
 
 function progress() {
-		var a = parseFloat(document.getElementById('progress1').value);
-		var b = parseFloat(document.getElementById('progress2').value);
-		var c = parseFloat(document.getElementById('progress3').value);
-		var d = parseFloat(document.getElementById('progress4').value);
-		var n = (a+b+c+d)/4 ;
+    var a = parseFloat(document.getElementById('progress1').getAttribute("data-sent")) / parseFloat(document.getElementById('progress1').getAttribute("data-all"));
+    var b = parseFloat(document.getElementById('progress2').getAttribute("data-sent")) / parseFloat(document.getElementById('progress2').getAttribute("data-all"));
+    var c = parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all"));
+    var d = parseFloat(document.getElementById('progress4').getAttribute("data-sent")) / parseFloat(document.getElementById('progress4').getAttribute("data-all"));
     
-		var an = document.querySelector( '.' + "la-anim-1" );
-    alert(n);
+	var n = (a+b+c+d)*25 ;
+		var an = document.getElementById('progress-bar');
 		if (n!=0) {
-			an.style="-webkit-transition: -webkit-transform 5s ease-in, opacity 0.5s 5s; transition: transform 0.5s ease-in, opacity 1s 5s;  -webkit-transform: translate3d("+parseFloat(n-100)+"%, 0, 0); 	transform: translate3d("+parseFloat(n-100)+"%, 0, 0);";
-			$("#bar").addClass("la-animate");
+			an.style.width = parseFloat(n) + "%";
 		}
 		
 		if (n==100) {
 		setTimeout( function() {
-			an.style="";
-			$("#bar").removeClass("la-animate");	
+			an.style.width = "0%";
 		}, 1000 );
 		}
 		
