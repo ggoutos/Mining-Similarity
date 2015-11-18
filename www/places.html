@@ -111,11 +111,13 @@
                 url: "http://ggoutos.ddns.net:5000/places",
                 success: function(data){
                     console.log(data);
-                    $.notify("Places sent successfully!!", "success");
                     var sent = parseInt(document.getElementById('progress2').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["places"].length);
                     document.getElementById('progress2').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress2').getAttribute("data-sent")) / parseFloat(document.getElementById('progress2').getAttribute("data-all")))==1) {
+                        $.notify("Places sent successfully!!", "success");
+                    }
                 },
                 error: function(){
                     console.log(data);
@@ -146,7 +148,12 @@
                     
                         // show the notification
                         notification.show();
+                        if (s!=0) {
+                        var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
+                        all = parseInt(all) + parseInt(s);
+                        document.getElementById('progress').setAttribute("data-all", all);
                         document.getElementById('progress2').setAttribute("data-all", s);
+                        }
                         changePage("music.html");
                     }
         

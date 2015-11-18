@@ -53,6 +53,7 @@
                      var id = data.id;
                      document.getElementById('progress1').setAttribute("data-sent", 0);
                      document.getElementById('progress1').setAttribute("data-all", 1);
+                     document.getElementById('progress').setAttribute("data-all", 1);
                      pages(after, token, sum, id);
                  },
                 error: function() {
@@ -117,11 +118,15 @@
                 url: "http://ggoutos.ddns.net:5000/pages",
                 success: function(data){
                     console.log(data);
-                    $.notify("Pages sent successfully!!", "success");
+                    
                     var sent = parseInt(document.getElementById('progress1').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["pages"].length);
                     document.getElementById('progress1').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress1').getAttribute("data-sent")) / parseFloat(document.getElementById('progress1').getAttribute("data-all")))==1) {
+                        $.notify("Pages sent successfully!!", "success");
+                    }
+                    
                 },
                 error: function(){
                     console.log(data);
@@ -152,7 +157,13 @@
                     
                         // show the notification
                         notification.show();
+                        if (s!=0) {
+                            document.getElementById('progress').setAttribute("data-all", 0);  // oxi sta upoloipa
+                        var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
+                        all = parseInt(all) + parseInt(s);
+                        document.getElementById('progress').setAttribute("data-all", all);
                         document.getElementById('progress1').setAttribute("data-all", s);
+                        }
                         changePage("places.html");
                     }
         

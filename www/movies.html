@@ -204,11 +204,13 @@
                 url: "http://ggoutos.ddns.net:5000/movies",
                 success: function(data){
                     console.log(data);
-                    $.notify("Movies sent successfully!", "success");
                     var sent = parseInt(document.getElementById('progress4').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["mname"].length);
                     document.getElementById('progress4').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress4').getAttribute("data-sent")) / parseFloat(document.getElementById('progress4').getAttribute("data-all")))==1) {
+                        $.notify("Movies sent successfully!!", "success");
+                    }
                 },
                 error: function(){
                     console.log(data);
@@ -263,11 +265,13 @@
                 url: "http://ggoutos.ddns.net:5000/movies",
                 success: function(data){
                     console.log(data);
-                    alert("Movies sent successfully!!");
                      var sent = parseInt(document.getElementById('progress4').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["mname"].length);
                     document.getElementById('progress4').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress4').getAttribute("data-sent")) / parseFloat(document.getElementById('progress4').getAttribute("data-all")))==1) {
+                        $.notify("Movies sent successfully!!", "success");
+                    }
                 },
                 error: function(){
                     console.log(data);
@@ -311,7 +315,12 @@
                     
                         // show the notification
                         notification.show();
-                         document.getElementById('progress4').setAttribute("data-all", s);
+                         if (s!=0) {
+                        var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
+                        all = parseInt(all) + parseInt(s);
+                        document.getElementById('progress').setAttribute("data-all", all);
+                        document.getElementById('progress4').setAttribute("data-all", s);
+                        }
                          changePage("menu.html"); 
                     }
              

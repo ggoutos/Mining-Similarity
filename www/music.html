@@ -221,11 +221,13 @@
                 url: "http://ggoutos.ddns.net:5000/music",
                 success: function(data){
                     console.log(data);
-                    $.notify("Music sent successfully!!", "success");
                     var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["mname"].length);
                     document.getElementById('progress3').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all")))==1) {
+                        $.notify("Music sent successfully!!", "success");
+                    }
                 },
                 error: function(){
                     console.log(data);
@@ -278,11 +280,13 @@
                 url: "http://ggoutos.ddns.net:5000/music",
                 success: function(data){
                     console.log(data);
-                    $.notify("Music sent successfully!","success");
                     var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
                     sent = parseInt(sent) + parseInt(postData["mname"].length);
                     document.getElementById('progress3').setAttribute("data-sent", sent);
                     progress();
+                    if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all")))==1) {
+                        $.notify("Music sent successfully!!", "success");
+                    }
                 },
                 error: function(){
                     console.log(data);
@@ -332,7 +336,12 @@
                     
                         // show the notification
                         notification.show();
+                        if (s!=0) {
+                        var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
+                        all = parseInt(all) + parseInt(s);
+                        document.getElementById('progress').setAttribute("data-all", all);
                         document.getElementById('progress3').setAttribute("data-all", s);
+                        }
                          changePage("movies.html"); 
                     }
              

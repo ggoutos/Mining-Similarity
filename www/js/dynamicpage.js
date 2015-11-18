@@ -37,7 +37,12 @@ function progress() {
     var c = parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all"));
     var d = parseFloat(document.getElementById('progress4').getAttribute("data-sent")) / parseFloat(document.getElementById('progress4').getAttribute("data-all"));
     
-	var n = (a+b+c+d)*25 ;
+	//var n = (a+b+c+d)*25 ;
+    
+    var n = ( parseFloat(document.getElementById('progress1').getAttribute("data-sent")) + parseFloat(document.getElementById('progress2').getAttribute("data-sent")) + parseFloat(document.getElementById('progress3').getAttribute("data-sent")) + parseFloat(document.getElementById('progress4').getAttribute("data-sent")) ) / parseFloat(document.getElementById('progress').getAttribute("data-all"));
+    
+    n = n*100;
+    
 		var an = document.getElementById('progress-bar');
 		if (n!=0) {
 			an.style.width = parseFloat(n) + "%";
