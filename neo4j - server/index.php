@@ -499,11 +499,18 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 $app->post('/checkFriend', function(Request $request) use ($neo4j) {
 
 
-///MATCH (l:User {name: "Eva Zografaki"}),(p:User {name: "Giwrgos Goutos"}), (l)--(u:Movie)--(p)
-///return DISTINCT u.name
 
+$q =  'MATCH (u:User {name: "'.$_POST["me"].'"})--(g)--(p:User {name: "'.$_POST["friend"].'"}), (g)--({name: "'.$_POST["genre"].'"})
+RETURN DISTINCT g.name AS name';
 
 	
+$genre = $neo4j->sendCypherQuery($q)->getResult();
+$genres = $genre->getTableFormat();
+
+
+$response = new JsonResponse();
+$response->setData($genres);
+return $response;
 });
 
 

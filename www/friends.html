@@ -38,10 +38,10 @@
     
     function onDeviceReady() {
         
-		 facebookConnectPlugin.api( "me?fields=name,friends.limit(1000)", ["user_birthday"], 
+		 facebookConnectPlugin.api( "me?fields=name,friends.limit(1000){name,picture}", ["user_birthday"], 
             function (response) {
              
-            similarity(response.name);  
+            similarity(response.name, response.friends.data);  
              
             //alert(JSON.stringify(response.friends.data.length)+"/"+ JSON.stringify(response.friends.summary.total_count) + " friends use the app.");
             },
@@ -51,7 +51,7 @@
         
           
         
-    function similarity(name) {
+    function similarity(name, fr) {
         
         
 		var postData = {
@@ -210,9 +210,36 @@
 					btn.onclick = function() {
 						check(response, this.name, pages[this.id], checkins[this.id], music[this.id], movies[this.id], mo[this.id]);
 					};
-					//btn.id=id[i];
-                    //btn.setAttribute("onclick","checkFriend(this.id)");
-                    btn.innerHTML = friends[i] + " - " + mo[i] + " %";
+                        
+                    var img = document.createElement('img');
+					//img.style="position: relative; left: 5%; width: 50px; height: 50px; padding-bottom: 30px; margin: 0px; padding-top: 20px;";
+					img.style.position="relative"; 
+                    img.style.left= "5%"; 
+                    img.style.width= "50px"; 
+                    img.style.height= "50px"; 
+                    img.style.paddingBottom= "30px"; 
+                    img.style.margin= "0px"; 
+                    img.style.paddingTop = "20px";
+                        
+                        
+					var pic = 0; 
+					for (k=0; k<fr.length; k++) {
+						if (btn.name==fr[k].name) {
+						pic = fr[k].picture.data.url;
+						}
+					}
+					img.src = pic;
+					btn.appendChild(img);
+					
+                    var div = document.createElement('div');
+					div.style.marginLeft= "70px"; 
+                    div.style.marginBottom= "20px"; 
+                    div.style.marginTop= "-80px"; 
+                    div.style.position= "relative";
+					div.innerHTML = friends[i] + "<br>" + mo[i] + " %";
+					btn.appendChild(div);    
+                        
+                    //btn.innerHTML = friends[i] + " - " + mo[i] + " %";
 					
                     buttons.appendChild(btn);
 					}
@@ -843,10 +870,10 @@
 		page2.appendChild(t2);
 		page3.appendChild(t3);
 		page4.appendChild(t4);
-		$('#genres1').DataTable();
-		$('#genres2').DataTable();
-		$('#genres3').DataTable();
-		$('#genres4').DataTable();
+		$('#genres1').DataTable( {select: true} );
+		$('#genres2').DataTable( {select: true} );
+		$('#genres3').DataTable( {select: true} );
+		$('#genres4').DataTable( {select: true} );
 		t1.style="display: block";
 		t2.style="display: block";
 		t3.style="display: block";
@@ -858,6 +885,44 @@
 		
 	}
 		
+        
+    
+        
+    $(document).on( 'click', 'tr', function () {
+	
+	var t = document.getElementsByClassName("tab-current")[0];
+	t = t.getElementsByTagName("a")[0];
+	t = t.getElementsByTagName("span")[0];
+	t = t.innerHTML;
+	
+	if (t=="Pages") {
+	var g = document.getElementById('genres1');
+	}
+	if (t=="Checkins") {
+	var g = document.getElementById('genres2');
+	}
+	if (t=="Music") {
+	var g = document.getElementById('genres3');
+	}
+	if (t=="Movies") {
+	var g = document.getElementById('genres4');
+	}
+	
+	var genre = g.getElementsByClassName("selected")[0].getElementsByClassName("g")[0].innerHTML;
+	//alert(genre);
+	
+	var me = document.getElementsByClassName("name")[0].innerHTML;
+	//alert(me);
+	
+	var friend = document.getElementsByClassName("name")[1].innerHTML;
+	//alert(friend);
+	
+	checkFriend(me, friend, genre, t);
+		
+		
+    } );
+        
+        
 		
 		
 	function back() {
@@ -884,11 +949,129 @@
 	}	
         
         
+    
+    
+	function checkFriend(me, friend, genre, section) {
+	
+	var postData = {
+		      "me": me,
+			  "friend": friend,
+			  "genre": genre
+		    };
+			
+			
+            $.ajax({
+                type: "POST",
+                data: postData,
+                async:   true,
+                //change the url for your project
+                url: "http://ggoutos.ddns.net:5000/checkFriend",
+                success: function(response){
+					//alert(JSON.stringify(response));
+					
+					if (section=="Pages") {
+						var list = document.getElementById("details1");
+						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> pages you both like:";
+						var tbl = document.getElementById("table1");
+						var button = document.getElementById("b1");
+					}
+					if (section=="Checkins") {
+						var list = document.getElementById("details2");
+						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> checkins you both did:";
+						var tbl = document.getElementById("table2");
+						var button = document.getElementById("b2");
+					}
+					if (section=="Music") {
+						var list = document.getElementById("details3");
+						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> music you both like:";
+						var tbl = document.getElementById("table3");
+						var button = document.getElementById("b3");
+					}
+					if (section=="Movies") {
+						var list = document.getElementById("details4");
+						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> movies you both like:";
+						var tbl = document.getElementById("table4");
+						var button = document.getElementById("b4");
+					}
+					
+					
+					
+					
+					if (response.length != 0) {
+					list.innerHTML = "";
+					tbl.style.display= "none";
+					button.style.display= "block";
+					list.style.display= "block";
+					var li = document.createElement('p');
+					li.style.color= "#00476B"; 
+                    li.style.marginBottom= "40px";
+					li.innerHTML = message;
+					list.appendChild(li);
+					var ul = document.createElement('ul');
+					for (var i=0; i < response.length; i++) {
+                            var li = document.createElement('li');
+							//li.style = "margin-left: 15%;";
+                            li.innerHTML = response[i].name;
+							ul.appendChild(li);
+                            list.appendChild(ul); 
+                    }
+					}
+					else {
+					alert("no match");
+					}
+					
+				},
+				error: function() {
+				alert("no match");
+				}
+			});
+	
+	}
+	
+	
+	function backTable() {
+	
+	var t = document.getElementsByClassName("tab-current")[0];
+	t = t.getElementsByTagName("a")[0];
+	t = t.getElementsByTagName("span")[0];
+	t = t.innerHTML;
+	
+	if (t=="Pages") {
+		var list = document.getElementById("details1");
+		var tbl = document.getElementById("table1");
+		var button = document.getElementById("b1");
+	}
+	if (t=="Checkins") {
+		var list = document.getElementById("details2");
+		var tbl = document.getElementById("table2");
+		var button = document.getElementById("b2");
+	}
+	if (t=="Music") {
+		var list = document.getElementById("details3");
+		var tbl = document.getElementById("table3");
+		var button = document.getElementById("b3");
+	}
+	if (t=="Movies") {
+		var list = document.getElementById("details4");
+		var tbl = document.getElementById("table4");
+		var button = document.getElementById("b4");
+	}
+	
+	
+    button.style.display= "none";
+    list.style.display= "none";
+    tbl.style.display= "block";
+	
+	}    
+    
+    
+        
+        
     var  callAnotherPage = function () {
         //changePage("menu.html");
         window.location = "index.html";
     }
-		
+    		
 		
     </script>
  
@@ -905,7 +1088,7 @@
           
           <h1>Mining Facebook<small>Graduate Thesis | <a href="">View details</a></small></h1>
           
-            <div id="menu" class="event listening button" style= "margin-bottom: 20px" onclick="callAnotherPage();">Menu</div>
+            <div id="menu" class="event listening button" style= "margin-bottom: 50px" onclick="callAnotherPage();">Menu</div>
           
           <div id="loading">
             <div class="container">
@@ -940,10 +1123,10 @@
 						</ul>
 					</nav>
 					<div class="content-wrap">
-						<section id="section-linemove-1"></section>
-						<section id="section-linemove-2"></section>
-						<section id="section-linemove-3"></section>
-						<section id="section-linemove-4"></section>
+						<section id="section-linemove-1"><a id="b1" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details1"></div></section>
+						<section id="section-linemove-2"><a id="b2" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details2"></div></section>
+						<section id="section-linemove-3"><a id="b3" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details3"></div></section>
+						<section id="section-linemove-4"><a id="b4" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details4"></div></section>
 					</div>
 				</div>
 			</section>

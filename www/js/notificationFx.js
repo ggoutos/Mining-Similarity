@@ -93,7 +93,7 @@
 		var self = this;
 		this.dismissttl = setTimeout( function() {
 			if( self.active ) {
-				//self.dismiss();
+				self.dismiss();
 			}
 		}, this.options.ttl );
 
