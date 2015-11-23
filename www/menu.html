@@ -58,11 +58,21 @@
             
             
             var  callupdatepage = function () {
+                
+                var progress = document.getElementById('progress');
+                
+                if (parseInt(progress.getAttribute("data-value"))==0) {
+                
                 if (confirm("Do you want to update your data?"))
                       {
                         //changePage("pages.html");
                           
+                         var menu = document.getElementById('menu');
+		                  menu.style.display = "none"; 
+                          var circle = document.getElementById('circle');
+		                  circle.style.display = "block"; 
                           
+                          progress.setAttribute("data-value", 1);
                 
                     ///////////////////////update personal data/////////////////////////
                         facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
@@ -125,15 +135,23 @@
                           
                           
                       }
+            
              }
+              else alert("Please wait for the update to finish.");
              
+            }
              
             
             var  calluserpage = function () {
                 changePage("user.html");
              }
             var  callfriendspage = function () {
+                 var progress = document.getElementById('progress');
+                
+                if (parseInt(progress.getAttribute("data-value"))==0) {
                 changePage("friends.html");
+                }
+                else alert("Please wait for the update to finish.");
              }
             
             var apiPermissions = function () { 
@@ -186,7 +204,7 @@
             
             <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
                 
-            
+            <div id="menu">
             <!--<div class="event listening button" onclick="progress();">Progress</div>-->
             <div class="event listening button" onclick="calluserpage();">Check yourself</div>
             <!--<div class="event listening button" onclick="getStatus();">Check login status</div>-->
@@ -194,7 +212,14 @@
             <div class="event listening button" onclick="callfriendspage();">Check your friends</div>
             
             <img id="logout" src="img/logout.png" alt="" />
-           
+           </div>
+            
+            <div id="circle" class="container" style="display: none;">
+                <div class="content">
+                    <div class="circle"></div>
+                    <div class="circle1"></div>
+                </div>
+            </div>
             
       
     </body>

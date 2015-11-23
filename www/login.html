@@ -38,7 +38,7 @@
                         else 
                             $.notify("disconnected", "info");
                     },
-                    function (response) { alert(JSON.stringify(response)) });
+                    function (response) {  $.notify("Please check your internet connection.", "warn");   });
                 
             }
             
@@ -51,12 +51,6 @@
                 
                 // $.notify("Login: successful", "success");
                 
-                if (!window.cordova) {
-                    var appId = prompt("Enter FB Application ID", "");
-                    facebookConnectPlugin.browserInit(appId);
-                }
-                
-                
                 
                 facebookConnectPlugin.login( ["email,user_friends,user_likes,user_tagged_places,user_posts,user_photos,user_videos,user_birthday"], 
                     function (response) { 
@@ -67,7 +61,7 @@
                     },
                     function (response) { 
                         //alert(JSON.stringify(response)) 
-                        $.notify("Something went wrong.\nPlease try again.", "warn");  
+                        $.notify("Please check your internet connection.", "warn"); 
                     }
                 );
                 
@@ -108,10 +102,18 @@
                                     console.log(data);
                                     $.notify("Profile update begins.", "success");
                                 },
-                                error: function(){
-                                    console.log(data);
-                                    alert("There was an error updating your profile.");
+				                //timeout: 5000,
+                                error: function(x, t, m) {
+					               if (t==="timeout") {
+						              alert("got timeout");
+					               } 
+					               else {
+                                        // $.notify("Server must have been offline. \nPlease try again later.", "warn"); 
+                                        //alert("Server must have been offline. Please try again later.");
+                                         window.location = "index.html";
+                                    }
                                 }
+				
                             });
                             
                             }
@@ -150,9 +152,16 @@
                                         }, 1000);
                                     }
                                 },
-                                error: function(){
-                                    console.log(data);
-                                    //alert("There was an error updating your profile.");
+                                //timeout: 5000,
+                                error: function(x, t, m) {
+					               if (t==="timeout") {
+						              alert("got timeout");
+					               } 
+					               else {
+                                       // alert("Server must have been offline. Please try again later.");
+                                        //$.notify("Server must have been offline. \nPlease try again later.", "warn"); 
+                                         window.location = "index.html";
+                                    }
                                 }
                             });
                             

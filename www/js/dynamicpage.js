@@ -51,18 +51,9 @@ function progress() {
 		if (n==100) {
 		setTimeout( function() {
 			an.style.width = "0%";
+            var progress = document.getElementById('progress');
+            progress.setAttribute("data-value", 0);
 		}, 1000 );
 		}
 		
-}
-
-function deleteProg() {
-		document.getElementById('progress1').value = 100;
-		document.getElementById('progress2').value = 100;
-		document.getElementById('progress3').value = 100;
-		document.getElementById('progress4').value = 100;
-		
-		var an = document.querySelector( '.' + "la-anim-1" );
-		an.style="";
-		classie.remove( an, 'la-animate' );	
 }
