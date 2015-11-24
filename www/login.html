@@ -92,6 +92,9 @@
                             
                             
                             if (document.getElementById("update").checked === true) {
+                                
+                            var progress = document.getElementById('progress');   
+                            progress.setAttribute("data-value", 1);
                             
                             $.ajax({
                                 type: "POST",
