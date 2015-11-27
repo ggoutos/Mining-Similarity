@@ -1,4 +1,5 @@
 <?php
+
 $app->get('/', function () {
     return file_get_contents(__DIR__.'/static/index.html');
 });
@@ -451,36 +452,46 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	$friends = $result->getTableFormat();
 	
 	
+	//MATCH (u:User {name: "Eva Zografaki"})--(m)--(g:Category)
+	//OPTIONAL MATCH (p:User {name: "Giwrgos Goutos"})--(k)--(u), (k)--(g)
+	//RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS count ORDER BY likes DESC
+	
 	
 	for ($i=0; $i<count($friends); $i++) {
 	
-	$q = 
+	$q =
 	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Category)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
+	
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	$genres[$i+1][] = $result->getTableFormat();
 	
 	
-	$q = 
+	$q =
 	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})-[CHECKED_IN]-(m)--(g:Place_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	$genres[$i+1][] = $result->getTableFormat();
 	
 	
-	$q = 
+	$q =
 	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Music_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	$genres[$i+1][] = $result->getTableFormat();
 	
 	
-    $q = 
+	
+	$q =
 	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Movie_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
 	$genres[$i+1][] = $result->getTableFormat();
