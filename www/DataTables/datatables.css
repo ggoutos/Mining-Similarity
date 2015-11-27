@@ -646,6 +646,7 @@ div.dataTables_wrapper span.select-item {
   margin-left: 0.5em;
 }
 
+
 @media screen and (max-width: 2000px) {
   div.dataTables_wrapper span.select-info,
   div.dataTables_wrapper span.select-item {
@@ -657,3 +658,21 @@ div.dataTables_wrapper span.select-item {
 }
 
 
+@media screen and (max-width: 500px) {
+ 
+table.dataTable thead th.alt {
+font: 17px normal Verdana,Arial,Helvetica,sans-serif; 
+	font-weight: bold;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+table.dataTable thead th.name {
+	//width: auto;
+    font: 10px normal Verdana,Arial,Helvetica,sans-serif; 
+	font-weight: bold;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+}

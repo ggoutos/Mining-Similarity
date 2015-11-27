@@ -298,7 +298,7 @@
 	
 	
 	var p = document.getElementById('par');
-	p.innerHTML = "You are similar to "+name+" by: ";
+	p.innerHTML = "You are similar to "+name+" by " + mo +"%: ";
 	
 	var ul = document.getElementById('list');
 	
@@ -316,10 +316,6 @@
 	
 	var li = document.createElement('li');
 	li.innerHTML = n+"% (movies)";
-    ul.appendChild(li);
-	
-	var li = document.createElement('li');
-	li.innerHTML = mo+"% (MO)";
     ul.appendChild(li);
 	
 	
@@ -348,7 +344,7 @@
 			if (me[1][i].genre!="" && me[1][i].genre!="undefined") {checkins.push(me[1][i].genre);}
 		}
 		for (i=0; i<me[2].length; i++) {
-			if (me[2][i].genre!="" && me[2][i].genre!="undefined") {music.push(me[2][i].genre.toLowerCase());}
+			if (me[2][i].genre!="" && me[2][i].genre!="undefined") {music.push(me[2][i].genre);}
 		}
 		for (i=0; i<me[3].length; i++) {
 			if (me[3][i].genre!="" && me[3][i].genre!="undefined") {movies.push(me[3][i].genre);}
@@ -361,7 +357,7 @@
 			if (friend[1][i].genre!="" && friend[1][i].genre!="undefined") {checkins.push(friend[1][i].genre);}
 		}
 		for (i=0; i<friend[2].length; i++) {
-			if (friend[2][i].genre!="" && friend[2][i].genre!="undefined") {music.push(friend[2][i].genre.toLowerCase());}
+			if (friend[2][i].genre!="" && friend[2][i].genre!="undefined") {music.push(friend[2][i].genre);}
 		}
 		for (i=0; i<friend[3].length; i++) {
 			if (friend[3][i].genre!="" && friend[3][i].genre!="undefined") {movies.push(friend[3][i].genre);}
@@ -392,6 +388,11 @@
 					
 			var cell = document.createElement('th');
 			cell.className="name";
+			cell.innerHTML = "Common";
+			row.appendChild(cell);		
+					
+			var cell = document.createElement('th');
+			cell.className="name";
 			cell.innerHTML = me[me.length-1].name;
 			row.appendChild(cell);
 					
@@ -408,6 +409,7 @@
 		var last = pages[0];
 		var m1 = "";
 		var m2 = "";
+		var common = "";
 		
 		for (i=0; i<me[0].length; i++) {
 			if (me[0][i].genre==last) {
@@ -416,6 +418,7 @@
 		}	
 		for (i=0; i<friend[0].length; i++) {
 			if (friend[0][i].genre==last) {
+				if (friend[0][i].common!= 0) common = friend[0][i].common;
 				m2=friend[0][i].likes;
 			}
 		}
@@ -427,6 +430,11 @@
 		var cell = document.createElement('td');
 		cell.className="g";
 		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = common;
 		row.appendChild(cell);
 		
 		var cell = document.createElement('td');
@@ -450,6 +458,7 @@
 		if (pages[i]!=last) {
 			m1 = "";
 			m2 = "";
+			common = "";
 			
 			for (j=0; j<me[0].length; j++) {
 				if (me[0][j].genre==pages[i]) {
@@ -458,6 +467,7 @@
 			}	
 			for (j=0; j<friend[0].length; j++) {
 				if (friend[0][j].genre==pages[i]) {
+				if (friend[0][j].common!= 0) common = friend[0][j].common;
 				m2=friend[0][j].likes;
 				}
 			}
@@ -471,6 +481,11 @@
 			cell.innerHTML = pages[i];
 			row.appendChild(cell);
 		
+			var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = common;
+		row.appendChild(cell);
+			
 			var cell = document.createElement('td');
 			cell.className="n";
 			cell.innerHTML = m1;
@@ -511,6 +526,11 @@
 			cell.className="alt";
 			cell.innerHTML = "Checkins";
 			row.appendChild(cell);
+			
+			var cell = document.createElement('th');
+			cell.className="name";
+			cell.innerHTML = "Common";
+			row.appendChild(cell);	
 					
 			var cell = document.createElement('th');
 			cell.className="name";
@@ -530,6 +550,7 @@
 		var last = checkins[0];
 		var m1 = "";
 		var m2 = "";
+		var common = "";
 		
 		for (i=0; i<me[1].length; i++) {
 			if (me[1][i].genre==last) {
@@ -539,6 +560,8 @@
 		for (i=0; i<friend[1].length; i++) {
 			if (friend[1][i].genre==last) {
 				m2=friend[1][i].likes;
+				if (friend[1][i].common!= 0) common = friend[1][i].common;
+				
 			}
 		}
 		
@@ -549,6 +572,12 @@
 		var cell = document.createElement('td');
 		cell.className="g";
 		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = common;
 		row.appendChild(cell);
 		
 		var cell = document.createElement('td');
@@ -572,6 +601,7 @@
 		if (checkins[i]!=last) {
 			m1 = "";
 			m2 = "";
+			common = "";
 			
 			for (j=0; j<me[1].length; j++) {
 				if (me[1][j].genre==checkins[i]) {
@@ -581,6 +611,7 @@
 			for (j=0; j<friend[1].length; j++) {
 				if (friend[1][j].genre==checkins[i]) {
 				m2=friend[1][j].likes;
+				if (friend[1][j].common!= 0) common = friend[1][j].common;
 				}
 			}
 		
@@ -591,6 +622,11 @@
 			var cell = document.createElement('td');
 			cell.className="g";
 			cell.innerHTML = checkins[i];
+			row.appendChild(cell);
+		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = common;
 			row.appendChild(cell);
 		
 			var cell = document.createElement('td');
@@ -633,6 +669,11 @@
 			cell.className="alt";
 			cell.innerHTML = "Music";
 			row.appendChild(cell);
+			
+			var cell = document.createElement('th');
+			cell.className="name";
+			cell.innerHTML = "Common";
+			row.appendChild(cell);	
 					
 			var cell = document.createElement('th');
 			cell.innerHTML = me[me.length-1].name;
@@ -650,15 +691,17 @@
 		var last = music[0];
 		var m1 = "";
 		var m2 = "";
+		var common = "";
 		
 		for (i=0; i<me[2].length; i++) {
-			if (me[2][i].genre.toLowerCase()==last) {
+			if (me[2][i].genre==last) {
 				m1=me[2][i].likes;
 			}
 		}	
 		for (i=0; i<friend[2].length; i++) {
-			if (friend[2][i].genre.toLowerCase()==last) {
+			if (friend[2][i].genre==last) {
 				m2=friend[2][i].likes;
+				if (friend[2][i].common!= 0) common = friend[2][i].common;
 			}
 		}
 		
@@ -669,6 +712,11 @@
 		var cell = document.createElement('td');
 		cell.className="g";
 		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = common;
 		row.appendChild(cell);
 		
 		var cell = document.createElement('td');
@@ -692,15 +740,17 @@
 		if (music[i]!=last) {
 			m1 = "";
 			m2 = "";
+			common = "";
 			
 			for (j=0; j<me[2].length; j++) {
-				if (me[2][j].genre.toLowerCase()==music[i]) {
+				if (me[2][j].genre==music[i]) {
 				m1=me[2][j].likes;
 				}
 			}	
 			for (j=0; j<friend[2].length; j++) {
-				if (friend[2][j].genre.toLowerCase()==music[i]) {
+				if (friend[2][j].genre==music[i]) {
 				m2=friend[2][j].likes;
+				if (friend[2][j].common!= 0) common = friend[2][j].common;
 				}
 			}
 		
@@ -713,6 +763,11 @@
 			cell.innerHTML = music[i];
 			row.appendChild(cell);
 		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = common;
+			row.appendChild(cell);
+			
 			var cell = document.createElement('td');
 			cell.className="n";
 			cell.innerHTML = m1;
@@ -754,6 +809,11 @@
 			cell.className="alt";
 			cell.innerHTML = "Movies";
 			row.appendChild(cell);
+			
+			var cell = document.createElement('th');
+			cell.className="name";
+			cell.innerHTML = "Common";
+			row.appendChild(cell);	
 					
 			var cell = document.createElement('th');
 			cell.innerHTML = me[me.length-1].name;
@@ -772,6 +832,7 @@
 		var last = movies[0];
 		var m1 = "";
 		var m2 = "";
+		var common = "";
 		
 		for (i=0; i<me[3].length; i++) {
 			if (me[3][i].genre==last) {
@@ -781,6 +842,7 @@
 		for (i=0; i<friend[3].length; i++) {
 			if (friend[3][i].genre==last) {
 				m2=friend[3][i].likes;
+				if (friend[3][i].common!= 0) common = friend[3][i].common;
 			}
 		}
 		
@@ -791,6 +853,11 @@
 		var cell = document.createElement('td');
 		cell.className="g";
 		cell.innerHTML = last;
+		row.appendChild(cell);
+		
+		var cell = document.createElement('td');
+		cell.className="n";
+		cell.innerHTML = common;
 		row.appendChild(cell);
 		
 		var cell = document.createElement('td');
@@ -815,6 +882,7 @@
 		if (movies[i]!=last) {
 			m1 = "";
 			m2 = "";
+			common = "";
 			
 			for (j=0; j<me[3].length; j++) {
 				if (me[3][j].genre==movies[i]) {
@@ -824,6 +892,7 @@
 			for (j=0; j<friend[3].length; j++) {
 				if (friend[3][j].genre==movies[i]) {
 				m2=friend[3][j].likes;
+				if (friend[3][j].common!= 0) common = friend[3][j].common;
 				}
 			}
 		
@@ -836,6 +905,11 @@
 			cell.innerHTML = movies[i];
 			row.appendChild(cell);
 		
+			var cell = document.createElement('td');
+			cell.className="n";
+			cell.innerHTML = common;
+			row.appendChild(cell);
+			
 			var cell = document.createElement('td');
 			cell.className="n";
 			cell.innerHTML = m1;
@@ -870,10 +944,10 @@
 		page2.appendChild(t2);
 		page3.appendChild(t3);
 		page4.appendChild(t4);
-		$('#genres1').DataTable( {select: true} );
-		$('#genres2').DataTable( {select: true} );
-		$('#genres3').DataTable( {select: true} );
-		$('#genres4').DataTable( {select: true} );
+		$('#genres1').DataTable( { select: true, 	"order": [[ 1, "desc" ]]} );
+		$('#genres2').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
+		$('#genres3').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
+		$('#genres4').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
 		t1.style="display: block";
 		t2.style="display: block";
 		t3.style="display: block";
@@ -911,10 +985,10 @@
 	var genre = g.getElementsByClassName("selected")[0].getElementsByClassName("g")[0].innerHTML;
 	//alert(genre);
 	
-	var me = document.getElementsByClassName("name")[0].innerHTML;
+	var me = document.getElementsByClassName("name")[1].innerHTML;
 	//alert(me);
 	
-	var friend = document.getElementsByClassName("name")[1].innerHTML;
+	var friend = document.getElementsByClassName("name")[2].innerHTML;
 	//alert(friend);
 	
 	checkFriend(me, friend, genre, t);
