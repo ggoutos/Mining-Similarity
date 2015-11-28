@@ -402,32 +402,32 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	
 /////me	
 	$q = 
-	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m)--(g:Category)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m:Page)--(g:Category)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes ORDER BY likes DESC';
 	
 	$genre = $neo4j->sendCypherQuery($q)->getResult();
 	$me[] = $genre->getTableFormat();
 	
 
 	$q = 
-	'MATCH (u:User {name: "'.$_POST["name"].'"})-[CHECKED_IN]-(m)--(g:Place_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY likes DESC';
+	'MATCH (u:User {name: "'.$_POST["name"].'"})-[CHECKED_IN]-(m:Place)--(g:Place_Genre)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes ORDER BY likes DESC';
 	
 	$genre = $neo4j->sendCypherQuery($q)->getResult();
 	$me[] = $genre->getTableFormat();
 	
 	
 	$q = 
-	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m)--(g:Music_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
+	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m:Music)--(g:Music_Genre)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes ORDER BY genre ASC';
 	
 	$genre = $neo4j->sendCypherQuery($q)->getResult();
 	$me[] = $genre->getTableFormat();
 	
 	
 	$q = 
-	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m)--(g:Movie_Genre)
-	RETURN g.name AS genre, count(*) AS likes ORDER BY genre ASC';
+	'MATCH (u:User {name: "'.$_POST["name"].'"})--(m:Movie)--(g:Movie_Genre)
+	RETURN g.name AS genre, count(DISTINCT m.name) AS likes ORDER BY genre ASC';
 	
 	$genre = $neo4j->sendCypherQuery($q)->getResult();
 	$me[] = $genre->getTableFormat();
@@ -460,8 +460,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	for ($i=0; $i<count($friends); $i++) {
 	
 	$q =
-	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Category)
-	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m:Page)--(g:Category)
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k:Page)--(u), (k:Page)--(g)
 	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	
@@ -470,8 +470,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	
 	
 	$q =
-	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})-[CHECKED_IN]-(m)--(g:Place_Genre)
-	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})-[CHECKED_IN]-(m:Place)--(g:Place_Genre)
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k:Place)--(u), (k:Place)--(g)
 	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
@@ -479,8 +479,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	
 	
 	$q =
-	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Music_Genre)
-	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m:Music)--(g:Music_Genre)
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k:Music)--(u), (k:Music)--(g)
 	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();
@@ -489,8 +489,8 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	
 	
 	$q =
-	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m)--(g:Movie_Genre)
-	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k)--(u), (k)--(g)
+	'MATCH (u:User {name: "'.$friends[$i]["friend"]["name"].'"})--(m:Movie)--(g:Movie_Genre)
+	OPTIONAL MATCH (p:User {name: "'.$_POST["name"].'"})--(k:Movie)--(u), (k:Movie)--(g)
 	RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS common ORDER BY likes DESC';
 	
 	$result = $neo4j->sendCypherQuery($q)->getResult();

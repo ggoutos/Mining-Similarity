@@ -991,7 +991,14 @@
 	var friend = document.getElementsByClassName("name")[2].innerHTML;
 	//alert(friend);
 	
+	var common = g.getElementsByClassName("selected")[0].getElementsByClassName("n")[0].innerHTML;
+	if (common!="") {
 	checkFriend(me, friend, genre, t);
+	}
+	else alert("no match");
+    setTimeout(function() { 
+        $(g.getElementsByClassName("selected")).removeClass("selected");
+    }, 1000);
 		
 		
     } );
