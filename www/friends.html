@@ -38,14 +38,29 @@
     
     function onDeviceReady() {
         
-		 facebookConnectPlugin.api( "me?fields=name,friends.limit(1000){name,picture}", ["user_birthday"], 
-            function (response) {
-             
-            similarity(response.name, response.friends.data);  
-             
-            //alert(JSON.stringify(response.friends.data.length)+"/"+ JSON.stringify(response.friends.summary.total_count) + " friends use the app.");
+         facebookConnectPlugin.getAccessToken( 
+            function (response) { 
+                
+                var token = response;
+                
+                 $.ajax({
+                type: "GET",
+                async:   true,
+                //change the url for your project
+                url: "https://graph.facebook.com/v2.5/me?fields=name,friends.limit(1000){name,picture}&access_token=" + token,
+                success: function(response){
+                     similarity(response.name, response.friends.data);  
+                 },
+                error: function() {
+                     console.log(data);
+                    alert("There was an error getting the pages.");
+                 }});
+                
+                
+        
             },
-             function (response) {  alert("Something went wrong.");    }  ); 
+            function (response) { alert(JSON.stringify(response)) });
+        
         
     }
         
@@ -89,24 +104,32 @@
 				
 					var enosh = 0;
 					var tomh = 0;
+					var arithmiths = 0;
+					var paronomasths = 0;
 					var koina = [];
 					
 					for (i=0; i<response[0][k].length; i++) {
 						var found = false;
 						for (j=0; j<response[f][k].length; j++) {
-						
+							//an mple grammh
 							if (response[0][k][i].genre==response[f][k][j].genre && response[0][k][i].genre!="undefined") {
 								//alert("tomh "+i);
 								enosh=enosh+Math.max(response[0][k][i].likes,response[f][k][j].likes);
 								tomh=tomh+Math.min(response[0][k][i].likes,response[f][k][j].likes);
+								
+								arithmiths += response[f][k][j].common;
+								paronomasths += response[0][k][i].likes + response[f][k][j].likes - response[f][k][j].common;
+								
 								found=true;
 								koina.push(j);
 							}
 							
 						}
+						//an aresoun se mena ki oxi sto filo
 						if (found==false && response[0][k][i].genre!="undefined") {
 								//alert("enosh: "+i);
 								enosh=enosh+response[0][k][i].likes;
+								paronomasths += response[0][k][i].likes;
 							}
 					}
 					
@@ -118,13 +141,18 @@
 							 found=true;
 							}
 						}
+						//an aresoun sto filo ki oxi se mena
 						if (found==false && response[f][k][j].genre!="undefined") {
 							enosh=enosh+response[f][k][j].likes;
+							paronomasths += response[f][k][j].likes;
 						}
 
 					}		
 					
 					var similarity = tomh/enosh*100;
+					var similarity2 = arithmiths/paronomasths*100;
+					
+					similarity = (similarity + similarity2)/2;
 					
 					if (k==0) pages.push(similarity.toPrecision(4));
 					if (k==1) checkins.push(similarity.toPrecision(4));

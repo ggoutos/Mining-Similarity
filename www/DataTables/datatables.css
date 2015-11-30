@@ -15,7 +15,6 @@
  */
 table.dataTable { 	
   width: 100%;
-  
   clear: both;
   border-collapse: collapse;
   //border-spacing: 0;
@@ -344,7 +343,13 @@ table.dataTable td {
 }
 .dataTables_wrapper .dataTables_filter input {
   margin-left: 0.5em;
+  font: 18px normal Verdana,Arial,Helvetica,sans-serif;
 }
+
+.dataTables_wrapper select  {
+	font: 16px normal Verdana,Arial,Helvetica,sans-serif;
+}
+
 .dataTables_wrapper .dataTables_info {
     clear: both;
   float: left;
@@ -455,6 +460,10 @@ table.dataTable td {
 .dataTables_wrapper .dataTables_processing,
 .dataTables_wrapper .dataTables_paginate {
   color: white;
+  text-align: center;
+	float: none;
+	padding-bottom: 20px;
+	font: 16px normal Verdana,Arial,Helvetica,sans-serif; 
 }
 .dataTables_wrapper .dataTables_scroll {
   clear: both;
@@ -485,7 +494,8 @@ table.dataTable td {
   height: 0;
 }
 
-@media screen and (max-width: 2000px) {
+/*
+@media screen and (max-width: 450px) {
   .dataTables_wrapper .dataTables_info,
   .dataTables_wrapper .dataTables_paginate {
     color: white;
@@ -497,17 +507,10 @@ table.dataTable td {
       color: white;
   }
 }
-@media screen and (max-width: 2000px) {
-  .dataTables_wrapper .dataTables_length,
-  .dataTables_wrapper .dataTables_filter {
-       color: white;
-    float: none;
-    text-align: center;
-  }
-  .dataTables_wrapper .dataTables_filter {
-    margin-top: 0.5em;
-      color: white;
-      text-align: center;
+*/
+@media screen and (min-width: 450px) {
+  .dataTables_wrapper .dataTables_filter{
+      text-align: left;
   }
 }
 
@@ -646,7 +649,6 @@ div.dataTables_wrapper span.select-item {
   margin-left: 0.5em;
 }
 
-
 @media screen and (max-width: 2000px) {
   div.dataTables_wrapper span.select-info,
   div.dataTables_wrapper span.select-item {
@@ -673,6 +675,20 @@ table.dataTable thead th.name {
 	font-weight: bold;
     padding-right: 5px;
     padding-left: 5px;
+}
+
+}
+
+
+@media screen and (min-width: 800px) {
+ 
+
+table.dataTable thead th.name {
+	//width: auto;
+    font: 15px normal Verdana,Arial,Helvetica,sans-serif; 
+	font-weight: bold;
+    //padding-right: 5px;
+    //padding-left: 5px;
 }
 
 }
