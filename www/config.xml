@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.example.fbconnect" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Mining Facebook</name>
+    <name>Mining Similarity</name>
     <description>
         Facebook user similarity application.
     </description>
@@ -46,7 +46,7 @@
     -->
     <gap:plugin name="com.phonegap.plugins.facebookconnect">
         <param name="APP_ID" value="726630890756055" />
-        <param name="APP_NAME" value="Mining Social Web" />
+        <param name="APP_NAME" value="Mining Similarity" />
     </gap:plugin>
     <icon src="img/logo.png" />
 	<!--
