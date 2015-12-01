@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+        <title>Mining Facebook</title>
+        </head>
+        
+        
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="js/notify.js.sdx"></script>
+		<script src="js/dynamicpage.js"></script>
+        <script type="text/javascript">
+
+        
+    var  callAnotherPage = function () {
+        
+        
+        facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+                        if (response.status == 'connected') {
+                            changePage("menu.html");
+                        }
+                        else 
+                            window.location = "index.html";
+                    },
+                    function (response) {  $.notify("Please check your internet connection.", "warn");   });
+        
+        
+      
+    }
+        
+    </script>
+  
+  <body>
+      
+       <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
+            <div id="fb-root"></div> 
+           
+           <span id="forkongithub"><a href="https://github.com">GitHub</a></span>
+
+           
+            <h1>Mining Facebook<small>Graduate Thesis | <a >View details</a></small></h1>
+          
+            <div class="event listening button" onclick="callAnotherPage();">Back</div>
+      
+          
+            <div style="margin-top: 50px;">
+                <p>
+                    Η παρούσα εφαρμογή υλοποιήθηκε από τον Γούτο Γεώργιο προπτυχιακό φοιτητή του Τμήματος Μηχανικών Η/Υ & Πληροφορικής, της Πολυτεχνικής Σχολής, του Πανεπιστημίου Πατρών σε συνεργασία με το Εργαστήριο Γραφικών πολυμέσων και Γεωγραφικών Συστημάτων του ίδιου τμήματος, στα πλαίσια της διπλωματικής του εργασίας με θέμα: <br></p>
+                <p style="text-align: center;">
+                    "Ανάπτυξη εφαρμογής σε φορητές συσκευές εξόρυξης ομοιότητας χρηστών".</p>
+                <p>
+                    <br>
+                    Περιγραφή
+                    <br><br>
+                    Στις μέρες μας όλο και περισσότεροι είναι οι χρήστες που έχουν λογαριασμό σε κάποιο κοινωνικό δίκτυο και αυτοί που χρησιμοποιούν φορητές συσκευές. Στα πλαίσια της διπλωματικής αυτής αναπτύχθηκε το πληροφοριακό σύστημα που ως στόχο έχει την εύρεση ομοιότητας μεταξύ προφίλ χρηστών στο Facebook.
+                    <br><br>
+                    Πιο συγκεκριμένα:
+                    <br>
+                     κάνει εξόρυξη γνώσης από το διαδίκτυο μαζεύοντας πληροφορίες για το προφίλ των χρηστών <br>
+                     διασυνδέεται με τα προφίλ των χρηστών στο Facebook μαζεύοντας πληροφορίες για αυτά <br>
+                     βρίσκει την ομοιότητα μεταξύ προφίλ χρηστών σε διάφορες κατηγορίες στις οποίες έχουν οι χρήστες κάνει like όπως:  <br>
+	                   σελίδες <br>
+	                   κοινοποιήσεις παρουσίας <br>
+	                   μουσική <br>
+	                   ταινίες <br>
+                    
+                     
+                    
+                    
+                    .......................................................
+                </p>
+           
+        </div>
+                
+                
+            </div>
+      
+  </body>
+</html>
+
+

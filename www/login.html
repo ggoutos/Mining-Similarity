@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
@@ -20,7 +21,7 @@
             
             
             function onLoad() {
-                document.addEventListener("deviceready", onDeviceReady, false);
+                //document.addEventListener("deviceready", onDeviceReady, false);
                 
             }
             
@@ -180,7 +181,7 @@
             }
             
             
-          
+           
         </script>
         
         
@@ -189,9 +190,9 @@
       
         <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">             
             <div id="fb-root"></div> 
-                <script type="text/javascript"> onLoad(); </script>
+                <script type="text/javascript"> onDeviceReady(); </script>
         
-             <h1>Mining Facebook<small>Graduate Thesis | <a href="index.html">View details</a></small></h1>
+               <h1>Mining Facebook<small>Graduate Thesis | <a onclick="changePage('details.html');">View details</a></small></h1>
             
             
             <input type="checkbox" name="update" id="update" class="css-checkbox" /><label for="update" class="css-label">Update profile</label>

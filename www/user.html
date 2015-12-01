@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
@@ -20,12 +21,7 @@
     <script src="js/dynamicpage.js"></script>
 	<script type="text/javascript" charset="utf-8">
 
-    // Wait for device API libraries to load
-    //
-    function onLoad() {
-        document.addEventListener("deviceready", onDeviceReady, false);
-        
-    }
+    
 
     // device APIs are available
     //
@@ -165,10 +161,10 @@
       
        <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
             <div id="fb-root"></div> 
-             <script type="text/javascript"> onLoad(); </script>
+             <script type="text/javascript"> onDeviceReady(); </script>
       
           
-            <h1>Mining Facebook<small>Graduate Thesis | <a href="menu.html">View details</a></small></h1>
+            <h1>Mining Facebook<small>Graduate Thesis | <a href="details.html">View details</a></small></h1>
           
             <div class="event listening button" onclick="callAnotherPage();">Back</div>
       
