@@ -21,6 +21,10 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
     <script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/draw_pie.js"></script>
+	<script src="js/graph.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+	<script src="js/d3.tip.v0.6.3.js"></script>
     <script type="text/javascript" src="js/notify.js.sdx"></script>
 	<script src="js/dynamicpage.js"></script>
     <!--<script type="text/javascript" src="DataTables/datatables.js"></script>-->
@@ -29,14 +33,7 @@
     
 	<script type="text/javascript" charset="utf-8">
 
-        /*
-    function onLoad() {
-        document.addEventListener("deviceready", onDeviceReady, false);
         
-    }
-        */
-    
-    
     function onDeviceReady() {
         
          facebookConnectPlugin.getAccessToken( 
@@ -327,8 +324,9 @@
 	
 	
 	var p = document.getElementById('par');
-	p.innerHTML = "You are similar to "+name+" by " + mo +"%: ";
+	p.innerHTML = "You are similar to "+name+" by: ";
 	
+    /*
 	var ul = document.getElementById('list');
 	
 	var li = document.createElement('li');
@@ -346,7 +344,9 @@
 	var li = document.createElement('li');
 	li.innerHTML = n+"% (movies)";
     ul.appendChild(li);
-	
+	*/
+        
+    draw_pie(g,c,m,n);	
 	
 //////////////////////////find friend//////////////////////////////////
 		var f = 0;
@@ -1051,6 +1051,9 @@
 		
 		var ul = document.getElementById('list');
 		ul.innerHTML = "";
+        
+        var plot = document.getElementById('plot');
+		plot.innerHTML = "";
 		
 		var menu = document.getElementById('menu');
 		menu.style.display = "block";
@@ -1114,9 +1117,11 @@
 					list.style.display= "block";
 					var li = document.createElement('p');
 					li.style.color= "#00476B"; 
-                    li.style.marginBottom= "40px";
+                    li.style.marginBottom= "0px";
 					li.innerHTML = message;
 					list.appendChild(li);
+                        
+                    /*
 					var ul = document.createElement('ul');
 					for (var i=0; i < response.length; i++) {
                             var li = document.createElement('li');
@@ -1125,6 +1130,10 @@
 							ul.appendChild(li);
                             list.appendChild(ul); 
                     }
+                    */
+                    
+                    graph(me, friend, genre, section, response);
+                    
 					}
 					else {
 					alert("no match");
@@ -1196,7 +1205,7 @@
           </script>
           
           
-          <h1>Mining Similarity<small>Graduate Thesis | <a href="">View details</a></small></h1>
+          <h1>Mining Similarity<small>Graduate Thesis | <a  onclick="changePage('details.html');">View details</a></small></h1>
           
             <div id="menu" class="event listening button" style= "margin-bottom: 50px" onclick="callAnotherPage();">Menu</div>
           
@@ -1223,6 +1232,7 @@
 	  <section id="section" style="display: none">	  
 				<p id="par"></p>
 				<ul id="list"></ul>
+                <div class="plot" id="plot" style="width: 300px; height: 300px;  margin: 40px auto;"></div>
 				<div class="tabs tabs-style-linemove">
 					<nav>
 						<ul>

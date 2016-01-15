@@ -418,3 +418,98 @@ label.css-label {
     #forkongithub{position:absolute;display:block;top:0;right:0;width:100px;overflow:hidden;height:100px;z-index:9999;}
     #forkongithub a{width:100px;position:absolute;top:20px;right:-50px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}
 }
+
+
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: orange;
+}
+
+.solidArc:hover {
+  fill: orangered ;
+}
+
+.solidArc {
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.aster-score { 
+  line-height: 1;
+  font-weight: bold;
+  font-size: 220%;
+}
+
+.svg {
+    width: 300px;
+    height: 300px;
+    margin: auto;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+    font-size: 120%;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+
+
+.node circle {
+  stroke: #3182bd;
+  stroke-width: 0px;
+}
+
+.node text {
+  font: 12px normal Verdana, Arial, Helvetica, sans-serif;
+  pointer-events: none;
+  text-anchor: middle;
+  margin-top: 10px;
+  fill: white;
+}
+
+line.link {
+  fill: none;
+   stroke: #999;
+  stroke-opacity: .6;
+  stroke-width: 1.5px;
+}
+
+

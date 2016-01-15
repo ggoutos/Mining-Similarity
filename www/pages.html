@@ -24,16 +24,7 @@
     <script type="text/javascript" src="js/notify.js.sdx"></script>
 	<script type="text/javascript" charset="utf-8">
 
-        
-          
-    // Wait for device API libraries to load
-    //
-    function onLoad() {
-        document.addEventListener("deviceready", onDeviceReady, false);
-    }
-
-    // device APIs are available
-    //
+    
     function onDeviceReady() {
         
         // Now safe to use device APIs
@@ -194,8 +185,8 @@
       
      <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
       <div id="fb-root"></div> 
-          <script type="text/javascript"> onLoad(); </script>
-            <h1>Mining Similarity<small>Graduate Thesis | <a href="">View details</a></small></h1>
+          <script type="text/javascript"> onDeviceReady(); </script>
+            <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
           
             <div class="container">
                 <div class="content">

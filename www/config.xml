@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.example.fbconnect" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="gr.mmlab.miningsimilarity" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Mining Similarity</name>
     <description>
         Facebook user similarity application.
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="tkd4real@hotmail.com" href="">
+        George Goutos
     </author>
     <content src="index.html" />
     <preference name="permissions" value="none" />
