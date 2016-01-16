@@ -1,0 +1,16 @@
+{
+    "type": "application",
+    "description": "Example app demonstrating usage of NeoClient",
+    "keywords": ["neo4j","graph","api","client","rest"],
+    "authors": [
+        {"name": "Christophe Willemsen", "email": "willemsen.christophe@gmail.com", "homepage": "http://neoxygen.io"}
+    ],
+    "require": {
+        "php": "~5.4",
+        "neoxygen/neoclient": "3.3.11-stable",
+        "silex/silex": "~1.1"
+    },
+    "require-dev": {
+        "heroku/heroku-buildpack-php": "^70.0"
+    }
+}
