@@ -21,5 +21,6 @@ If you are using a different version of PHP, or want to deploy to a different we
 Navigate to http://localhost:8080 and you should see your Neo4j server running.
 
 
-DON'T FORGET 
-Change your password in /config/config.yml file.
+= DON'T FORGET 
+ 
+ = Change your password in /config/config.yml file.
