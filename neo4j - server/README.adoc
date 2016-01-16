@@ -22,4 +22,8 @@ Navigate to http://localhost:8080 and you should see your Neo4j server running.
 
 
 = DON'T FORGET 
+<<<<<<< HEAD
 Change your password in /config/config.yml file.
+=======
+Change your password in /config/config.yml file.
+>>>>>>> bb2ecec6046e38e288b5b4306a41a81740bedd91
