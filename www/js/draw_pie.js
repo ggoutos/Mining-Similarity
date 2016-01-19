@@ -16,11 +16,19 @@ var tip = d3.tip()
     return d.data.label + ": <span style='color:orangered'>" + d.data.score + "%</span>";
   });
 
+  
 var arc = d3.svg.arc()
   .innerRadius(innerRadius)
   .outerRadius(function (d) { 
     return (radius - innerRadius) * (d.data.score / 100.0) + innerRadius; 
   });
+  
+  
+ var arc_2 = d3.svg.arc()
+  .innerRadius(function (d) { 
+    return (radius - innerRadius) * (d.data.score / 100.0) + innerRadius; 
+  })
+  .outerRadius(radius);
 
 var outlineArc = d3.svg.arc()
         .innerRadius(innerRadius)
@@ -65,6 +73,17 @@ var data = [
       .attr("class", "solidArc")
       .attr("stroke", "gray")
       .attr("d", arc)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+	  
+	 var path2 = svg.selectAll(".solidArc2")
+      .data(pie(data))
+    .enter().append("path")
+      .attr("fill", function(d) { return d.data.color; })
+	  .attr("opacity", 0)
+      .attr("class", "solidArc2")
+      .attr("stroke", "gray")
+      .attr("d", arc_2)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
 
