@@ -29,40 +29,6 @@ $app->get('/', function () {
 });
 
 
-
-
-$app->post('/update', function() use ($neo4j) {
-	
-	
-    $q = 'MATCH (u:User { id: "'.$_POST["id"].'"})
-		  DETACH DELETE u';
-    
-    
-    $result = $neo4j->sendCypherQuery($q)->getResult();
-    
-    $response = new JsonResponse();
-    $response->setData($result);
-
-    return $response;
-});
-
-
-$app->post('/create', function() use ($neo4j) {
-	
-	
-    $q = 'MERGE (ee:Person{name: "'.$_POST['name'].'", from: "Greece"})
-          RETURN ee';
-    
-    
-    $result = $neo4j->sendCypherQuery($q)->getResult();
-    
-    $response = new JsonResponse();
-    $response->setData($result);
-
-    return $response;
-});
-
-
 $app->post('/login', function() use ($neo4j) {
 
 	
@@ -97,6 +63,21 @@ $app->post('/login', function() use ($neo4j) {
 	
 });
 
+
+$app->post('/update', function() use ($neo4j) {
+	
+	
+    $q = 'MATCH (u:User { id: "'.$_POST["id"].'"})
+		  DETACH DELETE u';
+    
+    
+    $result = $neo4j->sendCypherQuery($q)->getResult();
+    
+    $response = new JsonResponse();
+    $response->setData($result);
+
+    return $response;
+});
 
 
 
@@ -476,11 +457,6 @@ $app->post('/similarity', function(Request $request) use ($neo4j) {
 	$friends = $result->getTableFormat();
 	
 	
-	//MATCH (u:User {name: "Eva Zografaki"})--(m)--(g:Category)
-	//OPTIONAL MATCH (p:User {name: "Giwrgos Goutos"})--(k)--(u), (k)--(g)
-	//RETURN g.name AS genre, count(DISTINCT m.name) AS likes, count(DISTINCT k.name) AS count ORDER BY likes DESC
-	
-	
 	for ($i=0; $i<count($friends); $i++) {
 	
 	$q =
@@ -550,3 +526,5 @@ return $response;
 
 
 $app->run();
+
+?>
