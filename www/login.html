@@ -1,200 +1,197 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Mining Similarity</title>
-        
-     </head>
-        
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-		<script src="js/jquery-1.7.2.min.js"></script>
-        <script src="js/dynamicpage.js"></script>
-    <script type="text/javascript" src="js/notify.js.sdx"></script>
-        <script type="text/javascript"  charset="utf-8">
-            
-            
-            
-            function onDeviceReady() {
-             
-                facebookConnectPlugin.getLoginStatus( 
-                    function (response) { 
-                        if (response.status == 'connected') {
-                            $.notify(response.status, "success");
-                            //changePage("menu.html");
-                            loggedin();
-                        }
-                        else 
-                            $.notify("disconnected", "info");
-                    },
-                    function (response) {  $.notify("Please check your internet connection.", "warn");   });
-                
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Mining Similarity</title>
+
+</head>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/dynamicpage.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+<script type="text/javascript" charset="utf-8">
+    function onDeviceReady() {
+
+        facebookConnectPlugin.getLoginStatus(
+            function (response) {
+                if (response.status == 'connected') {
+                    $.notify(response.status, "success");
+                    //changePage("menu.html");
+                    loggedin();
+                } else
+                    $.notify("disconnected", "info");
+            },
+            function (response) {
+                $.notify("Please check your internet connection.", "warn");
+            });
+
+    }
+
+
+
+
+
+
+    $(document).on('click', '#login', function () {
+
+        // $.notify("Login: successful", "success");
+
+
+        facebookConnectPlugin.login(["email,user_friends,user_likes,user_tagged_places,user_posts,user_photos,user_videos,user_birthday"],
+            function (response) {
+                //status=true;
+                //alert('Login: successful');
+                $.notify("Login: successful", "success");
+                loggedin();
+            },
+            function (response) {
+                //alert(JSON.stringify(response))
+                $.notify("Please check your internet connection.", "warn");
             }
-            
-            
-            
-            
-            
-            
-            $(document).on('click', '#login', function(){
-                
-                // $.notify("Login: successful", "success");
-                
-                
-                facebookConnectPlugin.login( ["email,user_friends,user_likes,user_tagged_places,user_posts,user_photos,user_videos,user_birthday"], 
-                    function (response) { 
-                        //status=true;
-                        //alert('Login: successful');
-                        $.notify("Login: successful", "success");
-                        loggedin();
-                    },
-                    function (response) { 
-                        //alert(JSON.stringify(response)) 
-                        $.notify("Please check your internet connection.", "warn"); 
-                    }
-                );
-                
-                    
-             });
-            
-            
-            
-            function loggedin() {
-                    
-                //alert('loggedin');
-                
-                
-                
-                    ///////////////////////update personal data/////////////////////////
-                        facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
-                            function (response) { 
-                            
-                            
-                            var postData = {
-                                "id": response.id,
-                                "name": response.name,
-                                "first": response.first_name,
-                                "last": response.last_name,
-                                "email": response.email,
-                                "friends": response.friends.data
-                            };
-                            
-                            
-                            if (document.getElementById("update").checked === true) {
-                                
-                            var progress = document.getElementById('progress');   
-                            progress.setAttribute("data-value", 1);
-                            
-                            $.ajax({
-                                type: "POST",
-                                data: postData,
-                                async:   false,
-                                url: "http://ggoutos.ddns.net:5000/update",
-                                success: function(data){
-                                    console.log(data);
-                                    $.notify("Profile update begins.", "success");
-                                },
-				                //timeout: 5000,
-                                error: function(x, t, m) {
-					               if (t==="timeout") {
-						              alert("got timeout");
-					               } 
-					               else {
-                                        // $.notify("Server must have been offline. \nPlease try again later.", "warn"); 
-                                        //alert("Server must have been offline. Please try again later.");
-                                         window.location = "index.html";
-                                    }
-                                }
-				
-                            });
-                            
+        );
+
+
+    });
+
+
+
+    function loggedin() {
+
+        //alert('loggedin');
+
+
+
+        ///////////////////////update personal data/////////////////////////
+        facebookConnectPlugin.api("me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
+            function (response) {
+
+
+                var postData = {
+                    "id": response.id,
+                    "name": response.name,
+                    "first": response.first_name,
+                    "last": response.last_name,
+                    "email": response.email,
+                    "friends": response.friends.data
+                };
+
+
+                if (document.getElementById("update").checked === true) {
+
+                    var progress = document.getElementById('progress');
+                    progress.setAttribute("data-value", 1);
+
+                    $.ajax({
+                        type: "POST",
+                        data: postData,
+                        async: false,
+                        url: "http://ggoutos.ddns.net:5000/update",
+                        success: function (data) {
+                            console.log(data);
+                            $.notify("Profile update begins.", "success");
+                        },
+                        //timeout: 5000,
+                        error: function (x, t, m) {
+                            if (t === "timeout") {
+                                alert("got timeout");
+                            } else {
+                                // $.notify("Server must have been offline. \nPlease try again later.", "warn");
+                                //alert("Server must have been offline. Please try again later.");
+                                window.location = "index.html";
                             }
-                            
-                            $.ajax({
-                                type: "POST",
-                                data: postData,
-                                async:   false,
-                                url: "http://ggoutos.ddns.net:5000/login",
-                                success: function(data){
-                                    console.log(data);
-                                    //$.notify("Music sent successfully!!", "success");
-                                    
-                                    if (document.getElementById("update").checked === true) {
-                                        
-                                        changePage("pages.html");
+                        }
+
+                    });
+
+                }
+
+                $.ajax({
+                    type: "POST",
+                    data: postData,
+                    async: false,
+                    url: "http://ggoutos.ddns.net:5000/login",
+                    success: function (data) {
+                        console.log(data);
+                        //$.notify("Music sent successfully!!", "success");
+
+                        if (document.getElementById("update").checked === true) {
+
+                            changePage("pages.html");
+                        } else {
+                            setTimeout(function () {
+                                // create the notification
+                                var notification = new NotificationFx({
+                                    message: '<span class="icon icon-megaphone" style="width: 25px; height: 25px; padding-top: 5px;"></span><p>Hello, ' + postData["first"] + '!</p>',
+                                    wrapper: document.getElementById('notifications'),
+                                    layout: 'bar',
+                                    effect: 'slidetop',
+                                    type: 'notice', // notice, warning or error
+                                    onClose: function () {
+                                        bttn.disabled = false;
                                     }
-                                    else {  
-                                        setTimeout(function() {
-                                            // create the notification
-                                            var notification = new NotificationFx({
-			                                 message : '<span class="icon icon-megaphone" style="width: 25px; height: 25px; padding-top: 5px;"></span><p>Hello, '+postData["first"]+'!</p>',
-                                             wrapper : document.getElementById('notifications'),
-			                                 layout : 'bar',
-			                                 effect : 'slidetop',
-			                                 type : 'notice', // notice, warning or error
-			                                 onClose : function() {
-				                                bttn.disabled = false;
-			                                 }
-                                            });
-                    
-                                            // show the notification
-                                            notification.show();
-                                            
-                                            changePage("menu.html"); 
-                                        }, 1000);
-                                    }
-                                },
-                                //timeout: 5000,
-                                error: function(x, t, m) {
-					               if (t==="timeout") {
-						              alert("got timeout");
-					               } 
-					               else {
-                                       // alert("Server must have been offline. Please try again later.");
-                                        //$.notify("Server must have been offline. \nPlease try again later.", "warn"); 
-                                         window.location = "index.html";
-                                    }
-                                }
-                            });
-                            
-                            },
-                    
-                            function (response) {  
-                            alert("Something went wrong.\nPlease try again.");    
-                            }  ); 
-                        /////////////////////////////////////////////////
-                
-                
-                    
-            }
-            
-            
-           
+                                });
+
+                                // show the notification
+                                notification.show();
+
+                                changePage("menu.html");
+                            }, 1000);
+                        }
+                    },
+                    //timeout: 5000,
+                    error: function (x, t, m) {
+                        if (t === "timeout") {
+                            alert("got timeout");
+                        } else {
+                            // alert("Server must have been offline. Please try again later.");
+                            //$.notify("Server must have been offline. \nPlease try again later.", "warn");
+                            window.location = "index.html";
+                        }
+                    }
+                });
+
+            },
+
+            function (response) {
+                alert("Something went wrong.\nPlease try again.");
+            });
+        /////////////////////////////////////////////////
+
+
+
+    }
+</script>
+
+
+
+<body>
+
+    <div id="page" style="position: absolute; top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+        <script type="text/javascript">
+            onDeviceReady();
         </script>
-        
-        
-   
-    <body>
-      
-        <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">             
-            <div id="fb-root"></div> 
-                <script type="text/javascript"> onDeviceReady(); </script>
-        
-               <h1>Mining Similarity<small>Graduate Thesis | <a onclick="changePage('details.html');">View details</a></small></h1>
-            
-            
-            <input type="checkbox" name="update" id="update" class="css-checkbox" /><label for="update" class="css-label">Update profile</label>
-            
-            
-            <img id="login" src="img/login.png"/>
-            
-            
-        </div>      
-           
-    </body>
+
+        <h1>Mining Similarity<small>Graduate Thesis | <a onclick="changePage('details.html');">View details</a></small></h1>
+
+
+        <input type="checkbox" name="update" id="update" class="css-checkbox" />
+        <label for="update" class="css-label">Update profile</label>
+
+
+        <img id="login" src="img/login.png" />
+
+
+    </div>
+
+</body>
+
 </html>

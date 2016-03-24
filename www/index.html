@@ -1,141 +1,88 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/demo.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
-        <title>Mining Similarity</title>
-        
-     </head>
-        
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-		<script src="js/jquery-1.7.2.min.js"></script>
-        <script src="js/dynamicpage.js"></script>
-        <script type="text/javascript" src="js/notify.js.sdx"></script>
-    
-        <script type="text/javascript"  charset="utf-8">
-            
-            
-            function onLoad() {
-                
-                document.addEventListener('backbutton', function(e){
-                      if (confirm("Do you want to exit?"))  
-                      {
-                        navigator.app.exitApp();
-                      }
-                    else
-                      {
-                        
-                      }
-                }, false);
-                document.addEventListener("deviceready", onDeviceReady, false);
-                
-            }
-            
-            
-            
-            function onDeviceReady() {
-                
-                
-             
-                facebookConnectPlugin.getLoginStatus( 
-                    function (response) { 
-                        if (response.status == 'connected') {
-                            //$.notify(response.status, "success");
-                            //progress();
-                             setTimeout(function() { 
-                                changePage("menu.html"); 
-                             }, 1000);
-                        }
-                        else 
-                            changePage("login.html");
-                    },
-                    function (response) { 
-                        //alert(JSON.stringify(response)) 
-                        changePage("login.html");
-                    });
-                    
-                
-            }
-            
-            
-        </script>
-        
-        <!-- onload="onLoad()" -->
-   
-    <body onload="onLoad()">
-      
-         <script src="js/modernizr.custom.js"></script>
-      <script src="js/classie.js"></script>
-		<script src="js/notificationFx.js"></script>
-        
-	   <div id="progress" data-value=0 class="progress" data-all=100 style="position: fixed; margin-top: 0px; width: 100%; z-index: 99999">
-        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
-           <div id="progress1" data-sent=100 data-all=100 style="display:none"></div>
-	       <div id="progress2" data-sent=100 data-all=100 style="display:none"></div>
-	       <div id="progress3" data-sent=100 data-all=100 style="display:none"></div>
-	       <div id="progress4" data-sent=100 data-all=100 style="display:none"></div>
-       </div>
-        
-        
-        <div id="notifications" style="position: fixed; margin-top: 5px; width: 100%; z-index: 99999"></div>
-    
-        
-        
-        <div id="page"   style="top: 0; left: 0; width: 100%;">            
-        <div id="fb-root"></div>
-                
-        
-             <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
-            
-            
-            <div class="container">
-                <div class="content">
-                    <div class="circle"></div>
-                    <div class="circle1"></div>
-                </div>
-            </div>
-            
-            
-            <!--
-            <div class="event listening button" style="">
-		<img id="pic" src="https://scontent.xx.fbcdn.net/hprofile-xtf1/v/l/t1.0-1/c0.7.50.50/p50x50/17102_10153302245464344_953016601815453776_n.jpg?oh=6063470cb57958001dcf5908269bea46&oe=56FAA536" style="">
-		<div style="margin-left: 70px; margin-bottom: 20px; margin-top: -80px; position: relative;">Eva zografaki<br>29.00 %</div></div>
--->
-            
-            <script>
-           /*
-                document.getElementById('progress1').setAttribute("data-sent", 70);
-                alert(document.getElementById('progress1').getAttribute("data-sent"));
-                progress();
-                
-            
-                document.getElementById('pic').style.position="relative"; 
-                document.getElementById('pic').style.left= "5%"; 
-                document.getElementById('pic').style.width= "50px"; 
-                document.getElementById('pic').style.height= "50px"; 
-                document.getElementById('pic').style.paddingBottom= "30px"; 
-                document.getElementById('pic').style.margin= "0px"; 
-                document.getElementById('pic').style.paddingTop = "20px";
-                */
-            </script>
-        
-            
-        
-      </div>      
-       
 
-       
-       
-        
-        
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+    <title>Mining Similarity</title>
+
+</head>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/dynamicpage.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+    function onLoad() {
+        document.addEventListener('backbutton', function (e) {
+            if (confirm("Do you want to exit?")) {
+                navigator.app.exitApp();
+            }
+        }, false);
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    function onDeviceReady() {
+        facebookConnectPlugin.getLoginStatus(
+            function (response) {
+                if (response.status == 'connected') {
+                    //$.notify(response.status, "success");
+                    //progress();
+                    setTimeout(function () {
+                        changePage("menu.html");
+                    }, 1000);
+                } else
+                    changePage("login.html");
+            },
+            function (response) {
+                //alert(JSON.stringify(response))
+                changePage("login.html");
+            });
+    }
+
+</script>
+
+
+<body onload="onLoad()">
+
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/notificationFx.js"></script>
+
+    <div id="progress" data-value=0 class="progress" data-all=100 style="position: fixed; margin-top: 0px; width: 100%; z-index: 99999">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+        <div id="progress1" data-sent=100 data-all=100 style="display:none"></div>
+        <div id="progress2" data-sent=100 data-all=100 style="display:none"></div>
+        <div id="progress3" data-sent=100 data-all=100 style="display:none"></div>
+        <div id="progress4" data-sent=100 data-all=100 style="display:none"></div>
+    </div>
+
+    <div id="notifications" style="position: fixed; margin-top: 5px; width: 100%; z-index: 99999"></div>
+
+    <div id="page" style="top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+
+        <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
+
+        <div class="container">
+            <div class="content">
+                <div class="circle"></div>
+                <div class="circle1"></div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
 </html>

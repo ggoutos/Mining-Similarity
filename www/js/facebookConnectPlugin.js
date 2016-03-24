@@ -11,7 +11,7 @@
  */
 
 if (!window.cordova) {
-// This should override the existing facebookConnectPlugin object created from cordova_plugins.js
+    // This should override the existing facebookConnectPlugin object created from cordova_plugins.js
     var facebookConnectPlugin = {
 
         getLoginStatus: function (s, f) {
@@ -49,27 +49,27 @@ if (!window.cordova) {
             if (!options.picture) {
                 options.picture = "";
             }
-            
+
             // Try will catch errors when SDK has not been init
             try {
                 FB.ui({
-                    method: options.method,
-                    message: options.message,
-                    name: options.name,
-                    caption: options.caption,
-                    description: (
-                        options.description
-                    ),
-                    href: options.href,
-                    picture: options.picture
-                },
-                function (response) {
-                    if (response && (response.request || !response.error_code)) {
-                        s(response);
-                    } else {
-                        f(response);
-                    }
-                });
+                        method: options.method,
+                        message: options.message,
+                        name: options.name,
+                        caption: options.caption,
+                        description: (
+                            options.description
+                        ),
+                        href: options.href,
+                        picture: options.picture
+                    },
+                    function (response) {
+                        if (response && (response.request || !response.error_code)) {
+                            s(response);
+                        } else {
+                            f(response);
+                        }
+                    });
             } catch (error) {
                 if (!f) {
                     console.error(error.message);
@@ -85,7 +85,7 @@ if (!window.cordova) {
             if (permissions && permissions.length > 0) {
                 permissionObj.scope = permissions.toString();
             }
-            
+
             FB.login(function (response) {
                 if (response.authResponse) {
                     s(response);
@@ -121,7 +121,7 @@ if (!window.cordova) {
         logout: function (s, f) {
             // Try will catch errors when SDK has not been init
             try {
-                FB.logout( function (response) {
+                FB.logout(function (response) {
                     s(response);
                 });
             } catch (error) {
@@ -135,14 +135,15 @@ if (!window.cordova) {
 
         api: function (graphPath, permissions, s, f) {
             // JS API does not take additional permissions
-            
+
             // Try will catch errors when SDK has not been init
             try {
                 FB.api(graphPath, function (response) {
                     if (response.error) {
                         f(response);
                     } else {
-                        s(response); }
+                        s(response);
+                    }
                 });
             } catch (error) {
                 if (!f) {
@@ -159,14 +160,14 @@ if (!window.cordova) {
                 version = "v2.5";
             }
             FB.init({
-                appId      : appId,
-                cookie     : true,
-                xfbml      : true,
-                version    : version
+                appId: appId,
+                cookie: true,
+                xfbml: true,
+                version: version
             })
         }
     };
-    
+
     // Bake in the JS SDK
     (function () {
         if (!window.FB) {
