@@ -1,211 +1,221 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/demo.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
-        <title>Mining Similarity</title>
-        </head>
-        
-        
-        
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-		<script src="js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/notify.js.sdx"></script>
-		<script src="js/dynamicpage.js"></script>
-        <script type="text/javascript">
-                
-            
-            
-            var login = function () {
-                if (!window.cordova) {
-                    var appId = prompt("Enter FB Application ID", "");
-                    facebookConnectPlugin.browserInit(appId);
-                }
-                facebookConnectPlugin.login( ["email,user_friends,user_actions.music,user_likes,user_birthday"], 
-                    function (response) { 
-                        alert("Status: connected\nNow ready to send data."); 
-                
-                    },
-                    function (response) { alert(JSON.stringify(response)) });
-            }
-            
-            var showDialog = function () { 
-                facebookConnectPlugin.showDialog( { method: "feed" }, 
-                    function (response) { alert("Your post sent successfully.") },
-                    function (response) {  });
-            }
-            
-            
-            var  callupdatepage = function () {
-                
-                var progress = document.getElementById('progress');
-                
-                if (parseInt(progress.getAttribute("data-value"))==0) {
-                
-                if (confirm("Do you want to update your data?"))
-                      {
-                        //changePage("pages.html");
-                          
-                         var menu = document.getElementById('menu');
-		                  menu.style.display = "none"; 
-                          var circle = document.getElementById('circle');
-		                  circle.style.display = "block"; 
-                          
-                          progress.setAttribute("data-value", 1);
-                
-                    ///////////////////////update personal data/////////////////////////
-                        facebookConnectPlugin.api( "me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
-                            function (response) { 
-                            
-                            
-                            var postData = {
-                                "id": response.id,
-                                "name": response.name,
-                                "first": response.first_name,
-                                "last": response.last_name,
-                                "email": response.email,
-                                "friends": response.friends.data
-                            };
-                            
-                            
-                             $.ajax({
-                                type: "POST",
-                                data: postData,
-                                async:   false,
-                                url: "http://ggoutos.ddns.net:5000/update",
-                                success: function(data){
-                                    console.log(data);
-                                    $.notify("Profile update begins.", "success");
-                                },
-                                error: function(){
-                                    console.log(data);
-                                    alert("There was an error updating your profile.");
-                                }
-                            });
-                            
-                            
-                            
-                            
-                            $.ajax({
-                                type: "POST",
-                                data: postData,
-                                async:   false,
-                                url: "http://ggoutos.ddns.net:5000/login",
-                                success: function(data){
-                                    console.log(data);
-                                    changePage("pages.html");
-                                },
-                                error: function(){
-                                    console.log(data);
-                                    alert("There was an error updating your profile.");
-                                }
-                            });
-                            
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+    <title>Mining Similarity</title>
+</head>
+
+
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+<script src="js/dynamicpage.js"></script>
+<script type="text/javascript">
+    var login = function () {
+        if (!window.cordova) {
+            var appId = prompt("Enter FB Application ID", "");
+            facebookConnectPlugin.browserInit(appId);
+        }
+        facebookConnectPlugin.login(["email,user_friends,user_actions.music,user_likes,user_birthday"],
+            function (response) {
+                alert("Status: connected\nNow ready to send data.");
+
+            },
+            function (response) {
+                alert(JSON.stringify(response))
+            });
+    }
+
+    var showDialog = function () {
+        facebookConnectPlugin.showDialog({
+                method: "feed"
+            },
+            function (response) {
+                alert("Your post sent successfully.")
+            },
+            function (response) {});
+    }
+
+
+    var callupdatepage = function () {
+
+        var progress = document.getElementById('progress');
+
+        if (parseInt(progress.getAttribute("data-value")) == 0) {
+
+            if (confirm("Do you want to update your data?")) {
+                //changePage("pages.html");
+
+                var menu = document.getElementById('menu');
+                menu.style.display = "none";
+                var circle = document.getElementById('circle');
+                circle.style.display = "block";
+
+                progress.setAttribute("data-value", 1);
+
+                ///////////////////////update personal data/////////////////////////
+                facebookConnectPlugin.api("me?fields=id,name,first_name,last_name,email,friends.limit(1000)", ["user_birthday"],
+                    function (response) {
+
+
+                        var postData = {
+                            "id": response.id,
+                            "name": response.name,
+                            "first": response.first_name,
+                            "last": response.last_name,
+                            "email": response.email,
+                            "friends": response.friends.data
+                        };
+
+
+                        $.ajax({
+                            type: "POST",
+                            data: postData,
+                            async: false,
+                            url: "http://ggoutos.ddns.net:5000/update",
+                            success: function (data) {
+                                console.log(data);
+                                $.notify("Profile update begins.", "success");
                             },
-                    
-                            function (response) {  
-                            alert("Something went wrong.\nPlease try again.");    
-                            }  ); 
-                        /////////////////////////////////////////////////
-                
-                
-                          
-                          
-                          
-                          
-                      }
-            
-             }
-              else alert("Please wait for the update to finish.");
-             
-            }
-             
-            
-            var  calluserpage = function () {
-                changePage("html/user.html");
-             }
-            var  callfriendspage = function () {
-                 var progress = document.getElementById('progress');
-                
-                if (parseInt(progress.getAttribute("data-value"))==0) {
-                changePage("friends.html");
-                }
-                else alert("Please wait for the update to finish.");
-             }
-            
-            var apiPermissions = function () { 
-                facebookConnectPlugin.api( "me/?fields=permissions", ["user_birthday"],
-                    function (response) { alert(JSON.stringify(response)) },
-                    function (response) { alert(JSON.stringify(response)) }); 
-            }
-            
-            var getAccessToken = function () { 
-                facebookConnectPlugin.getAccessToken( 
-                    function (response) { alert(JSON.stringify(response)) },
-                    function (response) { alert(JSON.stringify(response)) });
-            }
-            
-            var getStatus = function () { 
-                facebookConnectPlugin.getLoginStatus( 
-                    function (response) { alert(JSON.stringify(response)) },
-                    function (response) { alert(JSON.stringify(response)) });
+                            error: function () {
+                                console.log(data);
+                                alert("There was an error updating your profile.");
+                            }
+                        });
+
+
+
+
+                        $.ajax({
+                            type: "POST",
+                            data: postData,
+                            async: false,
+                            url: "http://ggoutos.ddns.net:5000/login",
+                            success: function (data) {
+                                console.log(data);
+                                changePage("pages.html");
+                            },
+                            error: function () {
+                                console.log(data);
+                                alert("There was an error updating your profile.");
+                            }
+                        });
+
+                    },
+
+                    function (response) {
+                        alert("Something went wrong.\nPlease try again.");
+                    });
+                /////////////////////////////////////////////////
+
+
+
+
+
+
             }
 
-           
-            
-            $(document).on('click', '#logout', function(){
-                facebookConnectPlugin.logout( 
-                    function (response) { alert("Good bye!");
-                                            window.location = "index.html";
-                                        },
-                    function (response) {  });
-                
-                  
-                                
-                            
+        } else alert("Please wait for the update to finish.");
+
+    }
+
+
+    var calluserpage = function () {
+        changePage("html/user.html");
+    }
+    var callfriendspage = function () {
+        var progress = document.getElementById('progress');
+
+        if (parseInt(progress.getAttribute("data-value")) == 0) {
+            changePage("friends.html");
+        } else alert("Please wait for the update to finish.");
+    }
+
+    var apiPermissions = function () {
+        facebookConnectPlugin.api("me/?fields=permissions", ["user_birthday"],
+            function (response) {
+                alert(JSON.stringify(response))
+            },
+            function (response) {
+                alert(JSON.stringify(response))
             });
-            
-            
-            
-            
-            
-        </script>
-        
-        
-    
-    <body>
-        
-        
-        <div id="page"  style="position: absolute; top: 0; left: 0; width: 100%;">
-           <div id="fb-root"></div> 
-         
-             <h1>Mining Similarity<small>Graduate Thesis | <a onclick="changePage('details.html');">View details</a></small></h1>
-                
-            <div id="menu">
+    }
+
+    var getAccessToken = function () {
+        facebookConnectPlugin.getAccessToken(
+            function (response) {
+                alert(JSON.stringify(response))
+            },
+            function (response) {
+                alert(JSON.stringify(response))
+            });
+    }
+
+    var getStatus = function () {
+        facebookConnectPlugin.getLoginStatus(
+            function (response) {
+                alert(JSON.stringify(response))
+            },
+            function (response) {
+                alert(JSON.stringify(response))
+            });
+    }
+
+
+
+    $(document).on('click', '#logout', function () {
+        facebookConnectPlugin.logout(
+            function (response) {
+                alert("Good bye!");
+                window.location = "index.html";
+            },
+            function (response) {});
+
+
+
+
+    });
+</script>
+
+
+
+<body>
+
+
+    <div id="page" style="position: absolute; top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+
+        <h1>Mining Similarity<small>Graduate Thesis | <a onclick="changePage('details.html');">View details</a></small></h1>
+
+        <div id="menu">
             <!--<div class="event listening button" onclick="progress();">Progress</div>
             <div class="event listening button" onclick="calluserpage();">Check yourself</div>-->
             <!--<div class="event listening button" onclick="getStatus();">Check login status</div>-->
             <div class="event listening button" onclick="callupdatepage();">Update your data</div>
             <div class="event listening button" onclick="callfriendspage();">Check your friends</div>
-            
+
             <img id="logout" src="img/logout.png" alt="" />
-           </div>
-            
-            <div id="circle" class="container" style="display: none;">
-                <div class="content">
-                    <div class="circle"></div>
-                    <div class="circle1"></div>
-                </div>
+        </div>
+
+        <div id="circle" class="container" style="display: none;">
+            <div class="content">
+                <div class="circle"></div>
+                <div class="circle1"></div>
             </div>
-            
-      
-    </body>
+        </div>
+
+    </div>
+</body>
+
 </html>

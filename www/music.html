@@ -1,387 +1,382 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/demo.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
-        <title>Mining Similarity</title>
-		</head>
-    
-		
-		
-		
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script src="js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/dynamicpage.js"></script>
-    <script type="text/javascript" src="js/notify.js.sdx"></script>
-	<script type="text/javascript" charset="utf-8">
 
-      
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+    <title>Mining Similarity</title>
+</head>
+
+
+
+
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/dynamicpage.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+<script type="text/javascript" charset="utf-8">
     function onDeviceReady() {
-        
+
         // Now safe to use device APIs
-		
-        facebookConnectPlugin.getAccessToken( 
-            function (response) { 
+
+        facebookConnectPlugin.getAccessToken(
+            function (response) {
                 var after = "";
                 var sum = 0;
                 var token = response;
-                
-                 $.ajax({
-                type: "GET",
-                async:   true,
-                //change the url for your project
-                url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
-                success: function(data){
-                     var id = data.id;
-                     document.getElementById('progress3').setAttribute("data-sent", 0);
-                     document.getElementById('progress3').setAttribute("data-all", 1);
-                     music(after, token, sum, id);
-                 },
-                error: function() {
-                     console.log(data);
-                    alert("There was an error getting the pages.");
-                 }});
-                
-                
-        
-            },
-            function (response) { alert(JSON.stringify(response)) });
-        
-        
-                  
-        }
-        
-        
-        
-        
-        function music(after, token, sum, id) {
-         
-            
-      $.ajax({
-                type: "GET",
-                async:   true,
-                //change the url for your project
-                url: "https://graph.facebook.com/v2.5/me/music?access_token=" + token + "&fields=name&limit=100&after=" + after,
-                success: function(data){
-          
-                    var i=0;
-                    var mname = [];
-                    
-             
-                    while (i < data.data.length) {
-                        mname[i]=data.data[i].name;
-                        i++;
-                    }
-                    
-                    
-                //genre(music, id);
-                  
-             
-             var s = sum + data.data.length;
-             
-             
-            //$.notify('Updating your music\'s genres.', 'info');
-            
-        
-            var artist = [];
-            var tag1 = [];
-            var count1 = [];
-            var tag2 = [];
-            var count2 = [];
-			var tag3 = [];
-            var count3 = [];
-			
-            
-            for(i=0; i<mname.length; i++) {
-                
+
                 $.ajax({
-		                  url: "http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist="+mname[i]+"&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json",
-		                  async:  true,
-		                  success: function(lastfm){
-			                 var a = "";
-								var found = false;
-								var index = 66;
-								
-								while (found == false) {
-								if (this.url[index]=='&' && this.url[index+1]=='u' && this.url[index+2]=='s' && this.url[index+3]=='e' && this.url[index+4]=='r') {
-								found = true;
-								//alert(a);
-								}
-								else {
-								if (this.url[index]=='"') {
-								var c = "\\";
-								//alert(c);
-								a += c;   }
-								a += this.url[index];
-								index++; }
-								}
-								
-								//alert(a);
-								artist.push(a);
-						
-                        
-						
-                             if (lastfm.hasOwnProperty("error"))  {
-								tag1.push("undefined");
-                                  count1.push("0");
-                                  tag2.push("undefined");
-                                  count2.push("0");
-								  tag3.push("undefined");
-                                  count3.push("0");
-                              }
-                              else {
-                                  
-                                  //artist.push(lastfm.toptags["@attr"].artist);
-                              
-                              if (lastfm.toptags.hasOwnProperty("tag"))  {
-                                   
-                                tag1.push(lastfm.toptags.tag[0].name); 
-                                count1.push(lastfm.toptags.tag[0].count);
-                                 
-                                if (lastfm.toptags.tag.length>=2 && lastfm.toptags.tag[1].count>=50) {
-                                      tag2.push(lastfm.toptags.tag[1].name); 
-                                      count2.push(lastfm.toptags.tag[1].count); 
-                                }
-								else {
-								tag2.push(lastfm.toptags.tag[0].name); 
-                                count2.push(lastfm.toptags.tag[0].count);
-								
-								}
-								
-								if (lastfm.toptags.tag.length>=3 && lastfm.toptags.tag[2].count>=50) {
-                                      tag3.push(lastfm.toptags.tag[2].name); 
-                                      count3.push(lastfm.toptags.tag[2].count); 
-                                }
-								else {
-								tag3.push(lastfm.toptags.tag[0].name); 
-                                count3.push(lastfm.toptags.tag[0].count);
-								
-								}
-                            
-                              
-                                 
-                               }
-                               else  {
-                                  tag1.push("undefined");
-                                  count1.push("0");
-                                  tag2.push("undefined");
-                                  count2.push("0");
-                                  tag3.push("undefined");
-                                  count3.push("0");
-                                }
-                              }
-                              
-                              
-                           var postData = {
-		      "id": id,
-		      "mname": artist,
-              "tag1": tag1,
-              "count1": count1,
-              "tag2": tag2,
-              "count2": count2,
-			  "tag3": tag3,
-              "count3": count3
-			  
-		    };
-			
-            //alert(mname.length+" "+postData["mname"].length);
-			
-			if (postData["mname"].length==mname.length)  {
-			
-			
-			//alert("Music genres downloaded.");
-             //   $.notify("Music genres downloaded.", 'success');
-			//alert("Music sending to database...");					
-				//$.notify("Music sending to database...", "info");				
-								
-			//alert(postDataa["mname"].length+" "+postDataa["tag1"].length+" "+postDataa["mname"]);
-            
-            $.ajax({
-                type: "POST",
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: "http://ggoutos.ddns.net:5000/music",
-                success: function(data){
-                    console.log(data);
-                    var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
-                    sent = parseInt(sent) + parseInt(postData["mname"].length);
-                    document.getElementById('progress3').setAttribute("data-sent", sent);
-                    progress();
-                    if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all")))==1) {
-                        $.notify("Music sent successfully!!", "success");
+                    type: "GET",
+                    async: true,
+                    //change the url for your project
+                    url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
+                    success: function (data) {
+                        var id = data.id;
+                        document.getElementById('progress3').setAttribute("data-sent", 0);
+                        document.getElementById('progress3').setAttribute("data-all", 1);
+                        music(after, token, sum, id);
+                    },
+                    error: function () {
+                        console.log(data);
+                        alert("There was an error getting the pages.");
                     }
-                },
-                error: function(){
-                    console.log(data);
-                    //alert("There was an error updating your profile.");
-                }
+                });
+
+
+
+            },
+            function (response) {
+                alert(JSON.stringify(response))
             });
-								
-								
-							 
-			
-			
-			
-			}
-		                  
-		                  },
-						  error: function(lastfm) {
-						  
-						  	
-					artist.push("undefined");
-			 tag1.push("undefined");
-              count1.push("0");
-               tag2.push("undefined");
-               count2.push("0");
-               tag3.push("undefined");
-             count3.push("0");
-			
-			
-			var postData = {
-		      "id": id,
-		      "mname": artist,
-              "tag1": tag1,
-              "count1": count1,
-              "tag2": tag2,
-              "count2": count2,
-			  "tag3": tag3,
-              "count3": count3
-			  
-		    };
-			
-			if (postData["mname"].length==mname.length)  {
-			
-			//kati leipei
-			
-            
-            $.ajax({
-                type: "POST",
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: "http://ggoutos.ddns.net:5000/music",
-                success: function(data){
-                    console.log(data);
-                    var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
-                    sent = parseInt(sent) + parseInt(postData["mname"].length);
-                    document.getElementById('progress3').setAttribute("data-sent", sent);
-                    progress();
-                    if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all")))==1) {
-                        $.notify("Music sent successfully!!", "success");
-                    }
-                },
-                error: function(){
-                    console.log(data);
-                    $.notify("There was an error updating your music.","warn");
+
+
+
+    }
+
+
+
+
+    function music(after, token, sum, id) {
+
+
+        $.ajax({
+            type: "GET",
+            async: true,
+            //change the url for your project
+            url: "https://graph.facebook.com/v2.5/me/music?access_token=" + token + "&fields=name&limit=100&after=" + after,
+            success: function (data) {
+
+                var i = 0;
+                var mname = [];
+
+
+                while (i < data.data.length) {
+                    mname[i] = data.data[i].name;
+                    i++;
                 }
-            });
-								
-					
-						  
-						  
-						  }
-	
+
+
+                //genre(music, id);
+
+
+                var s = sum + data.data.length;
+
+
+                //$.notify('Updating your music\'s genres.', 'info');
+
+
+                var artist = [];
+                var tag1 = [];
+                var count1 = [];
+                var tag2 = [];
+                var count2 = [];
+                var tag3 = [];
+                var count3 = [];
+
+
+                for (i = 0; i < mname.length; i++) {
+
+                    $.ajax({
+                        url: "http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist=" + mname[i] + "&user=RJ&api_key=c170af12c94d57d1c65bfd3e1cb277d6&format=json",
+                        async: true,
+                        success: function (lastfm) {
+                            var a = "";
+                            var found = false;
+                            var index = 66;
+
+                            while (found == false) {
+                                if (this.url[index] == '&' && this.url[index + 1] == 'u' && this.url[index + 2] == 's' && this.url[index + 3] == 'e' && this.url[index + 4] == 'r') {
+                                    found = true;
+                                    //alert(a);
+                                } else {
+                                    if (this.url[index] == '"') {
+                                        var c = "\\";
+                                        //alert(c);
+                                        a += c;
+                                    }
+                                    a += this.url[index];
+                                    index++;
+                                }
+                            }
+
+                            //alert(a);
+                            artist.push(a);
+
+
+
+                            if (lastfm.hasOwnProperty("error")) {
+                                tag1.push("undefined");
+                                count1.push("0");
+                                tag2.push("undefined");
+                                count2.push("0");
+                                tag3.push("undefined");
+                                count3.push("0");
+                            } else {
+
+                                //artist.push(lastfm.toptags["@attr"].artist);
+
+                                if (lastfm.toptags.hasOwnProperty("tag")) {
+
+                                    tag1.push(lastfm.toptags.tag[0].name);
+                                    count1.push(lastfm.toptags.tag[0].count);
+
+                                    if (lastfm.toptags.tag.length >= 2 && lastfm.toptags.tag[1].count >= 50) {
+                                        tag2.push(lastfm.toptags.tag[1].name);
+                                        count2.push(lastfm.toptags.tag[1].count);
+                                    } else {
+                                        tag2.push(lastfm.toptags.tag[0].name);
+                                        count2.push(lastfm.toptags.tag[0].count);
+
+                                    }
+
+                                    if (lastfm.toptags.tag.length >= 3 && lastfm.toptags.tag[2].count >= 50) {
+                                        tag3.push(lastfm.toptags.tag[2].name);
+                                        count3.push(lastfm.toptags.tag[2].count);
+                                    } else {
+                                        tag3.push(lastfm.toptags.tag[0].name);
+                                        count3.push(lastfm.toptags.tag[0].count);
+
+                                    }
+
+
+
+                                } else {
+                                    tag1.push("undefined");
+                                    count1.push("0");
+                                    tag2.push("undefined");
+                                    count2.push("0");
+                                    tag3.push("undefined");
+                                    count3.push("0");
+                                }
+                            }
+
+
+                            var postData = {
+                                "id": id,
+                                "mname": artist,
+                                "tag1": tag1,
+                                "count1": count1,
+                                "tag2": tag2,
+                                "count2": count2,
+                                "tag3": tag3,
+                                "count3": count3
+
+                            };
+
+                            //alert(mname.length+" "+postData["mname"].length);
+
+                            if (postData["mname"].length == mname.length) {
+
+
+                                //alert("Music genres downloaded.");
+                                //   $.notify("Music genres downloaded.", 'success');
+                                //alert("Music sending to database...");
+                                //$.notify("Music sending to database...", "info");
+
+                                //alert(postDataa["mname"].length+" "+postDataa["tag1"].length+" "+postDataa["mname"]);
+
+                                $.ajax({
+                                    type: "POST",
+                                    data: postData,
+                                    async: true,
+                                    //change the url for your project
+                                    url: "http://ggoutos.ddns.net:5000/music",
+                                    success: function (data) {
+                                        console.log(data);
+                                        var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
+                                        sent = parseInt(sent) + parseInt(postData["mname"].length);
+                                        document.getElementById('progress3').setAttribute("data-sent", sent);
+                                        progress();
+                                        if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all"))) == 1) {
+                                            $.notify("Music sent successfully!!", "success");
+                                        }
+                                    },
+                                    error: function () {
+                                        console.log(data);
+                                        //alert("There was an error updating your profile.");
+                                    }
+                                });
+
+
+
+
+
+
+                            }
+
+                        },
+                        error: function (lastfm) {
+
+
+                            artist.push("undefined");
+                            tag1.push("undefined");
+                            count1.push("0");
+                            tag2.push("undefined");
+                            count2.push("0");
+                            tag3.push("undefined");
+                            count3.push("0");
+
+
+                            var postData = {
+                                "id": id,
+                                "mname": artist,
+                                "tag1": tag1,
+                                "count1": count1,
+                                "tag2": tag2,
+                                "count2": count2,
+                                "tag3": tag3,
+                                "count3": count3
+
+                            };
+
+                            if (postData["mname"].length == mname.length) {
+
+                                //kati leipei
+
+
+                                $.ajax({
+                                    type: "POST",
+                                    data: postData,
+                                    async: true,
+                                    //change the url for your project
+                                    url: "http://ggoutos.ddns.net:5000/music",
+                                    success: function (data) {
+                                        console.log(data);
+                                        var sent = parseInt(document.getElementById('progress3').getAttribute("data-sent"));
+                                        sent = parseInt(sent) + parseInt(postData["mname"].length);
+                                        document.getElementById('progress3').setAttribute("data-sent", sent);
+                                        progress();
+                                        if ((parseFloat(document.getElementById('progress3').getAttribute("data-sent")) / parseFloat(document.getElementById('progress3').getAttribute("data-all"))) == 1) {
+                                            $.notify("Music sent successfully!!", "success");
+                                        }
+                                    },
+                                    error: function () {
+                                        console.log(data);
+                                        $.notify("There was an error updating your music.", "warn");
+                                    }
+                                });
+
+
+
+
+                            }
+
                         }
-	
-                        });
-						
-						
-        
-        } //for
-            
-            
-            
-                       
-                               
-                            
-                  
-            
-            
-             
-             
-               if (data.hasOwnProperty('paging') && data.paging.hasOwnProperty('next'))  {
-                        var a = data.paging.cursors.after;
-                        music(a, token, s, id);
-                    }
-                    else {
-                        // create the notification
-                        var notification = new NotificationFx({
-			             message : '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>'+s+' music found.</p>',
-                        wrapper : document.getElementById('notifications'),
-			             layout : 'bar',
-			             effect : 'slidetop',
-			             type : 'notice', // notice, warning or error
-			             onClose : function() {
-				            bttn.disabled = false;
-			             }
-                        });
-                    
-                        // show the notification
-                        notification.show();
-                        if (s!=0) {
+
+                    });
+
+
+
+                } //for
+
+
+
+
+
+
+
+
+
+                if (data.hasOwnProperty('paging') && data.paging.hasOwnProperty('next')) {
+                    var a = data.paging.cursors.after;
+                    music(a, token, s, id);
+                } else {
+                    // create the notification
+                    var notification = new NotificationFx({
+                        message: '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>' + s + ' music found.</p>',
+                        wrapper: document.getElementById('notifications'),
+                        layout: 'bar',
+                        effect: 'slidetop',
+                        type: 'notice', // notice, warning or error
+                        onClose: function () {
+                            bttn.disabled = false;
+                        }
+                    });
+
+                    // show the notification
+                    notification.show();
+                    if (s != 0) {
                         var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
                         all = parseInt(all) + parseInt(s);
                         document.getElementById('progress').setAttribute("data-all", all);
                         document.getElementById('progress3').setAttribute("data-all", s);
-                        }
-                         changePage("movies.html"); 
                     }
-             
-             
-             
-             
-             
-             
-             
-            
+                    changePage("movies.html");
+                }
+
+
+
+
+
+
+
+
             },
-            error: function(){
-                    console.log(data);
-                     $.notify("There was some error!!", "error");
-                }  
-        }); 
-            
-        
-        
-        }
-        
-        
-        
-        
-    </script>
-  <!-- onload="onLoad()"
+            error: function () {
+                console.log(data);
+                $.notify("There was some error!!", "error");
+            }
+        });
+
+
+
+    }
+</script>
+<!-- onload="onLoad()"
         -->
 
-  <body>
-      
-      
-     <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
-      <div id="fb-root"></div> 
-          <script type="text/javascript"> onDeviceReady(); </script>
-            <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
-        
-            <div class="container">
-                <div class="content">
-                    <div class="circle"></div>
-                    <div class="circle1"></div>
-                </div>
+<body>
+
+
+    <div id="page" style="position: absolute; top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+        <script type="text/javascript">
+            onDeviceReady();
+        </script>
+        <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
+
+        <div class="container">
+            <div class="content">
+                <div class="circle"></div>
+                <div class="circle1"></div>
             </div>
-          
-          <h1><small>loading your music
+        </div>
+
+        <h1><small>loading your music
               <br>this may take a minute</small></h1>
-          
-      </div>
-      
-       
-            
-  </body>
+
+    </div>
+
+
+
+</body>
+
 </html>

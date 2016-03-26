@@ -1,1275 +1,1326 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/demo.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
-		<link rel="stylesheet" type="text/css" href="css/tabs.css" />
-		<link rel="stylesheet" type="text/css" href="css/tabstyles.css" />
-      <link rel="stylesheet" type="text/css" href="DataTables/datatables.css"/>
-        <title>Mining Similarity</title>
-		</head>
-    
-    
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script src="js/jquery-1.7.2.min.js"></script>
-	<script src="js/draw_pie.js"></script>
-	<script src="js/graph.js"></script>
-	<script src="js/d3.v3.min.js"></script>
-	<script src="js/d3.tip.v0.6.3.js"></script>
-    <script type="text/javascript" src="js/notify.js.sdx"></script>
-	<script src="js/dynamicpage.js"></script>
-    <!--<script type="text/javascript" src="DataTables/datatables.js"></script>-->
-    
-		
-    
-	<script type="text/javascript" charset="utf-8">
 
-        
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+    <link rel="stylesheet" type="text/css" href="css/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="css/tabstyles.css" />
+    <link rel="stylesheet" type="text/css" href="DataTables/datatables.css" />
+    <title>Mining Similarity</title>
+</head>
+
+
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/draw_pie.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/d3.v3.min.js"></script>
+<script src="js/d3.tip.v0.6.3.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+<script src="js/dynamicpage.js"></script>
+<!--<script type="text/javascript" src="DataTables/datatables.js"></script>-->
+
+
+
+<script type="text/javascript" charset="utf-8">
     function onDeviceReady() {
-        
-         facebookConnectPlugin.getAccessToken( 
-            function (response) { 
-                
+
+        facebookConnectPlugin.getAccessToken(
+            function (response) {
+
                 var token = response;
-                
-                 $.ajax({
-                type: "GET",
-                async:   true,
-                //change the url for your project
-                url: "https://graph.facebook.com/v2.5/me?fields=name,friends.limit(1000){name,picture}&access_token=" + token,
-                success: function(response){
-                     similarity(response.name, response.friends.data);  
-                 },
-                error: function() {
-                     console.log(data);
-                    alert("There was an error getting the pages.");
-                 }});
-                
-                
-        
+
+                $.ajax({
+                    type: "GET",
+                    async: true,
+                    //change the url for your project
+                    url: "https://graph.facebook.com/v2.5/me?fields=name,friends.limit(1000){name,picture}&access_token=" + token,
+                    success: function (response) {
+                        similarity(response.name, response.friends.data);
+                    },
+                    error: function () {
+                        console.log(data);
+                        alert("There was an error getting the pages.");
+                    }
+                });
+
+
+
             },
-            function (response) { alert(JSON.stringify(response)) });
-        
-        
-    }
-        
-          
-        
-    function similarity(name, fr) {
-        
-        
-		var postData = {
-		      "name": name
-		    };
-			
-			
-			
-			
-            $.ajax({
-                type: "POST",
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: "http://ggoutos.ddns.net:5000/similarity",
-                success: function(response){
-                    console.log(response);
-					
-                
-					var friends = [];
-					var id = [];
-					var pages = [];
-					var checkins = [];
-					var music = [];
-					var movies = [];
-					var mo = [];
-					
-					
-				for (f=0; f<response.length; f++) {   
-				
-				friends.push(response[f][response[f].length-1].name);
-				id.push(response[f][response[f].length-1].id);
-				
-				for (k=0; k<4; k++) {
-				
-					var enosh = 0;
-					var tomh = 0;
-					var arithmiths = 0;
-					var paronomasths = 0;
-					var koina = [];
-					
-					for (i=0; i<response[0][k].length; i++) {
-						var found = false;
-						for (j=0; j<response[f][k].length; j++) {
-							//an mple grammh
-							if (response[0][k][i].genre==response[f][k][j].genre && response[0][k][i].genre!="undefined") {
-								//alert("tomh "+i);
-								enosh=enosh+Math.max(response[0][k][i].likes,response[f][k][j].likes);
-								tomh=tomh+Math.min(response[0][k][i].likes,response[f][k][j].likes);
-								
-								arithmiths += response[f][k][j].common;
-								paronomasths += response[0][k][i].likes + response[f][k][j].likes - response[f][k][j].common;
-								
-								found=true;
-								koina.push(j);
-							}
-							
-						}
-						//an aresoun se mena ki oxi sto filo
-						if (found==false && response[0][k][i].genre!="undefined") {
-								//alert("enosh: "+i);
-								enosh=enosh+response[0][k][i].likes;
-								paronomasths += response[0][k][i].likes;
-							}
-					}
-					
-					
-					for (j=0; j<response[f][k].length; j++) {
-						var found = false;
-						for (i=0; i<koina.length; i++) {
-							if (j==koina[i]) {
-							 found=true;
-							}
-						}
-						//an aresoun sto filo ki oxi se mena
-						if (found==false && response[f][k][j].genre!="undefined") {
-							enosh=enosh+response[f][k][j].likes;
-							paronomasths += response[f][k][j].likes;
-						}
-
-					}		
-					
-					var similarity = tomh/enosh*100;
-					var similarity2 = arithmiths/paronomasths*100;
-					
-					similarity = (similarity + similarity2)/2;
-					
-					if (k==0) pages.push(similarity.toPrecision(4));
-					if (k==1) checkins.push(similarity.toPrecision(4));
-					if (k==2) music.push(similarity.toPrecision(4));
-					if (k==3) movies.push(similarity.toPrecision(4));
-					
-					
-					
-					}
-					
-					
-					
-					mo.push(((parseFloat(pages[f])+parseFloat(checkins[f])+parseFloat(music[f])+parseFloat(movies[f]))/4).toPrecision(4));
-					
-					
-					
-					}
-					
-					
-					///////////sort/////////
-					var help=0
-					
-					while (help!=mo.length) {
-					var max=help;
-					for (i=max; i<mo.length; i++) {
-						if (parseFloat(mo[i])>parseFloat(mo[max])) {
-							max=i;
-						}
-					}
-					if (max!=help) {
-					
-					var k=friends[help];
-					friends[help]=friends[max];
-					friends[max]=k;
-					
-					var k=mo[help];
-					mo[help]=mo[max];
-					mo[max]=k;
-					
-					var k=pages[help];
-					pages[help]=pages[max];
-					pages[max]=k;
-					
-					var k=checkins[help];
-					checkins[help]=checkins[max];
-					checkins[max]=k;
-					
-					var k=music[help];
-					music[help]=music[max];
-					music[max]=k;
-					
-					var k=movies[help];
-					movies[help]=movies[max];
-					movies[max]=k;
-					
-					var k=id[help];
-					id[help]=id[max];
-					id[max]=k;
-					
-					}
-									
-					help++;
-					}
-					//////////////////
-					
-					
-					
-					var loading = document.getElementById('loading');
-		            loading.style.display = "none";
-        
-					
-					
-					var me = response[0][response[0].length-1].id;
-					var buttons = document.getElementById('btns');
-					
-					
-					for (var i=1; i < friends.length; i++) {
-					
-                    var btn = document.createElement('div');
-                    btn.className="event listening button";
-                    btn.name=friends[i];
-					btn.id=i;
-					btn.onclick = function() {
-						check(response, this.name, pages[this.id], checkins[this.id], music[this.id], movies[this.id], mo[this.id]);
-					};
-                        
-                    var img = document.createElement('img');
-					//img.style="position: relative; left: 5%; width: 50px; height: 50px; padding-bottom: 30px; margin: 0px; padding-top: 20px;";
-					img.style.position="relative"; 
-                    img.style.left= "5%"; 
-                    img.style.width= "50px"; 
-                    img.style.height= "50px"; 
-                    img.style.paddingBottom= "30px"; 
-                    img.style.margin= "0px"; 
-                    img.style.paddingTop = "20px";
-                        
-                        
-					var pic = 0; 
-					for (k=0; k<fr.length; k++) {
-						if (btn.name==fr[k].name) {
-						pic = fr[k].picture.data.url;
-						}
-					}
-					img.src = pic;
-					btn.appendChild(img);
-					
-                    var div = document.createElement('div');
-					div.style.marginLeft= "70px"; 
-                    div.style.marginBottom= "20px"; 
-                    div.style.marginTop= "-80px"; 
-                    div.style.position= "relative";
-					div.innerHTML = friends[i] + "<br>" + mo[i] + " %";
-					btn.appendChild(div);    
-                        
-                    //btn.innerHTML = friends[i] + " - " + mo[i] + " %";
-					
-                    buttons.appendChild(btn);
-					}
-					
-					//changePage("user.html");
-					
-                },
-                error: function(){
-                    console.log(data);
-                    alert("There was an error updating your profile.");
-                }
+            function (response) {
+                alert(JSON.stringify(response))
             });
-							
-        
-		//changePage("checkFriend.html?a=234234234234");
-        
+
+
     }
-		
-		
-		
-	function check(response, name, g, c, m, n, mo) {
-	
-	var menu = document.getElementById('menu');
-		menu.style.display = "none";
 
 
-	var buttons = document.getElementById('btns');
-		buttons.style.display = "none";
-	var back = document.getElementById('back');
-		back.style.display = "block";
-	var section = document.getElementById('section');
-		section.style.display = "block";	
-		
-	var main_page=document.getElementById('page');
-	
-	var page1=document.getElementById('section-linemove-1');
-	var page2=document.getElementById('section-linemove-2');
-	var page3=document.getElementById('section-linemove-3');
-	var page4=document.getElementById('section-linemove-4');
-	
-	var t1 = document.createElement('div');
-		t1.id="table1"; 
-		t1.class="table"; 
-	
-	var t2 = document.createElement('div');
-		t2.id="table2"; 
-		t2.class="table"; 
-	
-	var t3 = document.createElement('div');
-		t3.id="table3"; 
-		t3.class="table"; 
-		
-	var t4 = document.createElement('div');
-		t4.id="table4"; 
-		t4.class="table"; 
-	
-	
-	var p = document.getElementById('par');
-	p.innerHTML = "You are similar to "+name+" by: ";
-	
-    /*
-	var ul = document.getElementById('list');
-	
-	var li = document.createElement('li');
-	li.innerHTML = g+"% (pages)";
-    ul.appendChild(li);
-	
-	var li = document.createElement('li');
-	li.innerHTML = c+"% (checkins)";
-    ul.appendChild(li);
-	
-	var li = document.createElement('li');
-	li.innerHTML = m+"% (music)";
-    ul.appendChild(li);
-	
-	var li = document.createElement('li');
-	li.innerHTML = n+"% (movies)";
-    ul.appendChild(li);
-	*/
-        
-    draw_pie(g,c,m,n);	
-	
-//////////////////////////find friend//////////////////////////////////
-		var f = 0;
-					
-		for (j=1; j<response.length; j++) {
-			if (response[j][response[j].length-1].name==name) {
-			f = j;
-			}
-		}
-		
-		//alert(response[0][0][0].genre);	
-		var me = response[0];
-		var friend = response[f];
-		
-		var pages = [];
-		var checkins = [];
-		var music = [];
-		var movies = [];
-		
-		for (i=0; i<me[0].length; i++) {
-			if (me[0][i].genre!="" && me[0][i].genre!="undefined") {pages.push(me[0][i].genre);}
-		}
-		for (i=0; i<me[1].length; i++) {
-			if (me[1][i].genre!="" && me[1][i].genre!="undefined") {checkins.push(me[1][i].genre);}
-		}
-		for (i=0; i<me[2].length; i++) {
-			if (me[2][i].genre!="" && me[2][i].genre!="undefined") {music.push(me[2][i].genre);}
-		}
-		for (i=0; i<me[3].length; i++) {
-			if (me[3][i].genre!="" && me[3][i].genre!="undefined") {movies.push(me[3][i].genre);}
-		}
-		
-		for (i=0; i<friend[0].length; i++) {
-			if (friend[0][i].genre!="" && friend[0][i].genre!="undefined") {pages.push(friend[0][i].genre);}
-		}
-		for (i=0; i<friend[1].length; i++) {
-			if (friend[1][i].genre!="" && friend[1][i].genre!="undefined") {checkins.push(friend[1][i].genre);}
-		}
-		for (i=0; i<friend[2].length; i++) {
-			if (friend[2][i].genre!="" && friend[2][i].genre!="undefined") {music.push(friend[2][i].genre);}
-		}
-		for (i=0; i<friend[3].length; i++) {
-			if (friend[3][i].genre!="" && friend[3][i].genre!="undefined") {movies.push(friend[3][i].genre);}
-		}
-		
-		pages.sort();
-		checkins.sort();
-		music.sort();
-		movies.sort();
-		
 
-/////////////////////////PAGES///////////////////////////
+    function similarity(name, fr) {
 
-		
-		var genres1 = document.createElement('table');
-		genres1.id="genres1";
-					
-					
-					
-		var head = document.createElement('thead');
-		
+
+        var postData = {
+            "name": name
+        };
+
+
+
+
+        $.ajax({
+            type: "POST",
+            data: postData,
+            async: true,
+            //change the url for your project
+            url: "http://ggoutos.ddns.net:5000/similarity",
+            success: function (response) {
+                console.log(response);
+
+
+                var friends = [];
+                var id = [];
+                var pages = [];
+                var checkins = [];
+                var music = [];
+                var movies = [];
+                var mo = [];
+
+
+                for (f = 0; f < response.length; f++) {
+
+                    friends.push(response[f][response[f].length - 1].name);
+                    id.push(response[f][response[f].length - 1].id);
+
+                    for (k = 0; k < 4; k++) {
+
+                        var enosh = 0;
+                        var tomh = 0;
+                        var arithmiths = 0;
+                        var paronomasths = 0;
+                        var koina = [];
+
+                        for (i = 0; i < response[0][k].length; i++) {
+                            var found = false;
+                            for (j = 0; j < response[f][k].length; j++) {
+                                //an mple grammh
+                                if (response[0][k][i].genre == response[f][k][j].genre && response[0][k][i].genre != "undefined") {
+                                    //alert("tomh "+i);
+                                    enosh = enosh + Math.max(response[0][k][i].likes, response[f][k][j].likes);
+                                    tomh = tomh + Math.min(response[0][k][i].likes, response[f][k][j].likes);
+
+                                    arithmiths += response[f][k][j].common;
+                                    paronomasths += response[0][k][i].likes + response[f][k][j].likes - response[f][k][j].common;
+
+                                    found = true;
+                                    koina.push(j);
+                                }
+
+                            }
+                            //an aresoun se mena ki oxi sto filo
+                            if (found == false && response[0][k][i].genre != "undefined") {
+                                //alert("enosh: "+i);
+                                enosh = enosh + response[0][k][i].likes;
+                                paronomasths += response[0][k][i].likes;
+                            }
+                        }
+
+
+                        for (j = 0; j < response[f][k].length; j++) {
+                            var found = false;
+                            for (i = 0; i < koina.length; i++) {
+                                if (j == koina[i]) {
+                                    found = true;
+                                }
+                            }
+                            //an aresoun sto filo ki oxi se mena
+                            if (found == false && response[f][k][j].genre != "undefined") {
+                                enosh = enosh + response[f][k][j].likes;
+                                paronomasths += response[f][k][j].likes;
+                            }
+
+                        }
+
+                        var similarity = tomh / enosh * 100;
+                        var similarity2 = arithmiths / paronomasths * 100;
+
+                        similarity = (similarity + similarity2) / 2;
+
+                        if (k == 0) pages.push(similarity.toPrecision(4));
+                        if (k == 1) checkins.push(similarity.toPrecision(4));
+                        if (k == 2) music.push(similarity.toPrecision(4));
+                        if (k == 3) movies.push(similarity.toPrecision(4));
+
+
+
+                    }
+
+
+
+                    mo.push(((parseFloat(pages[f]) + parseFloat(checkins[f]) + parseFloat(music[f]) + parseFloat(movies[f])) / 4).toPrecision(4));
+
+
+
+                }
+
+
+                ///////////sort/////////
+                var help = 0
+
+                while (help != mo.length) {
+                    var max = help;
+                    for (i = max; i < mo.length; i++) {
+                        if (parseFloat(mo[i]) > parseFloat(mo[max])) {
+                            max = i;
+                        }
+                    }
+                    if (max != help) {
+
+                        var k = friends[help];
+                        friends[help] = friends[max];
+                        friends[max] = k;
+
+                        var k = mo[help];
+                        mo[help] = mo[max];
+                        mo[max] = k;
+
+                        var k = pages[help];
+                        pages[help] = pages[max];
+                        pages[max] = k;
+
+                        var k = checkins[help];
+                        checkins[help] = checkins[max];
+                        checkins[max] = k;
+
+                        var k = music[help];
+                        music[help] = music[max];
+                        music[max] = k;
+
+                        var k = movies[help];
+                        movies[help] = movies[max];
+                        movies[max] = k;
+
+                        var k = id[help];
+                        id[help] = id[max];
+                        id[max] = k;
+
+                    }
+
+                    help++;
+                }
+                //////////////////
+
+
+
+                var loading = document.getElementById('loading');
+                loading.style.display = "none";
+
+
+
+                var me = response[0][response[0].length - 1].id;
+                var buttons = document.getElementById('btns');
+
+
+                for (var i = 1; i < friends.length; i++) {
+
+                    var btn = document.createElement('div');
+                    btn.className = "event listening button";
+                    btn.name = friends[i];
+                    btn.id = i;
+                    btn.onclick = function () {
+                        check(response, this.name, pages[this.id], checkins[this.id], music[this.id], movies[this.id], mo[this.id]);
+                    };
+
+                    var img = document.createElement('img');
+                    //img.style="position: relative; left: 5%; width: 50px; height: 50px; padding-bottom: 30px; margin: 0px; padding-top: 20px;";
+                    img.style.position = "relative";
+                    img.style.left = "5%";
+                    img.style.width = "50px";
+                    img.style.height = "50px";
+                    img.style.paddingBottom = "30px";
+                    img.style.margin = "0px";
+                    img.style.paddingTop = "20px";
+
+
+                    var pic = 0;
+                    for (k = 0; k < fr.length; k++) {
+                        if (btn.name == fr[k].name) {
+                            pic = fr[k].picture.data.url;
+                        }
+                    }
+                    img.src = pic;
+                    btn.appendChild(img);
+
+                    var div = document.createElement('div');
+                    div.style.marginLeft = "70px";
+                    div.style.marginBottom = "20px";
+                    div.style.marginTop = "-80px";
+                    div.style.position = "relative";
+                    div.innerHTML = friends[i] + "<br>" + mo[i] + " %";
+                    btn.appendChild(div);
+
+                    //btn.innerHTML = friends[i] + " - " + mo[i] + " %";
+
+                    buttons.appendChild(btn);
+                }
+
+                //changePage("user.html");
+
+            },
+            error: function () {
+                console.log(data);
+                alert("There was an error updating your profile.");
+            }
+        });
+
+
+        //changePage("checkFriend.html?a=234234234234");
+
+    }
+
+
+
+    function check(response, name, g, c, m, n, mo) {
+
+        var menu = document.getElementById('menu');
+        menu.style.display = "none";
+
+
+        var buttons = document.getElementById('btns');
+        buttons.style.display = "none";
+        var back = document.getElementById('back');
+        back.style.display = "block";
+        var section = document.getElementById('section');
+        section.style.display = "block";
+
+        var main_page = document.getElementById('page');
+
+        var page1 = document.getElementById('section-linemove-1');
+        var page2 = document.getElementById('section-linemove-2');
+        var page3 = document.getElementById('section-linemove-3');
+        var page4 = document.getElementById('section-linemove-4');
+
+        var t1 = document.createElement('div');
+        t1.id = "table1";
+        t1.class = "table";
+
+        var t2 = document.createElement('div');
+        t2.id = "table2";
+        t2.class = "table";
+
+        var t3 = document.createElement('div');
+        t3.id = "table3";
+        t3.class = "table";
+
+        var t4 = document.createElement('div');
+        t4.id = "table4";
+        t4.class = "table";
+
+
+        var p = document.getElementById('par');
+        p.innerHTML = "You are similar to " + name + " by: ";
+
+        /*
+        var ul = document.getElementById('list');
+
+        var li = document.createElement('li');
+        li.innerHTML = g+"% (pages)";
+        ul.appendChild(li);
+
+        var li = document.createElement('li');
+        li.innerHTML = c+"% (checkins)";
+        ul.appendChild(li);
+
+        var li = document.createElement('li');
+        li.innerHTML = m+"% (music)";
+        ul.appendChild(li);
+
+        var li = document.createElement('li');
+        li.innerHTML = n+"% (movies)";
+        ul.appendChild(li);
+        */
+
+        draw_pie(g, c, m, n);
+
+        //////////////////////////find friend//////////////////////////////////
+        var f = 0;
+
+        for (j = 1; j < response.length; j++) {
+            if (response[j][response[j].length - 1].name == name) {
+                f = j;
+            }
+        }
+
+        //alert(response[0][0][0].genre);
+        var me = response[0];
+        var friend = response[f];
+
+        var pages = [];
+        var checkins = [];
+        var music = [];
+        var movies = [];
+
+        for (i = 0; i < me[0].length; i++) {
+            if (me[0][i].genre != "" && me[0][i].genre != "undefined") {
+                pages.push(me[0][i].genre);
+            }
+        }
+        for (i = 0; i < me[1].length; i++) {
+            if (me[1][i].genre != "" && me[1][i].genre != "undefined") {
+                checkins.push(me[1][i].genre);
+            }
+        }
+        for (i = 0; i < me[2].length; i++) {
+            if (me[2][i].genre != "" && me[2][i].genre != "undefined") {
+                music.push(me[2][i].genre);
+            }
+        }
+        for (i = 0; i < me[3].length; i++) {
+            if (me[3][i].genre != "" && me[3][i].genre != "undefined") {
+                movies.push(me[3][i].genre);
+            }
+        }
+
+        for (i = 0; i < friend[0].length; i++) {
+            if (friend[0][i].genre != "" && friend[0][i].genre != "undefined") {
+                pages.push(friend[0][i].genre);
+            }
+        }
+        for (i = 0; i < friend[1].length; i++) {
+            if (friend[1][i].genre != "" && friend[1][i].genre != "undefined") {
+                checkins.push(friend[1][i].genre);
+            }
+        }
+        for (i = 0; i < friend[2].length; i++) {
+            if (friend[2][i].genre != "" && friend[2][i].genre != "undefined") {
+                music.push(friend[2][i].genre);
+            }
+        }
+        for (i = 0; i < friend[3].length; i++) {
+            if (friend[3][i].genre != "" && friend[3][i].genre != "undefined") {
+                movies.push(friend[3][i].genre);
+            }
+        }
+
+        pages.sort();
+        checkins.sort();
+        music.sort();
+        movies.sort();
+
+
+        /////////////////////////PAGES///////////////////////////
+
+
+        var genres1 = document.createElement('table');
+        genres1.id = "genres1";
+
+
+
+        var head = document.createElement('thead');
+
         var row = document.createElement('tr');
-                    
-			var cell = document.createElement('th');
-			cell.className="alt";
-			cell.innerHTML = "Pages";
-			row.appendChild(cell);
-					
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = "Common";
-			row.appendChild(cell);		
-					
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = me[me.length-1].name;
-			row.appendChild(cell);
-					
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = friend[friend.length-1].name;
-			row.appendChild(cell);
-			head.appendChild(row);
-			
+
+        var cell = document.createElement('th');
+        cell.className = "alt";
+        cell.innerHTML = "Pages";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = "Common";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = me[me.length - 1].name;
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = friend[friend.length - 1].name;
+        row.appendChild(cell);
+        head.appendChild(row);
+
         genres1.appendChild(head);
-		
-		var body = document.createElement('tbody');
-/////////////////////////////////////////////////////////
-		var last = pages[0];
-		var m1 = "";
-		var m2 = "";
-		var common = "";
-		
-		for (i=0; i<me[0].length; i++) {
-			if (me[0][i].genre==last) {
-				m1=me[0][i].likes;
-			}
-		}	
-		for (i=0; i<friend[0].length; i++) {
-			if (friend[0][i].genre==last) {
-				if (friend[0][i].common!= 0) common = friend[0][i].common;
-				m2=friend[0][i].likes;
-			}
-		}
-		
-		
-		var row = document.createElement('tr');
-		if (m1=="" || m2=="") {row.className="alt"; }
-		
-		var cell = document.createElement('td');
-		cell.className="g";
-		cell.innerHTML = last;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = common;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m1;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m2;
-		row.appendChild(cell);
-			
-		body.appendChild(row);	
-			
-		genres1.appendChild(body);
-		
+
+        var body = document.createElement('tbody');
+        /////////////////////////////////////////////////////////
+        var last = pages[0];
+        var m1 = "";
+        var m2 = "";
+        var common = "";
+
+        for (i = 0; i < me[0].length; i++) {
+            if (me[0][i].genre == last) {
+                m1 = me[0][i].likes;
+            }
+        }
+        for (i = 0; i < friend[0].length; i++) {
+            if (friend[0][i].genre == last) {
+                if (friend[0][i].common != 0) common = friend[0][i].common;
+                m2 = friend[0][i].likes;
+            }
+        }
 
 
-		for (i=1; i<pages.length; i++) {
-		
-		if (pages[i]!=last) {
-			m1 = "";
-			m2 = "";
-			common = "";
-			
-			for (j=0; j<me[0].length; j++) {
-				if (me[0][j].genre==pages[i]) {
-				m1=me[0][j].likes;
-				}
-			}	
-			for (j=0; j<friend[0].length; j++) {
-				if (friend[0][j].genre==pages[i]) {
-				if (friend[0][j].common!= 0) common = friend[0][j].common;
-				m2=friend[0][j].likes;
-				}
-			}
-		
-		
-			var row = document.createElement('tr');
-			if (m1=="" || m2=="") {row.className="alt"; }
-		
-			var cell = document.createElement('td');
-			cell.className="g";
-			cell.innerHTML = pages[i];
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = common;
-		row.appendChild(cell);
-			
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m1;
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m2;
-			row.appendChild(cell);
-			
-			body.appendChild(row);	
-			
-		genres1.appendChild(body);
-			
-			
-			
-			last = pages[i];
-		}
-		}
-
-/////////////////////////////////////////////////////////////		
-		
-		
-		
-/////////////////////////CHECKINS//////////////////////////////
-
-		
-		var genres2 = document.createElement('table');
-		genres2.id="genres2";
-					
-					
-					
-		var head = document.createElement('thead');
-		
         var row = document.createElement('tr');
-                    
-			var cell = document.createElement('th');
-			cell.className="alt";
-			cell.innerHTML = "Checkins";
-			row.appendChild(cell);
-			
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = "Common";
-			row.appendChild(cell);	
-					
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = me[me.length-1].name;
-			row.appendChild(cell);
-					
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = friend[friend.length-1].name;
-			row.appendChild(cell);
-			head.appendChild(row);
-			
+        if (m1 == "" || m2 == "") {
+            row.className = "alt";
+        }
+
+        var cell = document.createElement('td');
+        cell.className = "g";
+        cell.innerHTML = last;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = common;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m1;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m2;
+        row.appendChild(cell);
+
+        body.appendChild(row);
+
+        genres1.appendChild(body);
+
+
+
+        for (i = 1; i < pages.length; i++) {
+
+            if (pages[i] != last) {
+                m1 = "";
+                m2 = "";
+                common = "";
+
+                for (j = 0; j < me[0].length; j++) {
+                    if (me[0][j].genre == pages[i]) {
+                        m1 = me[0][j].likes;
+                    }
+                }
+                for (j = 0; j < friend[0].length; j++) {
+                    if (friend[0][j].genre == pages[i]) {
+                        if (friend[0][j].common != 0) common = friend[0][j].common;
+                        m2 = friend[0][j].likes;
+                    }
+                }
+
+
+                var row = document.createElement('tr');
+                if (m1 == "" || m2 == "") {
+                    row.className = "alt";
+                }
+
+                var cell = document.createElement('td');
+                cell.className = "g";
+                cell.innerHTML = pages[i];
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = common;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m1;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m2;
+                row.appendChild(cell);
+
+                body.appendChild(row);
+
+                genres1.appendChild(body);
+
+
+
+                last = pages[i];
+            }
+        }
+
+        /////////////////////////////////////////////////////////////
+
+
+
+        /////////////////////////CHECKINS//////////////////////////////
+
+
+        var genres2 = document.createElement('table');
+        genres2.id = "genres2";
+
+
+
+        var head = document.createElement('thead');
+
+        var row = document.createElement('tr');
+
+        var cell = document.createElement('th');
+        cell.className = "alt";
+        cell.innerHTML = "Checkins";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = "Common";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = me[me.length - 1].name;
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = friend[friend.length - 1].name;
+        row.appendChild(cell);
+        head.appendChild(row);
+
         genres2.appendChild(head);
-		
-		var body = document.createElement('tbody');
-/////////////////////////////////////////////////////////
-		var last = checkins[0];
-		var m1 = "";
-		var m2 = "";
-		var common = "";
-		
-		for (i=0; i<me[1].length; i++) {
-			if (me[1][i].genre==last) {
-				m1=me[1][i].likes;
-			}
-		}	
-		for (i=0; i<friend[1].length; i++) {
-			if (friend[1][i].genre==last) {
-				m2=friend[1][i].likes;
-				if (friend[1][i].common!= 0) common = friend[1][i].common;
-				
-			}
-		}
-		
-		
-		var row = document.createElement('tr');
-		if (m1=="" || m2=="") {row.className="alt"; }
-		
-		var cell = document.createElement('td');
-		cell.className="g";
-		cell.innerHTML = last;
-		row.appendChild(cell);
-		
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = common;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m1;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m2;
-		row.appendChild(cell);
-			
-		body.appendChild(row);	
-			
-		genres2.appendChild(body);
-		
+
+        var body = document.createElement('tbody');
+        /////////////////////////////////////////////////////////
+        var last = checkins[0];
+        var m1 = "";
+        var m2 = "";
+        var common = "";
+
+        for (i = 0; i < me[1].length; i++) {
+            if (me[1][i].genre == last) {
+                m1 = me[1][i].likes;
+            }
+        }
+        for (i = 0; i < friend[1].length; i++) {
+            if (friend[1][i].genre == last) {
+                m2 = friend[1][i].likes;
+                if (friend[1][i].common != 0) common = friend[1][i].common;
+
+            }
+        }
 
 
-		for (i=1; i<checkins.length; i++) {
-		
-		if (checkins[i]!=last) {
-			m1 = "";
-			m2 = "";
-			common = "";
-			
-			for (j=0; j<me[1].length; j++) {
-				if (me[1][j].genre==checkins[i]) {
-				m1=me[1][j].likes;
-				}
-			}	
-			for (j=0; j<friend[1].length; j++) {
-				if (friend[1][j].genre==checkins[i]) {
-				m2=friend[1][j].likes;
-				if (friend[1][j].common!= 0) common = friend[1][j].common;
-				}
-			}
-		
-		
-			var row = document.createElement('tr');
-			if (m1=="" || m2=="") {row.className="alt"; }
-		
-			var cell = document.createElement('td');
-			cell.className="g";
-			cell.innerHTML = checkins[i];
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = common;
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m1;
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m2;
-			row.appendChild(cell);
-			
-			body.appendChild(row);	
-			
-		genres2.appendChild(body);
-			
-			
-			
-			last = checkins[i];
-		}
-		}
-
-/////////////////////////////////////////////////////////////		
-		
-		
-		
-/////////////////////////MUSIC//////////////////////////////
-
-		
-		var genres3 = document.createElement('table');
-		genres3.id="genres3";
-					
-					
-					
-		var head = document.createElement('thead');
-		
         var row = document.createElement('tr');
-                    
-			var cell = document.createElement('th');
-			cell.className="alt";
-			cell.innerHTML = "Music";
-			row.appendChild(cell);
-			
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = "Common";
-			row.appendChild(cell);	
-					
-			var cell = document.createElement('th');
-			cell.innerHTML = me[me.length-1].name;
-			row.appendChild(cell);
-					
-			var cell = document.createElement('th');
-			cell.innerHTML = friend[friend.length-1].name;
-			row.appendChild(cell);
-			head.appendChild(row);
-			
+        if (m1 == "" || m2 == "") {
+            row.className = "alt";
+        }
+
+        var cell = document.createElement('td');
+        cell.className = "g";
+        cell.innerHTML = last;
+        row.appendChild(cell);
+
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = common;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m1;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m2;
+        row.appendChild(cell);
+
+        body.appendChild(row);
+
+        genres2.appendChild(body);
+
+
+
+        for (i = 1; i < checkins.length; i++) {
+
+            if (checkins[i] != last) {
+                m1 = "";
+                m2 = "";
+                common = "";
+
+                for (j = 0; j < me[1].length; j++) {
+                    if (me[1][j].genre == checkins[i]) {
+                        m1 = me[1][j].likes;
+                    }
+                }
+                for (j = 0; j < friend[1].length; j++) {
+                    if (friend[1][j].genre == checkins[i]) {
+                        m2 = friend[1][j].likes;
+                        if (friend[1][j].common != 0) common = friend[1][j].common;
+                    }
+                }
+
+
+                var row = document.createElement('tr');
+                if (m1 == "" || m2 == "") {
+                    row.className = "alt";
+                }
+
+                var cell = document.createElement('td');
+                cell.className = "g";
+                cell.innerHTML = checkins[i];
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = common;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m1;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m2;
+                row.appendChild(cell);
+
+                body.appendChild(row);
+
+                genres2.appendChild(body);
+
+
+
+                last = checkins[i];
+            }
+        }
+
+        /////////////////////////////////////////////////////////////
+
+
+
+        /////////////////////////MUSIC//////////////////////////////
+
+
+        var genres3 = document.createElement('table');
+        genres3.id = "genres3";
+
+
+
+        var head = document.createElement('thead');
+
+        var row = document.createElement('tr');
+
+        var cell = document.createElement('th');
+        cell.className = "alt";
+        cell.innerHTML = "Music";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = "Common";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.innerHTML = me[me.length - 1].name;
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.innerHTML = friend[friend.length - 1].name;
+        row.appendChild(cell);
+        head.appendChild(row);
+
         genres3.appendChild(head);
-		
-		var body = document.createElement('tbody');
-/////////////////////////////////////////////////////////
-		var last = music[0];
-		var m1 = "";
-		var m2 = "";
-		var common = "";
-		
-		for (i=0; i<me[2].length; i++) {
-			if (me[2][i].genre==last) {
-				m1=me[2][i].likes;
-			}
-		}	
-		for (i=0; i<friend[2].length; i++) {
-			if (friend[2][i].genre==last) {
-				m2=friend[2][i].likes;
-				if (friend[2][i].common!= 0) common = friend[2][i].common;
-			}
-		}
-		
-		
-		var row = document.createElement('tr');
-		if (m1=="" || m2=="") {row.className="alt"; }
-		
-		var cell = document.createElement('td');
-		cell.className="g";
-		cell.innerHTML = last;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = common;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m1;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m2;
-		row.appendChild(cell);
-			
-		body.appendChild(row);	
-			
-		genres3.appendChild(body);
-		
+
+        var body = document.createElement('tbody');
+        /////////////////////////////////////////////////////////
+        var last = music[0];
+        var m1 = "";
+        var m2 = "";
+        var common = "";
+
+        for (i = 0; i < me[2].length; i++) {
+            if (me[2][i].genre == last) {
+                m1 = me[2][i].likes;
+            }
+        }
+        for (i = 0; i < friend[2].length; i++) {
+            if (friend[2][i].genre == last) {
+                m2 = friend[2][i].likes;
+                if (friend[2][i].common != 0) common = friend[2][i].common;
+            }
+        }
 
 
-		for (i=1; i<music.length; i++) {
-		
-		if (music[i]!=last) {
-			m1 = "";
-			m2 = "";
-			common = "";
-			
-			for (j=0; j<me[2].length; j++) {
-				if (me[2][j].genre==music[i]) {
-				m1=me[2][j].likes;
-				}
-			}	
-			for (j=0; j<friend[2].length; j++) {
-				if (friend[2][j].genre==music[i]) {
-				m2=friend[2][j].likes;
-				if (friend[2][j].common!= 0) common = friend[2][j].common;
-				}
-			}
-		
-		
-			var row = document.createElement('tr');
-			if (m1=="" || m2=="") {row.className="alt"; }
-		
-			var cell = document.createElement('td');
-			cell.className="g";
-			cell.innerHTML = music[i];
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = common;
-			row.appendChild(cell);
-			
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m1;
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m2;
-			row.appendChild(cell);
-			
-			body.appendChild(row);	
-			
-		genres3.appendChild(body);
-			
-			
-			
-			last = music[i];
-		}
-		}
-
-		
-/////////////////////////////////////////////////////////////	
-
-//////////////////////MOVIES////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////
-
-		
-		var genres4 = document.createElement('table');
-		genres4.id="genres4";
-					
-					
-					
-		var head = document.createElement('thead');
-		
         var row = document.createElement('tr');
-                    
-			var cell = document.createElement('th');
-			cell.className="alt";
-			cell.innerHTML = "Movies";
-			row.appendChild(cell);
-			
-			var cell = document.createElement('th');
-			cell.className="name";
-			cell.innerHTML = "Common";
-			row.appendChild(cell);	
-					
-			var cell = document.createElement('th');
-			cell.innerHTML = me[me.length-1].name;
-			row.appendChild(cell);
-					
-			var cell = document.createElement('th');
-			cell.innerHTML = friend[friend.length-1].name;
-			row.appendChild(cell);
-			head.appendChild(row);
-			
+        if (m1 == "" || m2 == "") {
+            row.className = "alt";
+        }
+
+        var cell = document.createElement('td');
+        cell.className = "g";
+        cell.innerHTML = last;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = common;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m1;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m2;
+        row.appendChild(cell);
+
+        body.appendChild(row);
+
+        genres3.appendChild(body);
+
+
+
+        for (i = 1; i < music.length; i++) {
+
+            if (music[i] != last) {
+                m1 = "";
+                m2 = "";
+                common = "";
+
+                for (j = 0; j < me[2].length; j++) {
+                    if (me[2][j].genre == music[i]) {
+                        m1 = me[2][j].likes;
+                    }
+                }
+                for (j = 0; j < friend[2].length; j++) {
+                    if (friend[2][j].genre == music[i]) {
+                        m2 = friend[2][j].likes;
+                        if (friend[2][j].common != 0) common = friend[2][j].common;
+                    }
+                }
+
+
+                var row = document.createElement('tr');
+                if (m1 == "" || m2 == "") {
+                    row.className = "alt";
+                }
+
+                var cell = document.createElement('td');
+                cell.className = "g";
+                cell.innerHTML = music[i];
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = common;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m1;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m2;
+                row.appendChild(cell);
+
+                body.appendChild(row);
+
+                genres3.appendChild(body);
+
+
+
+                last = music[i];
+            }
+        }
+
+
+        /////////////////////////////////////////////////////////////
+
+        //////////////////////MOVIES////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////
+
+
+        var genres4 = document.createElement('table');
+        genres4.id = "genres4";
+
+
+
+        var head = document.createElement('thead');
+
+        var row = document.createElement('tr');
+
+        var cell = document.createElement('th');
+        cell.className = "alt";
+        cell.innerHTML = "Movies";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.className = "name";
+        cell.innerHTML = "Common";
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.innerHTML = me[me.length - 1].name;
+        row.appendChild(cell);
+
+        var cell = document.createElement('th');
+        cell.innerHTML = friend[friend.length - 1].name;
+        row.appendChild(cell);
+        head.appendChild(row);
+
         genres4.appendChild(head);
-		
-		var body = document.createElement('tbody');
-/////////////////////////////////////////////////////////
 
-		var last = movies[0];
-		var m1 = "";
-		var m2 = "";
-		var common = "";
-		
-		for (i=0; i<me[3].length; i++) {
-			if (me[3][i].genre==last) {
-				m1=me[3][i].likes;
-			}
-		}	
-		for (i=0; i<friend[3].length; i++) {
-			if (friend[3][i].genre==last) {
-				m2=friend[3][i].likes;
-				if (friend[3][i].common!= 0) common = friend[3][i].common;
-			}
-		}
-		
-		
-		var row = document.createElement('tr');
-		if (m1=="" || m2=="") {row.className="alt"; }
-		
-		var cell = document.createElement('td');
-		cell.className="g";
-		cell.innerHTML = last;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = common;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m1;
-		row.appendChild(cell);
-		
-		var cell = document.createElement('td');
-		cell.className="n";
-		cell.innerHTML = m2;
-		row.appendChild(cell);
-			
-		body.appendChild(row);	
-			
-		genres4.appendChild(body);
-		
-		
-		
+        var body = document.createElement('tbody');
+        /////////////////////////////////////////////////////////
 
-		for (i=1; i<movies.length; i++) {
-		
-		if (movies[i]!=last) {
-			m1 = "";
-			m2 = "";
-			common = "";
-			
-			for (j=0; j<me[3].length; j++) {
-				if (me[3][j].genre==movies[i]) {
-				m1=me[3][j].likes;
-				}
-			}	
-			for (j=0; j<friend[3].length; j++) {
-				if (friend[3][j].genre==movies[i]) {
-				m2=friend[3][j].likes;
-				if (friend[3][j].common!= 0) common = friend[3][j].common;
-				}
-			}
-		
-		
-			var row = document.createElement('tr');
-			if (m1=="" || m2=="") {row.className="alt"; }
-		
-			var cell = document.createElement('td');
-			cell.className="g";
-			cell.innerHTML = movies[i];
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = common;
-			row.appendChild(cell);
-			
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m1;
-			row.appendChild(cell);
-		
-			var cell = document.createElement('td');
-			cell.className="n";
-			cell.innerHTML = m2;
-			row.appendChild(cell);
-			
-			body.appendChild(row);	
-			
-		genres4.appendChild(body);
-			
-			
-			
-			last = movies[i];
-		}
-		}
+        var last = movies[0];
+        var m1 = "";
+        var m2 = "";
+        var common = "";
 
-		//////////////////////////////////////////////////
+        for (i = 0; i < me[3].length; i++) {
+            if (me[3][i].genre == last) {
+                m1 = me[3][i].likes;
+            }
+        }
+        for (i = 0; i < friend[3].length; i++) {
+            if (friend[3][i].genre == last) {
+                m2 = friend[3][i].likes;
+                if (friend[3][i].common != 0) common = friend[3][i].common;
+            }
+        }
 
-		
-		
-		
 
-		t1.appendChild(genres1);
-		t2.appendChild(genres2);
-		t3.appendChild(genres3);
-		t4.appendChild(genres4);
-		page1.appendChild(t1);
-		page2.appendChild(t2);
-		page3.appendChild(t3);
-		page4.appendChild(t4);
-		$('#genres1').DataTable( { select: true, 	"order": [[ 1, "desc" ]]} );
-		$('#genres2').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
-		$('#genres3').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
-		$('#genres4').DataTable( { select: true,	"order": [[ 1, "desc" ]]} );
-		t1.style="display: block";
-		t2.style="display: block";
-		t3.style="display: block";
-		t4.style="display: block";
-		
-			
-					
-	
-		
-	}
-		
-        
-    
-        
-    $(document).on( 'click', 'tr', function () {
-	
-	var t = document.getElementsByClassName("tab-current")[0];
-	t = t.getElementsByTagName("a")[0];
-	t = t.getElementsByTagName("span")[0];
-	t = t.innerHTML;
-	
-	if (t=="Pages") {
-	var g = document.getElementById('genres1');
-	}
-	if (t=="Checkins") {
-	var g = document.getElementById('genres2');
-	}
-	if (t=="Music") {
-	var g = document.getElementById('genres3');
-	}
-	if (t=="Movies") {
-	var g = document.getElementById('genres4');
-	}
-	
-	var genre = g.getElementsByClassName("selected")[0].getElementsByClassName("g")[0].innerHTML;
-	//alert(genre);
-	
-	var me = document.getElementsByClassName("name")[1].innerHTML;
-	//alert(me);
-	
-	var friend = document.getElementsByClassName("name")[2].innerHTML;
-	//alert(friend);
-	
-	var common = g.getElementsByClassName("selected")[0].getElementsByClassName("n")[0].innerHTML;
-	if (common!="") {
-	checkFriend(me, friend, genre, t);
-	}
-	else alert("no match");
-    setTimeout(function() { 
-        $(g.getElementsByClassName("selected")).removeClass("selected");
-    }, 1000);
-		
-		
-    } );
-        
-        
-		
-		
-	function back() {
-		var back = document.getElementById('back');
-		back.style.display = "none";
-		var section = document.getElementById('section');
-		section.style.display = "none";
-		var tbl = document.getElementById("table1");
+        var row = document.createElement('tr');
+        if (m1 == "" || m2 == "") {
+            row.className = "alt";
+        }
+
+        var cell = document.createElement('td');
+        cell.className = "g";
+        cell.innerHTML = last;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = common;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m1;
+        row.appendChild(cell);
+
+        var cell = document.createElement('td');
+        cell.className = "n";
+        cell.innerHTML = m2;
+        row.appendChild(cell);
+
+        body.appendChild(row);
+
+        genres4.appendChild(body);
+
+
+
+
+        for (i = 1; i < movies.length; i++) {
+
+            if (movies[i] != last) {
+                m1 = "";
+                m2 = "";
+                common = "";
+
+                for (j = 0; j < me[3].length; j++) {
+                    if (me[3][j].genre == movies[i]) {
+                        m1 = me[3][j].likes;
+                    }
+                }
+                for (j = 0; j < friend[3].length; j++) {
+                    if (friend[3][j].genre == movies[i]) {
+                        m2 = friend[3][j].likes;
+                        if (friend[3][j].common != 0) common = friend[3][j].common;
+                    }
+                }
+
+
+                var row = document.createElement('tr');
+                if (m1 == "" || m2 == "") {
+                    row.className = "alt";
+                }
+
+                var cell = document.createElement('td');
+                cell.className = "g";
+                cell.innerHTML = movies[i];
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = common;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m1;
+                row.appendChild(cell);
+
+                var cell = document.createElement('td');
+                cell.className = "n";
+                cell.innerHTML = m2;
+                row.appendChild(cell);
+
+                body.appendChild(row);
+
+                genres4.appendChild(body);
+
+
+
+                last = movies[i];
+            }
+        }
+
+        //////////////////////////////////////////////////
+
+
+
+
+
+        t1.appendChild(genres1);
+        t2.appendChild(genres2);
+        t3.appendChild(genres3);
+        t4.appendChild(genres4);
+        page1.appendChild(t1);
+        page2.appendChild(t2);
+        page3.appendChild(t3);
+        page4.appendChild(t4);
+        $('#genres1').DataTable({
+            select: true,
+            "order": [[1, "desc"]]
+        });
+        $('#genres2').DataTable({
+            select: true,
+            "order": [[1, "desc"]]
+        });
+        $('#genres3').DataTable({
+            select: true,
+            "order": [[1, "desc"]]
+        });
+        $('#genres4').DataTable({
+            select: true,
+            "order": [[1, "desc"]]
+        });
+        t1.style = "display: block";
+        t2.style = "display: block";
+        t3.style = "display: block";
+        t4.style = "display: block";
+
+
+
+
+
+    }
+
+
+
+
+    $(document).on('click', 'tr', function () {
+
+        var t = document.getElementsByClassName("tab-current")[0];
+        t = t.getElementsByTagName("a")[0];
+        t = t.getElementsByTagName("span")[0];
+        t = t.innerHTML;
+
+        if (t == "Pages") {
+            var g = document.getElementById('genres1');
+        }
+        if (t == "Checkins") {
+            var g = document.getElementById('genres2');
+        }
+        if (t == "Music") {
+            var g = document.getElementById('genres3');
+        }
+        if (t == "Movies") {
+            var g = document.getElementById('genres4');
+        }
+
+        var genre = g.getElementsByClassName("selected")[0].getElementsByClassName("g")[0].innerHTML;
+        //alert(genre);
+
+        var me = document.getElementsByClassName("name")[1].innerHTML;
+        //alert(me);
+
+        var friend = document.getElementsByClassName("name")[2].innerHTML;
+        //alert(friend);
+
+        var common = g.getElementsByClassName("selected")[0].getElementsByClassName("n")[0].innerHTML;
+        if (common != "") {
+            checkFriend(me, friend, genre, t);
+        } else alert("no match");
+        setTimeout(function () {
+            $(g.getElementsByClassName("selected")).removeClass("selected");
+        }, 1000);
+
+
+    });
+
+
+
+
+    function back() {
+        var back = document.getElementById('back');
+        back.style.display = "none";
+        var section = document.getElementById('section');
+        section.style.display = "none";
+        var tbl = document.getElementById("table1");
         tbl.parentNode.removeChild(tbl);
-		tbl = document.getElementById("table2");
+        tbl = document.getElementById("table2");
         tbl.parentNode.removeChild(tbl);
-		tbl = document.getElementById("table3");
+        tbl = document.getElementById("table3");
         tbl.parentNode.removeChild(tbl);
-		tbl = document.getElementById("table4");
+        tbl = document.getElementById("table4");
         tbl.parentNode.removeChild(tbl);
-		
-		var ul = document.getElementById('list');
-		ul.innerHTML = "";
-        
+
+        var ul = document.getElementById('list');
+        ul.innerHTML = "";
+
         var plot = document.getElementById('plot');
-		plot.innerHTML = "";
-		
-		var menu = document.getElementById('menu');
-		menu.style.display = "block";
-		var buttons = document.getElementById('btns');
-		buttons.style.display = "block";
-	}	
-        
-        
-    
-    
-	function checkFriend(me, friend, genre, section) {
-	
-	var postData = {
-		      "me": me,
-			  "friend": friend,
-			  "genre": genre
-		    };
-			
-			
-            $.ajax({
-                type: "POST",
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: "http://ggoutos.ddns.net:5000/checkFriend",
-                success: function(response){
-					//alert(JSON.stringify(response));
-					
-					if (section=="Pages") {
-						var list = document.getElementById("details1");
-						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> pages you both like:";
-						var tbl = document.getElementById("table1");
-						var button = document.getElementById("b1");
-					}
-					if (section=="Checkins") {
-						var list = document.getElementById("details2");
-						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> checkins you both did:";
-						var tbl = document.getElementById("table2");
-						var button = document.getElementById("b2");
-					}
-					if (section=="Music") {
-						var list = document.getElementById("details3");
-						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> music you both like:";
-						var tbl = document.getElementById("table3");
-						var button = document.getElementById("b3");
-					}
-					if (section=="Movies") {
-						var list = document.getElementById("details4");
-						var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> movies you both like:";
-						var tbl = document.getElementById("table4");
-						var button = document.getElementById("b4");
-					}
-					
-					
-					
-					
-					if (response.length != 0) {
-					list.innerHTML = "";
-					tbl.style.display= "none";
-					button.style.display= "block";
-					list.style.display= "block";
-					var li = document.createElement('p');
-					li.style.color= "#00476B"; 
-                    li.style.marginBottom= "0px";
-					li.innerHTML = message;
-					list.appendChild(li);
-                        
+        plot.innerHTML = "";
+
+        var menu = document.getElementById('menu');
+        menu.style.display = "block";
+        var buttons = document.getElementById('btns');
+        buttons.style.display = "block";
+    }
+
+
+
+
+    function checkFriend(me, friend, genre, section) {
+
+        var postData = {
+            "me": me,
+            "friend": friend,
+            "genre": genre
+        };
+
+
+        $.ajax({
+            type: "POST",
+            data: postData,
+            async: true,
+            //change the url for your project
+            url: "http://ggoutos.ddns.net:5000/checkFriend",
+            success: function (response) {
+                //alert(JSON.stringify(response));
+
+                if (section == "Pages") {
+                    var list = document.getElementById("details1");
+                    var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> pages you both like:";
+                    var tbl = document.getElementById("table1");
+                    var button = document.getElementById("b1");
+                }
+                if (section == "Checkins") {
+                    var list = document.getElementById("details2");
+                    var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> checkins you both did:";
+                    var tbl = document.getElementById("table2");
+                    var button = document.getElementById("b2");
+                }
+                if (section == "Music") {
+                    var list = document.getElementById("details3");
+                    var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> music you both like:";
+                    var tbl = document.getElementById("table3");
+                    var button = document.getElementById("b3");
+                }
+                if (section == "Movies") {
+                    var list = document.getElementById("details4");
+                    var message = "<b style=\"color: purple\">" + postData["genre"] + "</b> movies you both like:";
+                    var tbl = document.getElementById("table4");
+                    var button = document.getElementById("b4");
+                }
+
+
+
+
+                if (response.length != 0) {
+                    list.innerHTML = "";
+                    tbl.style.display = "none";
+                    button.style.display = "block";
+                    list.style.display = "block";
+                    var li = document.createElement('p');
+                    li.style.color = "#00476B";
+                    li.style.marginBottom = "0px";
+                    li.innerHTML = message;
+                    list.appendChild(li);
+
                     /*
-					var ul = document.createElement('ul');
-					for (var i=0; i < response.length; i++) {
+                    var ul = document.createElement('ul');
+                    for (var i=0; i < response.length; i++) {
                             var li = document.createElement('li');
-							//li.style = "margin-left: 15%;";
+                            //li.style = "margin-left: 15%;";
                             li.innerHTML = response[i].name;
-							ul.appendChild(li);
-                            list.appendChild(ul); 
+                            ul.appendChild(li);
+                            list.appendChild(ul);
                     }
                     */
-                    
+
                     graph(me, friend, genre, section, response);
-                    
-					}
-					else {
-					alert("no match");
-					}
-					
-				},
-				error: function() {
-				alert("no match");
-				}
-			});
-	
-	}
-	
-	
-	function backTable() {
-	
-	var t = document.getElementsByClassName("tab-current")[0];
-	t = t.getElementsByTagName("a")[0];
-	t = t.getElementsByTagName("span")[0];
-	t = t.innerHTML;
-	
-	if (t=="Pages") {
-		var list = document.getElementById("details1");
-		var tbl = document.getElementById("table1");
-		var button = document.getElementById("b1");
-	}
-	if (t=="Checkins") {
-		var list = document.getElementById("details2");
-		var tbl = document.getElementById("table2");
-		var button = document.getElementById("b2");
-	}
-	if (t=="Music") {
-		var list = document.getElementById("details3");
-		var tbl = document.getElementById("table3");
-		var button = document.getElementById("b3");
-	}
-	if (t=="Movies") {
-		var list = document.getElementById("details4");
-		var tbl = document.getElementById("table4");
-		var button = document.getElementById("b4");
-	}
-	
-	
-    button.style.display= "none";
-    list.style.display= "none";
-    tbl.style.display= "block";
-	
-	}    
-    
-    
-        
-        
-    var  callAnotherPage = function () {
+
+                } else {
+                    alert("no match");
+                }
+
+            },
+            error: function () {
+                alert("no match");
+            }
+        });
+
+    }
+
+
+    function backTable() {
+
+        var t = document.getElementsByClassName("tab-current")[0];
+        t = t.getElementsByTagName("a")[0];
+        t = t.getElementsByTagName("span")[0];
+        t = t.innerHTML;
+
+        if (t == "Pages") {
+            var list = document.getElementById("details1");
+            var tbl = document.getElementById("table1");
+            var button = document.getElementById("b1");
+        }
+        if (t == "Checkins") {
+            var list = document.getElementById("details2");
+            var tbl = document.getElementById("table2");
+            var button = document.getElementById("b2");
+        }
+        if (t == "Music") {
+            var list = document.getElementById("details3");
+            var tbl = document.getElementById("table3");
+            var button = document.getElementById("b3");
+        }
+        if (t == "Movies") {
+            var list = document.getElementById("details4");
+            var tbl = document.getElementById("table4");
+            var button = document.getElementById("b4");
+        }
+
+
+        button.style.display = "none";
+        list.style.display = "none";
+        tbl.style.display = "block";
+
+    }
+
+
+
+
+    var callAnotherPage = function () {
         //changePage("menu.html");
         window.location = "index.html";
     }
-    		
-		
-    </script>
- 
-      
-  <body>
-       <script type="text/javascript" src="DataTables/datatables.js"></script>
-      <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
-          <div id="fb-root"></div> 
-            
-            <script type="text/javascript"> 
-                onDeviceReady(); 
-          </script>
-          
-          
-          <h1>Mining Similarity<small>Graduate Thesis | <a  onclick="changePage('details.html');">View details</a></small></h1>
-          
-            <div id="menu" class="event listening button" style= "margin-bottom: 50px" onclick="callAnotherPage();">Menu</div>
-          
-          <div id="loading">
+</script>
+
+
+<body>
+    <script type="text/javascript" src="DataTables/datatables.js"></script>
+    <div id="page" style="position: absolute; top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+
+        <script type="text/javascript">
+            onDeviceReady();
+        </script>
+
+
+        <h1>Mining Similarity<small>Graduate Thesis | <a  onclick="changePage('details.html');">View details</a></small></h1>
+
+        <div id="menu" class="event listening button" style="margin-bottom: 50px" onclick="callAnotherPage();">Menu</div>
+
+        <div id="loading">
             <div class="container">
                 <div class="content">
                     <div class="circle"></div>
                     <div class="circle1"></div>
                 </div>
             </div>
-          
+
             <h1><small>Checking similarity
             <br>this may take a while</small></h1>
-          </div>
-          
-          
-           <!--
+        </div>
+
+
+        <!--
           <div id=pictures style="margin-left: 20%"></div> -->
-          <div id="btns" style="display: block"></div>
-          
-          <div id="back" class="event listening button" onclick="back();" style="display: none">Back</div>
-          
-          
-	  <section id="section" style="display: none">	  
-				<p id="par"></p>
-				<ul id="list"></ul>
-                <div class="plot" id="plot" style="width: 300px; height: 300px;  margin: 40px auto;"></div>
-				<div class="tabs tabs-style-linemove">
-					<nav>
-						<ul>
-							<li><a href="#section-linemove-1" ><span>Pages</span></a></li>
-							<li><a href="#section-linemove-2" ><span>Checkins</span></a></li>
-							<li><a href="#section-linemove-3" ><span>Music</span></a></li>
-							<li><a href="#section-linemove-4" ><span>Movies</span></a></li>
-						</ul>
-					</nav>
-					<div class="content-wrap">
-						<section id="section-linemove-1"><a id="b1" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details1"></div></section>
-						<section id="section-linemove-2"><a id="b2" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details2"></div></section>
-						<section id="section-linemove-3"><a id="b3" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details3"></div></section>
-						<section id="section-linemove-4"><a id="b4" style="display: none" class="myButton" onclick="backTable();" >back</a><div id="details4"></div></section>
-					</div>
-				</div>
-			</section>
-	  
-	  
-          
-          
-          
-         
-          
-      </div>
-      
-      
-      <script src="js/cbpFWTabs.js"></script>
-		<script>
-			(function() {
+        <div id="btns" style="display: block"></div>
 
-				[].slice.call( document.querySelectorAll( '.tabs' ) ).forEach( function( el ) {
-					new CBPFWTabs( el );
-				});
+        <div id="back" class="event listening button" onclick="back();" style="display: none">Back</div>
 
-			})();
-		</script>   
-      
-      
-  </body>
+
+        <section id="section" style="display: none">
+            <p id="par"></p>
+            <ul id="list"></ul>
+            <div class="plot" id="plot" style="width: 300px; height: 300px;  margin: 40px auto;"></div>
+            <div class="tabs tabs-style-linemove">
+                <nav>
+                    <ul>
+                        <li><a href="#section-linemove-1"><span>Pages</span></a></li>
+                        <li><a href="#section-linemove-2"><span>Checkins</span></a></li>
+                        <li><a href="#section-linemove-3"><span>Music</span></a></li>
+                        <li><a href="#section-linemove-4"><span>Movies</span></a></li>
+                    </ul>
+                </nav>
+                <div class="content-wrap">
+                    <section id="section-linemove-1"><a id="b1" style="display: none" class="myButton" onclick="backTable();">back</a>
+                        <div id="details1"></div>
+                    </section>
+                    <section id="section-linemove-2"><a id="b2" style="display: none" class="myButton" onclick="backTable();">back</a>
+                        <div id="details2"></div>
+                    </section>
+                    <section id="section-linemove-3"><a id="b3" style="display: none" class="myButton" onclick="backTable();">back</a>
+                        <div id="details3"></div>
+                    </section>
+                    <section id="section-linemove-4"><a id="b4" style="display: none" class="myButton" onclick="backTable();">back</a>
+                        <div id="details4"></div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+
+
+    </div>
+
+
+    <script src="js/cbpFWTabs.js"></script>
+    <script>
+        (function () {
+
+                [].slice.call(document.querySelectorAll('.tabs')).forEach(function (el) {
+                new CBPFWTabs(el);
+            });
+
+        })();
+    </script>
+
+
+</body>
+
 </html>

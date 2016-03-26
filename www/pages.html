@@ -1,207 +1,206 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->   
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/demo.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-default.css" />
-		<link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
-        <title>Mining Similarity</title>
-		</head>
-    
-		
-		
-		
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-    <script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
-    <script src="js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/dynamicpage.js"></script>
-    <script type="text/javascript" src="js/notify.js.sdx"></script>
-	<script type="text/javascript" charset="utf-8">
 
-    
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-default.css" />
+    <link rel="stylesheet" type="text/css" href="css/ns-style-bar.css" />
+    <title>Mining Similarity</title>
+</head>
+
+
+
+
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/dynamicpage.js"></script>
+<script type="text/javascript" src="js/notify.js.sdx"></script>
+<script type="text/javascript" charset="utf-8">
     function onDeviceReady() {
-        
+
         // Now safe to use device APIs
-        
-        
-        facebookConnectPlugin.getAccessToken( 
-            function (response) { 
+
+
+        facebookConnectPlugin.getAccessToken(
+            function (response) {
                 var after = "";
                 var sum = 0;
                 var token = response;
-                
-                 $.ajax({
-                type: "GET",
-                async:   true,
-                //change the url for your project
-                url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
-                success: function(data){
-                     var id = data.id;
-                     document.getElementById('progress1').setAttribute("data-sent", 0);
-                     document.getElementById('progress1').setAttribute("data-all", 1);
-                     document.getElementById('progress').setAttribute("data-all", 1);
-                     pages(after, token, sum, id);
-                 },
-                error: function() {
-                     console.log(data);
-                    alert("There was an error getting the pages.");
-                 }});
-                
-                
-        
+
+                $.ajax({
+                    type: "GET",
+                    async: true,
+                    //change the url for your project
+                    url: "https://graph.facebook.com/v2.5/me?access_token=" + token,
+                    success: function (data) {
+                        var id = data.id;
+                        document.getElementById('progress1').setAttribute("data-sent", 0);
+                        document.getElementById('progress1').setAttribute("data-all", 1);
+                        document.getElementById('progress').setAttribute("data-all", 1);
+                        pages(after, token, sum, id);
+                    },
+                    error: function () {
+                        console.log(data);
+                        alert("There was an error getting the pages.");
+                    }
+                });
+
+
+
             },
-            function (response) { alert(JSON.stringify(response)) });
-        
-                
-    }
-    
-    
-    function pages(after, token, sum, id) {
-       
-      
-        
-         $.ajax({
-                type: "GET",
-                async:   true,
-                //change the url for your project
-                url: "https://graph.facebook.com/v2.5/me/likes?access_token=" + token + "&fields=name,category&limit=100&after=" + after,
-                success: function(data){
-                    console.log(data);
-                    //alert(JSON.stringify(data));
-                    
-                    var s = sum + data.data.length;
-             
-            var p = data.data;
-             
-            for (i=0; i<p.length; i++) {
-			  var a = "";
-              var b = "";
-			  for (j=0; j<p[i].name.length; j++) {
-					if (p[i].name[j]=='"') a+="\\";
-					a+=p[i].name[j];
-			  }
-              p[i].name=a;
-              for (j=0; j<p[i].category.length; j++) {
-					if (p[i].category[j]=='/') b+=", ";
-					else b+=p[i].category[j];
-			  }
-              p[i].category=b;
-            }
-             
-             
-             var postData = {
-		      "pages": p,
-		      "id": id
-		    };
-             
-             
-                    
-            $.ajax({
-                type: "POST",
-                data: postData,
-                async:   true,
-                //change the url for your project
-                url: "http://ggoutos.ddns.net:5000/pages",
-                success: function(data){
-                    console.log(data);
-                    
-                    var sent = parseInt(document.getElementById('progress1').getAttribute("data-sent"));
-                    sent = parseInt(sent) + parseInt(postData["pages"].length);
-                    document.getElementById('progress1').setAttribute("data-sent", sent);
-                    progress();
-                    if ((parseFloat(document.getElementById('progress1').getAttribute("data-sent")) / parseFloat(document.getElementById('progress1').getAttribute("data-all")))==1) {
-                        $.notify("Pages sent successfully!!", "success");
-                    }
-                    
-                },
-                error: function(){
-                    console.log(data);
-                     $.notify("There was some error!!", "error");
-                }
+            function (response) {
+                alert(JSON.stringify(response))
             });
-        
-            
-                    
-                //alert("wait");          
-        
-                    if (data.hasOwnProperty('paging') && data.paging.hasOwnProperty('next'))  {
-                        var a = data.paging.cursors.after;
-                        pages(a, token, s, id);
+
+
+    }
+
+
+    function pages(after, token, sum, id) {
+
+
+
+        $.ajax({
+            type: "GET",
+            async: true,
+            //change the url for your project
+            url: "https://graph.facebook.com/v2.5/me/likes?access_token=" + token + "&fields=name,category&limit=100&after=" + after,
+            success: function (data) {
+                console.log(data);
+                //alert(JSON.stringify(data));
+
+                var s = sum + data.data.length;
+
+                var p = data.data;
+
+                for (i = 0; i < p.length; i++) {
+                    var a = "";
+                    var b = "";
+                    for (j = 0; j < p[i].name.length; j++) {
+                        if (p[i].name[j] == '"') a += "\\";
+                        a += p[i].name[j];
                     }
-                    else {
-                        // create the notification
-                        var notification = new NotificationFx({
-			             message : '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>'+s+' pages found.</p>',
-                        wrapper : document.getElementById('notifications'),
-			             layout : 'bar',
-			             effect : 'slidetop',
-			             type : 'notice', // notice, warning or error
-			             onClose : function() {
-				            bttn.disabled = false;
-			             }
-                        });
-                    
-                        // show the notification
-                        notification.show();
-                        if (s!=0) {
-                            document.getElementById('progress').setAttribute("data-all", 0);  // oxi sta upoloipa
+                    p[i].name = a;
+                    for (j = 0; j < p[i].category.length; j++) {
+                        if (p[i].category[j] == '/') b += ", ";
+                        else b += p[i].category[j];
+                    }
+                    p[i].category = b;
+                }
+
+
+                var postData = {
+                    "pages": p,
+                    "id": id
+                };
+
+
+
+                $.ajax({
+                    type: "POST",
+                    data: postData,
+                    async: true,
+                    //change the url for your project
+                    url: "http://ggoutos.ddns.net:5000/pages",
+                    success: function (data) {
+                        console.log(data);
+
+                        var sent = parseInt(document.getElementById('progress1').getAttribute("data-sent"));
+                        sent = parseInt(sent) + parseInt(postData["pages"].length);
+                        document.getElementById('progress1').setAttribute("data-sent", sent);
+                        progress();
+                        if ((parseFloat(document.getElementById('progress1').getAttribute("data-sent")) / parseFloat(document.getElementById('progress1').getAttribute("data-all"))) == 1) {
+                            $.notify("Pages sent successfully!!", "success");
+                        }
+
+                    },
+                    error: function () {
+                        console.log(data);
+                        $.notify("There was some error!!", "error");
+                    }
+                });
+
+
+
+                //alert("wait");
+
+                if (data.hasOwnProperty('paging') && data.paging.hasOwnProperty('next')) {
+                    var a = data.paging.cursors.after;
+                    pages(a, token, s, id);
+                } else {
+                    // create the notification
+                    var notification = new NotificationFx({
+                        message: '<span class="icon icon-megaphone" style="width: 25px; height: 25px; top: 50%;"></span><p>' + s + ' pages found.</p>',
+                        wrapper: document.getElementById('notifications'),
+                        layout: 'bar',
+                        effect: 'slidetop',
+                        type: 'notice', // notice, warning or error
+                        onClose: function () {
+                            bttn.disabled = false;
+                        }
+                    });
+
+                    // show the notification
+                    notification.show();
+                    if (s != 0) {
+                        document.getElementById('progress').setAttribute("data-all", 0); // oxi sta upoloipa
                         var all = parseInt(document.getElementById('progress').getAttribute("data-all"));
                         all = parseInt(all) + parseInt(s);
                         document.getElementById('progress').setAttribute("data-all", all);
                         document.getElementById('progress1').setAttribute("data-all", s);
-                        }
-                        changePage("places.html");
                     }
-        
-        
-                },
-                error: function(){
-                    console.log(data);
-                    alert("There was an error getting the pages.");
+                    changePage("places.html");
                 }
-            });
-        
-        
-        
-        
-    }
-        
 
-    
-        
-        
-    </script>
-  <!-- onload="onLoad()"
+
+            },
+            error: function () {
+                console.log(data);
+                alert("There was an error getting the pages.");
+            }
+        });
+
+
+
+
+    }
+</script>
+<!-- onload="onLoad()"
         -->
 
-  <body>
-      
-      
-     <div id="page"   style="position: absolute; top: 0; left: 0; width: 100%;">   
-      <div id="fb-root"></div> 
-          <script type="text/javascript"> onDeviceReady(); </script>
-            <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
-          
-            <div class="container">
-                <div class="content">
-                    <div class="circle"></div>
-                    <div class="circle1"></div>
-                </div>
+<body>
+
+
+    <div id="page" style="position: absolute; top: 0; left: 0; width: 100%;">
+        <div id="fb-root"></div>
+        <script type="text/javascript">
+            onDeviceReady();
+        </script>
+        <h1>Mining Similarity<small>Graduate Thesis | <a>View details</a></small></h1>
+
+        <div class="container">
+            <div class="content">
+                <div class="circle"></div>
+                <div class="circle1"></div>
             </div>
-          
-          <h1><small>loading your pages
+        </div>
+
+        <h1><small>loading your pages
               <br>this may take a minute</small></h1>
-          
-         
-          
-      </div>
-      
-       
-            
-  </body>
+
+
+
+    </div>
+
+
+
+</body>
+
 </html>
