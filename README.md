@@ -1,5 +1,4 @@
-# Mining-Similarity
-##Description of Diploma Thesis
+# Mining-Similarity - Diploma Thesis
 
 **Title:** “Information system mining user similarity from social media"  
 **Student:** George Goutos  
@@ -20,8 +19,8 @@ The Information System of this Diploma Thesis consists of two parts according to
 
 **Key words:** HTML, CSS, Javascript, RESTful web services, PHP, jQuery, Ajax, NoSQL, graph databases, Neo4j, PhoneGap, mobile development
 
-**Mining Similarity (preview)**  
-https://www.youtube.com/watch?v=IYEciNZ6SCo
+**Mining Similarity (preview):** https://www.youtube.com/watch?v=IYEciNZ6SCo
 
-**Workflow with PhoneGap Build & Neo4j**  
-https://www.youtube.com/watch?v=cu9-HYqFCNk
+**Workflow with PhoneGap Build & Neo4j:** https://www.youtube.com/watch?v=cu9-HYqFCNk
+
+**Thesis:** https://www.dropbox.com/s/2rpiuwr9bhi5nzp/thesis.pdf?dl=0
